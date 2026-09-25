@@ -1,6 +1,479 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-52-29Z-plane-1595",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-plane-1595.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-29Z-motion-1596",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-motion-1596.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-29Z-motion-1597",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-motion-1597.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-29Z-plane-1598",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-plane-1598.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-29Z-motion-1599",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-motion-1599.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-29Z-motion-1600",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-motion-1600.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-29Z-motion-1601",
+      "t": "2026-09-25T11:52:29Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-52-29Z-motion-1601.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-25Z-plane-1594",
+      "t": "2026-09-25T11:52:25Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-25Z-plane-1594.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-22Z-plane-1593",
+      "t": "2026-09-25T11:52:22Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-22Z-plane-1593.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-05Z-plane-1588",
+      "t": "2026-09-25T11:52:05Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-05Z-plane-1588.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-05Z-plane-1589",
+      "t": "2026-09-25T11:52:05Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-05Z-plane-1589.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-05Z-motion-1590",
+      "t": "2026-09-25T11:52:05Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-52-05Z-motion-1590.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-05Z-plane-1591",
+      "t": "2026-09-25T11:52:05Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-05Z-plane-1591.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-05Z-plane-1592",
+      "t": "2026-09-25T11:52:05Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-05Z-plane-1592.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-04Z-car-1587",
+      "t": "2026-09-25T11:52:04Z",
+      "type": "car",
+      "label": "Voiture",
+      "zone": "roundabout",
+      "confidence": 0.682,
+      "thumb": "data/thumbs/2026-09-25T11-52-04Z-car-1587.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-52-01Z-plane-1586",
+      "t": "2026-09-25T11:52:01Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-52-01Z-plane-1586.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-58Z-plane-1585",
+      "t": "2026-09-25T11:51:58Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-51-58Z-plane-1585.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-57Z-motion-1582",
+      "t": "2026-09-25T11:51:57Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-57Z-motion-1582.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-57Z-motion-1583",
+      "t": "2026-09-25T11:51:57Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-57Z-motion-1583.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-57Z-motion-1584",
+      "t": "2026-09-25T11:51:57Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-57Z-motion-1584.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-50Z-plane-1581",
+      "t": "2026-09-25T11:51:50Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-51-50Z-plane-1581.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-49Z-motion-1580",
+      "t": "2026-09-25T11:51:49Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-49Z-motion-1580.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-42Z-plane-1576",
+      "t": "2026-09-25T11:51:42Z",
+      "type": "plane",
+      "label": "NSZ5525",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T11-51-42Z-plane-1576.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "47a039",
+        "callsign": "NSZ5525",
+        "altitude_m": 10660.38,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-42Z-habit-1577",
+      "t": "2026-09-25T11:51:42Z",
+      "type": "habit",
+      "label": "Habitude du cadrage",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-42Z-habit-1577.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Cet endroit a bougé plusieurs fois sans événement nouveau. Le cadrage le reconnaît maintenant.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-42Z-motion-1578",
+      "t": "2026-09-25T11:51:42Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-42Z-motion-1578.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-42Z-plane-1579",
+      "t": "2026-09-25T11:51:42Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-51-42Z-plane-1579.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-37Z-motion-1574",
+      "t": "2026-09-25T11:51:37Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-37Z-motion-1574.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-51-37Z-motion-1575",
+      "t": "2026-09-25T11:51:37Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-51-37Z-motion-1575.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T11-51-30Z-motion-1570",
       "t": "2026-09-25T11:51:30Z",
       "type": "motion",
