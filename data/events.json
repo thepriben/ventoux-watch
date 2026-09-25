@@ -1,6 +1,54 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-06-19Z-motion-1455",
+      "t": "2026-09-25T11:06:19Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-06-19Z-motion-1455.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T11-06-19Z-motion-1456",
+      "t": "2026-09-25T11:06:19Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-06-19Z-motion-1456.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T11-06-19Z-motion-1457",
+      "t": "2026-09-25T11:06:19Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-06-19Z-motion-1457.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T11-05-52Z-plane-1452",
       "t": "2026-09-25T11:05:52Z",
       "type": "plane",
