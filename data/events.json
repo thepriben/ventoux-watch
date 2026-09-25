@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T09-40-20Z-motion-705",
+      "t": "2026-09-25T09:40:20Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T09-40-20Z-motion-705.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T09-39-02Z-motion-704",
       "t": "2026-09-25T09:39:02Z",
       "type": "motion",
