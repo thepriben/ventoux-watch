@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T07-29-04Z-plane-249",
+      "t": "2026-09-25T07:29:04Z",
+      "type": "plane",
+      "label": "STH03",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T07-29-04Z-plane-249.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39ce35",
+        "callsign": "STH03",
+        "altitude_m": 1112.52,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T07-26-19Z-plane-246",
       "t": "2026-09-25T07:26:19Z",
       "type": "plane",
