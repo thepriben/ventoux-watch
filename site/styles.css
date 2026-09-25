@@ -381,12 +381,6 @@ h2 {
 
 .log strong { font-size: 15px; }
 
-.log .note {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
 #loupe {
   position: fixed;
   z-index: 40;

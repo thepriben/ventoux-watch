@@ -50,7 +50,6 @@ const COPY = {
     colTime: "Time",
     colPhoto: "Photo",
     colReading: "Reading",
-    colDetail: "Detail",
     notInFrame: "Not in the picture",
     colCam: "Webcam",
     colApi: "Station",
@@ -116,7 +115,6 @@ const COPY = {
     colTime: "Heure",
     colPhoto: "Photo",
     colReading: "Lecture",
-    colDetail: "Détail",
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",
     colApi: "Station",
@@ -396,7 +394,7 @@ function render() {
     const piled = Number(info.count || 1);
     const times = !info.correction && piled > 1 ? ` · ${piled}` : "";
     const note = [extra, times.replace(/^ · /, ""), state].filter(Boolean).join(" · ");
-    return `<tr class="${event.review || ""}"><td class="when"><time>${clock}</time><span>${day}</span></td><td class="shot">${picture}</td><td><strong>${escapeHtml(title)}</strong>${review}</td><td class="note">${escapeHtml(note)}</td></tr>`;
+    return `<tr class="${event.review || ""}"><td class="when"><time>${clock}</time><span>${day}</span></td><td class="shot">${picture}</td><td><strong>${escapeHtml(title)}</strong><p class="meta">${escapeHtml(note)}</p>${review}</td></tr>`;
   }).join("");
 }
 
