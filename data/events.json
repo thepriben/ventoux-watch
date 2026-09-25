@@ -1,6 +1,412 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-24-50Z-motion",
+      "t": "2026-09-25T05:24:50Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-50Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-50Z-plane",
+      "t": "2026-09-25T05:24:50Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-50Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-42Z-plane",
+      "t": "2026-09-25T05:24:42Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-42Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-42Z-motion",
+      "t": "2026-09-25T05:24:42Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "slope",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-42Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-41Z-motion",
+      "t": "2026-09-25T05:24:41Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-41Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-35Z-plane",
+      "t": "2026-09-25T05:24:35Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-35Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-34Z-motion",
+      "t": "2026-09-25T05:24:34Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-34Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-34Z-plane",
+      "t": "2026-09-25T05:24:34Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-34Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-28Z-plane",
+      "t": "2026-09-25T05:24:28Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-28Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-28Z-motion",
+      "t": "2026-09-25T05:24:28Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-28Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-27Z-motion",
+      "t": "2026-09-25T05:24:27Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-27Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-27Z-plane",
+      "t": "2026-09-25T05:24:27Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-27Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-21Z-plane",
+      "t": "2026-09-25T05:24:21Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-21Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-21Z-motion",
+      "t": "2026-09-25T05:24:21Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-21Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-20Z-plane",
+      "t": "2026-09-25T05:24:20Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-20Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-20Z-motion",
+      "t": "2026-09-25T05:24:20Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-20Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-13Z-motion",
+      "t": "2026-09-25T05:24:13Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "slope",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-13Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-13Z-plane",
+      "t": "2026-09-25T05:24:13Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-13Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-06Z-motion",
+      "t": "2026-09-25T05:24:06Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-06Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-05Z-plane",
+      "t": "2026-09-25T05:24:05Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-24-05Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-05Z-motion",
+      "t": "2026-09-25T05:24:05Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-05Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-24-01Z-motion",
+      "t": "2026-09-25T05:24:01Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-24-01Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-23-58Z-plane",
+      "t": "2026-09-25T05:23:58Z",
+      "type": "plane",
+      "label": "EWG2WE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-23-58Z-plane.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2509",
+        "callsign": "EWG2WE",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-23-58Z-motion",
+      "t": "2026-09-25T05:23:58Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-23-58Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-23-52Z-motion",
       "t": "2026-09-25T05:23:52Z",
       "type": "motion",
