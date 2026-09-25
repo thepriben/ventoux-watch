@@ -4,7 +4,7 @@
     "webcam": "ciel dégagé",
     "period": "night",
     "moon": false,
-    "api": "peu nuageux",
+    "api": "couvert",
     "temp_c": 13,
     "photo": "data/view.jpg"
   }
