@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T06-35-16Z-plane-134",
+      "t": "2026-09-25T06:35:16Z",
+      "type": "plane",
+      "label": "AFR38AZ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-35-16Z-plane-134.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39bda8",
+        "callsign": "AFR38AZ",
+        "altitude_m": 8077.2,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T06-34-57Z-plane-133",
       "t": "2026-09-25T06:34:57Z",
       "type": "plane",
