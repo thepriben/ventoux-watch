@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-21-33Z-motion-1501",
+      "t": "2026-09-25T11:21:33Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-21-33Z-motion-1501.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T11-19-42Z-plane-1500",
       "t": "2026-09-25T11:19:42Z",
       "type": "plane",
