@@ -1,6 +1,60 @@
 {
   "events": [
     {
+      "id": "2026-09-25T06-00-26Z-plane-107",
+      "t": "2026-09-25T06:00:26Z",
+      "type": "plane",
+      "label": "EWG3MJ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-00-26Z-plane-107.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c6490",
+        "callsign": "EWG3MJ",
+        "altitude_m": 10668,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T06-00-18Z-plane-106",
+      "t": "2026-09-25T06:00:18Z",
+      "type": "plane",
+      "label": "EWG3MJ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-00-18Z-plane-106.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c6490",
+        "callsign": "EWG3MJ",
+        "altitude_m": 10668,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T06-00-03Z-plane-105",
+      "t": "2026-09-25T06:00:03Z",
+      "type": "plane",
+      "label": "EWG3MJ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-00-03Z-plane-105.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c6490",
+        "callsign": "EWG3MJ",
+        "altitude_m": 10668,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-59-56Z-plane-104",
       "t": "2026-09-25T05:59:56Z",
       "type": "plane",
