@@ -1,6 +1,86 @@
 {
   "events": [
     {
+      "id": "2026-09-25T14-06-36Z-motion-1938",
+      "t": "2026-09-25T14:06:36Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-06-36Z-motion-1938.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T14-06-35Z-motion-1936",
+      "t": "2026-09-25T14:06:35Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-06-35Z-motion-1936.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T14-06-35Z-motion-1937",
+      "t": "2026-09-25T14:06:35Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-06-35Z-motion-1937.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T14-06-32Z-motion-1935",
+      "t": "2026-09-25T14:06:32Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-06-32Z-motion-1935.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T14-06-21Z-motion-1934",
+      "t": "2026-09-25T14:06:21Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-06-21Z-motion-1934.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T14-04-50Z-motion-1932",
       "t": "2026-09-25T14:04:50Z",
       "type": "motion",
