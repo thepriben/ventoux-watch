@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-58-29Z-plane-103",
+      "t": "2026-09-25T05:58:29Z",
+      "type": "plane",
+      "label": "TUI5HJ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-58-29Z-plane-103.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c7439",
+        "callsign": "TUI5HJ",
+        "altitude_m": 11277.6,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-57-42Z-plane-102",
       "t": "2026-09-25T05:57:42Z",
       "type": "plane",
