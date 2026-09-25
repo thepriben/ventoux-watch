@@ -129,7 +129,8 @@ class MotionDetector:
             if index in unused and track.frames > 0 and track.updated != now:
                 track.misses += 1
             if track.misses >= 2:
-                if track.frames >= self.min_track_frames:
+                needed = 3 if track.zone == "sky" else self.min_track_frames
+                if track.frames >= needed:
                     ended.append(track)
                 continue
             kept.append(track)

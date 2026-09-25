@@ -16,11 +16,13 @@ class Store:
         self.candidates_path = root / "candidates.jsonl"
         self.thumbs.mkdir(parents=True, exist_ok=True)
         self.dirty = False
+        self._seq = 0
         self.events = self._load()
 
     def add_event(self, when: datetime, type_: str, label: str, zone: str, confidence: float, jpeg: bytes, detail: dict) -> dict:
         stamp = when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
-        event_id = f"{stamp}-{type_}"
+        self._seq += 1
+        event_id = f"{stamp}-{type_}-{self._seq}"
         thumb_name = f"{event_id}.jpg"
         if jpeg:
             (self.thumbs / thumb_name).write_bytes(jpeg)
