@@ -19,9 +19,16 @@ const ROOF = 0x7a5f52;
 const STEEL = 0xb9bec7;
 const FOLIAGE = [0x345c2c, 0x3e6b33, 0x4a7a3a, 0x2e5228];
 const TRUNK = 0x4a3b2c;
-// A tree every twelve metres is what a Ventoux pine wood looks like from a
-// kilometre off, and it is also as many as a page can carry without labouring.
+// A tree every twelve metres is what a pine wood looks like up here. Sown at
+// that spacing over every parcel the map knows, it comes to a quarter of a
+// million trees, which no page should be asked to carry. So the wood is thinned
+// with distance, the way the eye thins it: at two kilometres, one tree in
+// twenty-five stands for the rest, and nobody can tell.
 const SPACING_M = 12;
+const THINNING_M = 40;
+const SPARSEST_M = 60;
+// Below this a trunk is worth drawing. Beyond it a trunk is a tenth of a pixel.
+const TRUNKS_M = 350;
 const CROWN_M = 10;
 
 // The sky and the light at three moments of the day. What is shown is what the
@@ -244,23 +251,29 @@ function wood(relief) {
     for (let x = west; x <= east; x += SPACING_M) {
       for (let y = south; y <= north; y += SPACING_M) {
         const at = [x + (roll() - 0.5) * SPACING_M, y + (roll() - 0.5) * SPACING_M];
+        const away = Math.hypot(at[0], at[1]);
+        const spacing = Math.min(SPARSEST_M, SPACING_M + away / THINNING_M);
+        if (roll() > (SPACING_M * SPACING_M) / (spacing * spacing)) continue;
         if (!inside(at, ring)) continue;
-        standing.push([at[0], at[1], high(at[0], at[1]), CROWN_M * (0.65 + roll() * 0.7)]);
+        standing.push([at[0], at[1], high(at[0], at[1]), CROWN_M * (0.65 + roll() * 0.7), away]);
       }
     }
   }
-  for (const [x, y, z, tall] of relief.trees) standing.push([x, y, z, tall]);
+  for (const [x, y, z, tall] of relief.trees) standing.push([x, y, z, tall, Math.hypot(x, y)]);
   if (!standing.length) return [];
+  const close = standing.filter((tree) => tree[4] <= TRUNKS_M);
 
   const crowns = new THREE.InstancedMesh(
     new THREE.ConeGeometry(0.34, 1, 7),
-    new THREE.MeshLambertMaterial({ vertexColors: true }),
+    // White, because the colour of each tree is carried by the instance and
+    // multiplies this one. Tinting the material would tint the whole wood.
+    new THREE.MeshLambertMaterial(),
     standing.length,
   );
   const trunks = new THREE.InstancedMesh(
     new THREE.CylinderGeometry(0.06, 0.09, 1, 5),
     new THREE.MeshLambertMaterial({ color: TRUNK }),
-    standing.length,
+    close.length,
   );
   const sit = new THREE.Object3D();
   const tint = new THREE.Color();
@@ -272,6 +285,11 @@ function wood(relief) {
     sit.updateMatrix();
     crowns.setMatrixAt(index, sit.matrix);
     crowns.setColorAt(index, tint.setHex(FOLIAGE[index % FOLIAGE.length]));
+  });
+  crowns.instanceColor.needsUpdate = true;
+  close.forEach(([x, y, z, tall], index) => {
+    const crown = tall * 0.78;
+    sit.rotation.y = 0;
     sit.position.set(x, z + (tall - crown) / 2, -y);
     sit.scale.set(tall, tall - crown, tall);
     sit.updateMatrix();
