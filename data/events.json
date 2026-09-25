@@ -1,6 +1,92 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-56-43Z-plane-1619",
+      "t": "2026-09-25T11:56:43Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-56-43Z-plane-1619.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-56-43Z-habit-1620",
+      "t": "2026-09-25T11:56:43Z",
+      "type": "habit",
+      "label": "Habitude du cadrage",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-56-43Z-habit-1620.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Cet endroit a bougé plusieurs fois sans événement nouveau. Le cadrage le reconnaît maintenant.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-56-32Z-plane-1618",
+      "t": "2026-09-25T11:56:32Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-56-32Z-plane-1618.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-56-20Z-plane-1617",
+      "t": "2026-09-25T11:56:20Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-56-20Z-plane-1617.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-56-08Z-motion-1616",
+      "t": "2026-09-25T11:56:08Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-56-08Z-motion-1616.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T11-55-29Z-plane-1615",
       "t": "2026-09-25T11:55:29Z",
       "type": "plane",
