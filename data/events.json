@@ -1,6 +1,28 @@
 {
   "events": [
     {
+      "id": "2026-09-25T22-11-35Z-vehicle-18",
+      "t": "2026-09-25T22:11:35Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "road",
+      "confidence": 0.503,
+      "thumb": "data/thumbs/2026-09-25T22-11-35Z-vehicle-18.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "night",
+        "weather": "peu nuageux",
+        "context": "de nuit, peu nuageux",
+        "surface": "road",
+        "box": [
+          0.1656,
+          0.7167,
+          0.0437,
+          0.0556
+        ]
+      }
+    },
+    {
       "id": "2026-09-25T21-39-29Z-vehicle-1",
       "t": "2026-09-25T21:39:29Z",
       "type": "vehicle",
