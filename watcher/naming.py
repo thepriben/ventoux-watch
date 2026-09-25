@@ -200,6 +200,9 @@ def decide(obs: Observation) -> Decision:
             return _stamp(Decision("publish", "car", label, reason=vehicle.cls, confidence=vehicle.conf), obs)
         return _motion(obs, "unnamed_vehicle", "Mouvement sur la route", "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.")
 
+    if obs.zone == "slope" and obs.travel < max(obs.min_travel, 0.02):
+        return Decision("hold", reason="slope_still")
+
     return _motion(obs, "unclassified", "Mouvement", "Un passage a été vu. La classe viendra quand cet endroit aura été revu.")
 
 
