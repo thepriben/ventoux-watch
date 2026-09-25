@@ -26,6 +26,16 @@ class Track:
     best_jpeg: bytes = b""
     started: float = 0.0
     updated: float = 0.0
+    first_top: float = 0.0
+    top: float = 0.0
+
+    @property
+    def rise(self) -> float:
+        """How far the top of the blob has climbed, as a share of the frame.
+
+        A plume grows upwards while a car, a walker or a shadow does not.
+        """
+        return max(0.0, self.first_top - self.top)
 
     @property
     def travel(self) -> float:
@@ -107,6 +117,8 @@ class MotionDetector:
                     started=now,
                     updated=now,
                     frames=1,
+                    first_top=blob["top"],
+                    top=blob["top"],
                 )
                 self._next_id += 1
                 track.best_jpeg = _jpeg(frame)
@@ -117,6 +129,7 @@ class MotionDetector:
             track.frames += 1
             track.misses = 0
             track.centroid = (blob["cx"], blob["cy"])
+            track.top = blob["top"]
             track.bbox = blob["bbox"]
             track.area_ratio = blob["area_ratio"]
             track.updated = now
@@ -187,6 +200,7 @@ def _blobs(mask: np.ndarray, scale: float) -> list[dict]:
             {
                 "cx": (x + w / 2) / width,
                 "cy": (y + h / 2) / height,
+                "top": y / height,
                 "bbox": (int(x / scale), int(y / scale), max(int(w / scale), 1), max(int(h / scale), 1)),
                 "area_ratio": (w * h) / float(width * height),
             }
@@ -201,14 +215,49 @@ def _jpeg(frame: np.ndarray) -> bytes:
     return encoded.tobytes()
 
 
-def warm_ratio(jpeg: bytes) -> float:
+def _crop(jpeg: bytes, bbox=None):
     if not jpeg:
-        return 0.0
+        return None
     image = cv2.imdecode(np.frombuffer(jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
     if image is None or image.size == 0:
+        return None
+    if not bbox or not any(bbox):
+        return image
+    height, width = image.shape[:2]
+    x, y, w, h = bbox
+    x0, y0 = max(0, x), max(0, y)
+    x1, y1 = min(width, x + max(w, 1)), min(height, y + max(h, 1))
+    if x1 - x0 < 2 or y1 - y0 < 2:
+        return image
+    return image[y0:y1, x0:x1]
+
+
+def warm_ratio(jpeg: bytes, bbox=None) -> float:
+    """How much of the blob has the colour of a flame."""
+    image = _crop(jpeg, bbox)
+    if image is None:
         return 0.0
     blue = image[:, :, 0].astype(np.int16)
     green = image[:, :, 1].astype(np.int16)
     red = image[:, :, 2].astype(np.int16)
     warm = (red > 140) & (red > green + 25) & (red > blue + 25)
     return float(np.count_nonzero(warm)) / float(warm.size)
+
+
+def smoke_ratio(jpeg: bytes, bbox=None) -> float:
+    """How much of the blob looks like a plume: pale, grey, and not the sky.
+
+    Smoke shows before flame, and from a kilometre away it is all a camera will
+    ever see of a fire that has just started. It has almost no colour, it is
+    brighter than the wood behind it, and it is never as blue as the sky.
+    """
+    image = _crop(jpeg, bbox)
+    if image is None:
+        return 0.0
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    saturation = hsv[:, :, 1].astype(np.int16)
+    value = hsv[:, :, 2].astype(np.int16)
+    blue = image[:, :, 0].astype(np.int16)
+    red = image[:, :, 2].astype(np.int16)
+    plume = (saturation < 55) & (value > 90) & (blue - red < 25)
+    return float(np.count_nonzero(plume)) / float(plume.size)

@@ -27,6 +27,17 @@ RENAME = {
     "2026-09-25T15:14:37Z": ("car", "Voiture blanche", (5, 188, 42, 211), None),
     "2026-09-25T12:33:22Z": ("vehicle", "Voiture et piéton", (32, 186, 53, 207), None),
 }
+# Strokes drawn on the wrong thing, given straight in thumbnail pixels because
+# they were never stored as a box.
+REFRAME = {
+    "2026-09-25T18:58:22Z": {
+        "type": "vehicle",
+        "label": "Voiture",
+        "erase": [(0, 169, 176, 270)],
+        "draw": (298, 250, 378, 269),
+    },
+    "2026-09-25T15:56:28Z": {"erase": [(345, 205, 390, 270)]},
+}
 DROP = {
     "2026-09-25T17:08:06Z": "ombre et soleil à la lisière",
     "2026-09-25T17:02:48Z": "la statue en bois",
@@ -97,6 +108,32 @@ def _find_rect(image: np.ndarray, near: tuple[int, int, int, int]) -> tuple[int,
     return best
 
 
+def _reframe(event: dict, order: dict) -> None:
+    thumb = ROOT / event["thumb"]
+    image = cv2.imread(str(thumb))
+    if image is None:
+        raise SystemExit(f"photo manquante {thumb}")
+    for stale in order.get("erase") or []:
+        image = _erase(image, stale)
+    detail = dict(event.get("detail") or {})
+    rect = order.get("draw")
+    if rect is not None:
+        cv2.rectangle(image, rect[:2], rect[2:], (0, 0, 210), 1)
+        detail["box"] = _raw_box(rect, image.shape[1], image.shape[0])
+    else:
+        detail.pop("box", None)
+    cv2.imwrite(str(thumb), image, [int(cv2.IMWRITE_JPEG_QUALITY), 82])
+    label = order.get("label")
+    if label:
+        event["type"] = order.get("type") or event["type"]
+        event["label"] = label
+        detail["correction"] = label
+        detail["reading"] = f"{label}, indiqué à la main."
+    event["detail"] = detail
+    event["review"] = "accepted"
+    print(f"recadré {event['t']}  {event['label']}")
+
+
 def main() -> int:
     path = ROOT / "data" / "events.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -108,6 +145,10 @@ def main() -> int:
             touched += 1
             continue
         kept.append(event)
+        if when in REFRAME:
+            _reframe(event, REFRAME[when])
+            touched += 1
+            continue
         if when not in RENAME:
             continue
         kind, label, rect, was = RENAME[when]

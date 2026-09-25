@@ -5,9 +5,14 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
-from watcher.scenemap import DRIVABLE
+from watcher.scenemap import DRIVABLE, FLAMMABLE
 
 NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree"}
+
+# The widest a thing of that kind can be where it stands, in metres. The scene
+# map turns a box into ground metres, so a walker eight metres across is light
+# or shadow whatever the model reads into it.
+BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
 
 
 @dataclass
@@ -37,6 +42,9 @@ class Observation:
     area_ratio: float = 0.0
     duration_s: float = 0.0
     warm_ratio: float = 0.0
+    smoke_ratio: float = 0.0
+    rise: float = 0.0
+    width_m: float = 0.0
     area_grow: float = 1.0
     person_count: int = 0
     kind: str = "track"
@@ -47,6 +55,8 @@ class Observation:
     fire_sustain_s: float = 20.0
     fire_grow: float = 1.5
     fire_warm: float = 0.08
+    fire_smoke: float = 0.35
+    fire_rise: float = 0.008
     period: str = "day"
     weather: str = ""
     surface: str = ""
@@ -101,6 +111,12 @@ def choose_aircraft(aircraft: list[dict]) -> tuple[dict | None, str]:
         if nxt["altitude_m"] > 0 and lowest["altitude_m"] < 0.5 * nxt["altitude_m"]:
             return lowest, "much_lower"
     return None, "ambiguous"
+
+
+def _fits(obs: Observation, cls: str) -> bool:
+    """Could a thing of that kind really be that wide, where it stands?"""
+    limit = BIGGEST_M.get(cls)
+    return not (limit and obs.width_m > limit)
 
 
 def _best(detections: list[Detection], names: set[str]) -> Detection | None:
@@ -166,27 +182,36 @@ def decide(obs: Observation) -> Decision:
             )
         return Decision("hold", reason="crowd_below_threshold", detail={"persons": obs.person_count})
 
-    if (
-        obs.zone == "slope"
-        and obs.duration_s >= obs.fire_sustain_s
-        and obs.area_grow >= obs.fire_grow
-        and obs.warm_ratio >= obs.fire_warm
-    ):
-        if obs.period == "twilight":
-            return _motion(obs, "sunset", "Lueur du soir", "La pente rougit au crépuscule. Ce n'est pas retenu comme un incendie.")
-        if obs.weather in {"brouillard", "neige", "pluie"} and obs.warm_ratio < 0.2:
-            return _motion(obs, "weather_glow", "Lueur dans la météo", "La tache chaude reste ambiguë par ce temps.")
-        return _stamp(
-            Decision(
-                "publish",
-                "fire",
-                "Incendie",
-                reason="warm_growing",
-                detail={"warm_ratio": round(obs.warm_ratio, 3), "grow": round(obs.area_grow, 2)},
-                confidence=min(0.99, obs.warm_ratio),
-            ),
-            obs,
-        )
+    if (obs.surface in FLAMMABLE or (obs.zone == "slope" and not obs.surface)) and obs.duration_s >= obs.fire_sustain_s:
+        flame = obs.warm_ratio >= obs.fire_warm
+        # A fire that has just caught shows as a pale plume climbing out of the
+        # trees, minutes before any flame is large enough to colour a pixel.
+        plume = obs.smoke_ratio >= obs.fire_smoke and obs.rise >= obs.fire_rise
+        if (flame or plume) and obs.area_grow >= obs.fire_grow:
+            if obs.period == "twilight" and not plume:
+                return _motion(obs, "sunset", "Lueur du soir", "La pente rougit au crépuscule. Ce n'est pas retenu comme un incendie.")
+            if obs.weather in {"brouillard", "neige", "pluie"} and obs.warm_ratio < 0.2:
+                return _motion(obs, "weather_glow", "Lueur dans la météo", "La tache chaude reste ambiguë par ce temps.")
+            if obs.period == "night" and plume and not flame:
+                return _motion(obs, "night_plume", "Masse sur la pente", "Une masse pâle monte, mais de nuit une fumée ne se distingue pas d'un nuage bas.")
+            return _stamp(
+                Decision(
+                    "publish",
+                    "fire",
+                    "Incendie" if flame else "Départ de feu",
+                    reason="warm_growing" if flame else "plume_rising",
+                    detail={
+                        "warm_ratio": round(obs.warm_ratio, 3),
+                        "smoke_ratio": round(obs.smoke_ratio, 3),
+                        "rise": round(obs.rise, 4),
+                        "grow": round(obs.area_grow, 2),
+                        "width_m": round(obs.width_m, 1),
+                        "surface": obs.surface,
+                    },
+                    confidence=min(0.99, max(obs.warm_ratio, obs.smoke_ratio * 0.8)),
+                ),
+                obs,
+            )
 
     if obs.zone == "sky":
         if obs.area_ratio > obs.max_sky_area:
@@ -213,6 +238,19 @@ def decide(obs: Observation) -> Decision:
         bus = _best(obs.detections, {"bus"})
         vehicle = _best(obs.detections, {"car", "truck"})
         person = _best(obs.detections, {"person"})
+        if obs.width_m > BIGGEST_M["truck"]:
+            return _motion(
+                obs,
+                "oversized",
+                "Tache trop large",
+                f"Environ {obs.width_m:.0f} m au sol. Rien ne roule et ne marche à cette taille : de la lumière ou de l'ombre.",
+            )
+        if not _fits(obs, "person"):
+            person = None
+        if vehicle is not None and not _fits(obs, vehicle.cls):
+            vehicle = None
+        if bus is not None and not _fits(obs, "bus"):
+            bus = None
         if obs.landmark and obs.travel < obs.min_travel:
             return _motion(
                 obs,
@@ -228,7 +266,7 @@ def decide(obs: Observation) -> Decision:
             if person is not None and person.conf < 0.6:
                 person = None
             lit = obs.lit_ratio >= 0.03
-            if person is None and (lit or obs.travel >= obs.min_travel):
+            if person is None and _fits(obs, "car") and (lit or obs.travel >= obs.min_travel):
                 return _stamp(
                     Decision(
                         "publish",

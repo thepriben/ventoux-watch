@@ -7,9 +7,24 @@
   "max_foreground_ratio": 0.35,
   "min_travel": 0.01,
   "max_sky_area": 0.02,
-  "min_conf": {"bus": 0.45, "bus_unnamed": 0.6, "car": 0.4},
-  "crowd": {"min_persons": 4, "sustain_s": 8, "cooldown_s": 600},
-  "fire": {"sustain_s": 20, "grow_ratio": 1.5, "warm_ratio": 0.08, "cooldown_s": 1800},
+  "min_conf": {
+    "bus": 0.45,
+    "bus_unnamed": 0.6,
+    "car": 0.4
+  },
+  "crowd": {
+    "min_persons": 4,
+    "sustain_s": 8,
+    "cooldown_s": 600
+  },
+  "fire": {
+    "sustain_s": 20,
+    "grow_ratio": 1.5,
+    "warm_ratio": 0.08,
+    "cooldown_s": 1800,
+    "smoke_ratio": 0.35,
+    "rise": 0.008
+  },
   "history_days": 30,
   "publish_interval_s": 60,
   "model_path": "models/yolo11n.onnx",
@@ -22,16 +37,45 @@
     "pitch": 0,
     "fov": 90,
     "height_m": 4,
-    "scene_radius_m": 130,
-    "flat_apron": true,
     "marks": [
-      {"name": "rond-point", "osm": "way/174649403", "lat": 44.183294, "lon": 5.262344, "ele": 1387, "x": 0.225, "y": 0.832},
-      {"name": "statue", "osm": "node/14215729333", "lat": 44.1832035, "lon": 5.2622505, "ele": 1387, "x": 0.567, "y": 0.861},
-      {"name": "sommet du Ventoux", "lat": 44.17405, "lon": 5.27856, "ele": 1945, "x": 0.513, "y": 0.269}
-    ]
+      {
+        "name": "rond-point",
+        "osm": "way/174649403",
+        "lat": 44.183294,
+        "lon": 5.262344,
+        "ele": 1387,
+        "x": 0.225,
+        "y": 0.832
+      },
+      {
+        "name": "statue",
+        "osm": "node/14215729333",
+        "lat": 44.1832035,
+        "lon": 5.2622505,
+        "ele": 1387,
+        "x": 0.567,
+        "y": 0.861
+      },
+      {
+        "name": "sommet du Ventoux",
+        "lat": 44.17405,
+        "lon": 5.27856,
+        "ele": 1894,
+        "x": 0.5125,
+        "y": 0.3,
+        "note": "le sol de la crête, pas le haut de la tour"
+      }
+    ],
+    "reach_m": 2500,
+    "apron_m": 25
   },
   "opensky": {
-    "bbox": [44.05, 5.05, 44.35, 5.5],
+    "bbox": [
+      44.05,
+      5.05,
+      44.35,
+      5.5
+    ],
     "poll_s": 60,
     "retain_days": 14,
     "match_window_s": 120,
@@ -51,6 +95,9 @@
   "gtfs_radius_m": 3000,
   "gtfs_window_min": 15,
   "gtfs_refresh_s": 86400,
-  "drive": {"credentials": "secrets/drive.json", "folder_id": ""},
+  "drive": {
+    "credentials": "secrets/drive.json",
+    "folder_id": ""
+  },
   "zones": "config/zones.json"
 }

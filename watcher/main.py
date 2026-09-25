@@ -19,12 +19,12 @@ from watcher.drive import DriveUploader
 from watcher.geometry import load_zones
 from watcher.gtfs import GtfsIndex, PARIS
 from watcher.memory import Memory
-from watcher.motion import MotionDetector, warm_ratio
+from watcher.motion import MotionDetector, smoke_ratio, warm_ratio
 from watcher.naming import Observation, decide
 from watcher.opensky import SkyArchive
 from watcher.publish import publish
 from watcher.scene import SceneReader, ViewLog
-from watcher.scenemap import SceneMap
+from watcher.scenemap import FLAMMABLE, SceneMap
 from watcher.store import Store
 
 log = logging.getLogger("ventoux")
@@ -121,7 +121,8 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
     aircraft = sky.around(track.updated, cfg["opensky"]["match_window_s"]) if track.zone == "sky" else []
     trips = gtfs.trips_at(when.astimezone(PARIS), cfg["gtfs_window_min"]) if track.zone in {"road", "roundabout"} else []
     duration = max(0.0, track.updated - track.started)
-    fire_ready = track.zone == "slope" and now - last_fire.get("fire", 0.0) >= cfg["fire"]["cooldown_s"]
+    on_fuel = surface in FLAMMABLE or (track.zone == "slope" and not surface)
+    fire_ready = on_fuel and now - last_fire.get("fire", 0.0) >= cfg["fire"]["cooldown_s"]
     obs = Observation(
         zone=track.zone,
         detections=detections,
@@ -130,7 +131,10 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         travel=track.travel,
         area_ratio=track.area_ratio,
         duration_s=duration if fire_ready else 0.0,
-        warm_ratio=warm_ratio(track.best_jpeg) if fire_ready else 0.0,
+        warm_ratio=warm_ratio(track.best_jpeg, track.best_bbox) if fire_ready else 0.0,
+        smoke_ratio=smoke_ratio(track.best_jpeg, track.best_bbox) if fire_ready else 0.0,
+        rise=track.rise,
+        width_m=scene_map.metres_across(box) if box else 0.0,
         area_grow=track.area_grow,
         min_travel=cfg["min_travel"],
         max_sky_area=cfg["max_sky_area"],
@@ -138,6 +142,8 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         fire_sustain_s=cfg["fire"]["sustain_s"],
         fire_grow=cfg["fire"]["grow_ratio"],
         fire_warm=cfg["fire"]["warm_ratio"],
+        fire_smoke=float(cfg["fire"].get("smoke_ratio") or 0.35),
+        fire_rise=float(cfg["fire"].get("rise") or 0.008),
         period=current.period,
         weather=current.weather,
         surface=surface,

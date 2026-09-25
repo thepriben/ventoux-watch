@@ -2,9 +2,15 @@
 
     .venv/bin/python -m scripts.build_scene
 
-Reads the camera pose and the landmarks that can be pointed at in both the map
-and the picture, fits the direction, the tilt and the field of view on them,
-then paints every OpenStreetMap surface into a grid the watcher can read.
+This is the install step of a camera. It reads the pose declared in
+OpenStreetMap, fits the direction, the tilt and the field of view on a few
+landmarks pointed at in both the map and the picture, then answers one question
+for every point of the frame: what is on the ground there, and how far.
+
+The answer is found by following the line of sight until it meets the terrain,
+then reading what OpenStreetMap has drawn at that spot — forest, meadow, scree,
+roadway, roundabout, car park, path, building. Nothing here is specific to Mont
+Serein: another camera only needs its own position and its own landmarks.
 """
 
 from __future__ import annotations
@@ -20,13 +26,16 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from watcher.config import load_config
-from watcher.frustum import Pose, distance_m, fit, project
+from watcher.frustum import Pose, distance_m, fit, march, project
 from watcher.geometry import load_zones
-from watcher.osm import Ground, around, road_width_m, surface_of
+from watcher.osm import around, road_width_m, surface_of
 from watcher.scenemap import CODES
+from watcher.terrain import Terrain
 
 GRID_W, GRID_H = 192, 108
+REACH_W, REACH_H = 96, 54
 LANDMARK_SIZE_M = 2.0
+MAP_STEP_M = 4.0
 PAINT_ORDER = ["meadow", "scree", "forest", "parking", "path", "road", "roundabout", "building"]
 
 
@@ -53,79 +62,60 @@ def main() -> int:
     rms = (score / len(marks)) ** 0.5
     print(f"Calage : cap {pose.yaw:.1f}° site {pose.pitch:.1f}° champ {pose.hfov:.1f}° écart {rms:.4f}")
 
-    data = around(pose.lat, pose.lon, float(camera.get("scene_radius_m") or 900), root / "data" / "osm" / "around.json")
-    ground = Ground(root / "data" / "osm" / "elevation.json", default=pose.ele)
+    reach = float(camera.get("reach_m", 2500))
+    apron = float(camera.get("apron_m", 60))
+    terrain = Terrain(float(camera["lat"]), float(camera["lon"]), reach, cache=root / "data" / "osm" / "terrain.json")
+    terrain.anchor(pose.lat, pose.lon)
+    holes = len(terrain.missing())
+    if holes:
+        print(f"Terrain : {holes} altitudes à demander, environ {holes // 100 + 1} appels", flush=True)
+        terrain.build(say=lambda done, total: print(f"  {done}/{total}", flush=True))
+        left = len(terrain.missing())
+        if left:
+            print(f"Terrain : {left} altitudes manquent encore, relance la commande pour les finir")
+    near = [mark for mark in marks if distance_m(pose, mark["lat"], mark["lon"]) <= 300]
+    if near:
+        print(f"Terrain : recalé de {terrain.settle(near):+.1f} m sur {len(near)} repères")
+    levels = sorted(float(mark["ele"]) for mark in marks if distance_m(pose, mark["lat"], mark["lon"]) <= apron)
+    if apron > 0 and levels:
+        terrain.level(apron, levels[len(levels) // 2])
+        print(f"Terrain : replat à {levels[len(levels) // 2]:.0f} m sur {apron:.0f} m")
 
-    # Beyond the near field the ground model is a coarse elevation grid, and a
-    # few metres of error there throw a shape halfway up the mountain. Only the
-    # apron around the camera is painted; the rest stays unknown on purpose.
-    radius = float(camera.get("scene_radius_m") or 250)
-    ways, landmarks = _sort(data, pose, radius)
-    wanted = [point for _kind, _tags, points in ways for point in points]
-    wanted += [(mark["lat"], mark["lon"]) for mark in landmarks]
-    added = ground.learn(wanted)
-    if camera.get("flat_apron", True):
-        # The apron around a station is flat to within a metre or two, while the
-        # public elevation grid is ninety metres wide. Levelling it on the marks
-        # that were used to fit the view removes more error than it adds.
-        levels = sorted(
-            float(mark["ele"]) for mark in marks
-            if distance_m(pose, mark["lat"], mark["lon"]) <= radius
-        )
-        if levels:
-            ground.default = levels[len(levels) // 2]
-            ground.known = {}
-            print(f"Terrain : replat à {ground.default:.0f} m")
-    print(f"Terrain : {len(ways)} tracés, {added} altitudes nouvelles")
+    data = around(pose.lat, pose.lon, reach, root / "data" / "osm" / "around.json")
+    land, codes = _land(data, pose, reach)
+    print(f"Carte   : {int((land > 0).sum() * MAP_STEP_M ** 2 / 10_000)} ha de surfaces connues autour")
 
     grid = np.zeros((GRID_H, GRID_W), dtype=np.uint8)
-    codes = {name: index + 1 for index, name in enumerate(PAINT_ORDER)}
-    for name in PAINT_ORDER:
-        for kind, tags, points in ways:
-            if kind != name:
+    far = np.zeros((GRID_H, GRID_W), dtype=np.float32)
+    sky = _sky_mask(load_zones(root / cfg["zones"]), GRID_W, GRID_H)
+    span = int(reach / MAP_STEP_M)
+    for row in range(GRID_H):
+        for column in range(GRID_W):
+            hit = march(pose, (column + 0.5) / GRID_W, (row + 0.5) / GRID_H, terrain, reach)
+            if hit is None:
                 continue
-            _paint(grid, codes[name], pose, ground, tags, points, closed=_is_closed(points))
+            east, north, distance = hit
+            far[row, column] = distance
+            if sky[row, column] and distance > 0.8 * reach:
+                continue
+            x = int(round(east / MAP_STEP_M)) + span
+            y = span - int(round(north / MAP_STEP_M))
+            if 0 <= x < land.shape[1] and 0 <= y < land.shape[0]:
+                grid[row, column] = land[y, x]
 
-    # The elevation grid is coarse on a steep slope, so a path a hundred metres
-    # away can land above the skyline. Nothing on the ground belongs to the sky.
-    sky = _sky_mask(load_zones(root / cfg["zones"]))
-    codes["sky"] = max(codes.values()) + 1
-    grid[sky > 0] = codes["sky"]
-
-    rows = []
     back = {index: name for name, index in codes.items()}
-    for row in grid:
-        rows.append("".join("." if cell == 0 else CODES[back[cell]] for cell in row))
-
-    marks_out = []
-    for mark in landmarks:
-        seen = project(pose, mark["lat"], mark["lon"], ground.at(mark["lat"], mark["lon"]) + 1.0)
-        if seen is None or not (0 <= seen[0] <= 1 and 0 <= seen[1] <= 1):
-            continue
-        span = distance_m(pose, mark["lat"], mark["lon"])
-        half = math.degrees(math.atan2(LANDMARK_SIZE_M / 2, max(span, 5.0)))
-        reach = math.tan(math.radians(half)) / (2 * math.tan(math.radians(pose.hfov / 2)))
-        marks_out.append(
-            {
-                "name": mark.get("name") or mark.get("kind") or "landmark",
-                "kind": mark.get("kind") or "",
-                "osm": mark.get("osm") or "",
-                "x": round(seen[0], 4),
-                "y": round(seen[1], 4),
-                # Widened by how well the view is calibrated: we know where the
-                # statue is to within that much, no better.
-                "r": round(max(0.010, min(0.08, reach + rms)), 4),
-                "distance_m": round(span, 1),
-            }
-        )
+    back[len(codes) + 1] = "sky"
+    grid[far == 0] = len(codes) + 1
+    rows = ["".join("." if cell == 0 else CODES[back[cell]] for cell in line) for line in grid]
 
     out = root / "config" / "scene.json"
     out.write_text(
         json.dumps(
             {
-                "pose": {**pose.as_dict(), "rms": round(rms, 5)},
+                "pose": {**pose.as_dict(), "rms": round(rms, 5), "reach_m": reach},
                 "grid": rows,
-                "landmarks": marks_out,
+                "reach": _shrink(far),
+                "landmarks": _landmarks(data, pose, terrain, rms, apron),
             },
             ensure_ascii=False,
             indent=2,
@@ -134,111 +124,106 @@ def main() -> int:
         encoding="utf-8",
     )
     counts: dict[str, int] = {}
-    for row in rows:
-        for cell in row:
+    for line in rows:
+        for cell in line:
             counts[cell] = counts.get(cell, 0) + 1
     share = {key: round(100 * value / (GRID_W * GRID_H)) for key, value in sorted(counts.items())}
+    seen = far[far > 0]
     print(f"Surfaces : {share}")
-    print(f"Repères  : {[mark['name'] for mark in marks_out]}")
+    print(f"Portée   : de {seen.min():.0f} m à {seen.max():.0f} m, médiane {np.median(seen):.0f} m")
     print(f"Écrit    : {out}")
     return 0
 
 
-def _sky_mask(zones: dict) -> np.ndarray:
-    mask = np.zeros((GRID_H, GRID_W), dtype=np.uint8)
-    polygon = (zones.get("polygons") or {}).get("sky")
-    if not polygon:
-        return mask
-    shape = np.array([[point[0] * GRID_W, point[1] * GRID_H] for point in polygon], dtype=np.int32)
-    cv2.fillPoly(mask, [shape], 1)
-    return mask
+def _land(data: dict, pose: Pose, reach: float) -> tuple[np.ndarray, dict]:
+    """Paint the map itself, seen from above, in metres around the camera."""
+    span = int(reach / MAP_STEP_M)
+    image = np.zeros((2 * span + 1, 2 * span + 1), dtype=np.uint8)
+    codes = {name: index + 1 for index, name in enumerate(PAINT_ORDER)}
+    scale = math.cos(math.radians(pose.lat))
 
+    def to_pixels(points):
+        out = []
+        for lat, lon in points:
+            east = (lon - pose.lon) * 111_320.0 * scale
+            north = (lat - pose.lat) * 110_540.0
+            out.append((int(round(east / MAP_STEP_M)) + span, span - int(round(north / MAP_STEP_M))))
+        return np.array(out, dtype=np.int32)
 
-def _sort(data: dict, pose: Pose, radius: float) -> tuple[list, list]:
-    ways, landmarks = [], []
+    shapes: dict[str, list] = {name: [] for name in PAINT_ORDER}
     for element in data.get("elements") or []:
-        tags = element.get("tags") or {}
-        if element["type"] == "node":
-            if not (tags.get("tourism") == "artwork" or tags.get("historic")):
-                continue
-            if distance_m(pose, element["lat"], element["lon"]) > radius:
-                continue
-            landmarks.append(
-                {
-                    "lat": element["lat"],
-                    "lon": element["lon"],
-                    "name": tags.get("name") or tags.get("artwork_type") or tags.get("historic") or "artwork",
-                    "kind": tags.get("artwork_type") or tags.get("historic") or tags.get("tourism") or "",
-                    "osm": f"node/{element['id']}",
-                }
-            )
+        if element.get("type") != "way":
             continue
         geometry = element.get("geometry") or []
         if len(geometry) < 2:
             continue
+        tags = element.get("tags") or {}
         name = surface_of(tags)
         if not name:
             continue
-        points = [(point["lat"], point["lon"]) for point in geometry]
-        if min(distance_m(pose, lat, lon) for lat, lon in points) > radius:
+        shapes[name].append((tags, [(point["lat"], point["lon"]) for point in geometry]))
+
+    for name in PAINT_ORDER:
+        for tags, points in shapes[name]:
+            shape = to_pixels(points)
+            if tags.get("highway"):
+                thick = max(1, int(round(road_width_m(tags) / MAP_STEP_M)))
+                cv2.polylines(image, [shape], False, int(codes[name]), thick)
+            elif len(points) > 3 and points[0] == points[-1]:
+                cv2.fillPoly(image, [shape], int(codes[name]))
+            else:
+                cv2.polylines(image, [shape], False, int(codes[name]), 2)
+    return image, codes
+
+
+def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, apron: float) -> list[dict]:
+    out = []
+    for element in data.get("elements") or []:
+        tags = element.get("tags") or {}
+        if element.get("type") != "node":
             continue
-        ways.append((name, tags, points))
-    return ways, landmarks
+        if not (tags.get("tourism") == "artwork" or tags.get("historic")):
+            continue
+        span = distance_m(pose, element["lat"], element["lon"])
+        if span > apron * 2:
+            continue
+        east = (element["lon"] - pose.lon) * 111_320.0 * math.cos(math.radians(pose.lat))
+        north = (element["lat"] - pose.lat) * 110_540.0
+        seen = project(pose, element["lat"], element["lon"], terrain.height(east, north) + 1.0)
+        if seen is None or not (0 <= seen[0] <= 1 and 0 <= seen[1] <= 1):
+            continue
+        half = math.degrees(math.atan2(LANDMARK_SIZE_M / 2, max(span, 5.0)))
+        size = math.tan(math.radians(half)) / (2 * math.tan(math.radians(pose.hfov / 2)))
+        out.append(
+            {
+                "name": tags.get("name") or tags.get("artwork_type") or tags.get("historic") or "artwork",
+                "kind": tags.get("artwork_type") or tags.get("historic") or tags.get("tourism") or "",
+                "osm": f"node/{element['id']}",
+                "x": round(seen[0], 4),
+                "y": round(seen[1], 4),
+                # Widened by how well the view is calibrated: we know where the
+                # statue is to within that much, no better.
+                "r": round(max(0.010, min(0.08, size + rms)), 4),
+                "distance_m": round(span, 1),
+            }
+        )
+    return out
 
 
-def _is_closed(points: list) -> bool:
-    return len(points) > 3 and points[0] == points[-1]
+def _shrink(far: np.ndarray) -> list[list[int]]:
+    """How far the ground is, kept coarse: it changes slowly across the frame."""
+    small = cv2.resize(far, (REACH_W, REACH_H), interpolation=cv2.INTER_AREA)
+    return [[int(round(value)) for value in row] for row in small]
 
 
-def _in_reach(seen) -> bool:
-    """A point projected far outside the frame means the shape wraps the camera."""
-    return seen is not None and -1.0 <= seen[0] <= 2.0 and -1.0 <= seen[1] <= 2.0
-
-
-def _paint(grid, code, pose, ground, tags, points, closed: bool) -> None:
-    if closed:
-        shape = []
-        for lat, lon in points:
-            seen = project(pose, lat, lon, ground.at(lat, lon))
-            if not _in_reach(seen):
-                return
-            shape.append((seen[0] * GRID_W, seen[1] * GRID_H))
-        polygon = np.array(shape, dtype=np.int32)
-        if len(polygon) >= 3:
-            cv2.fillPoly(grid, [polygon], int(code))
-        return
-    half = road_width_m(tags) / 2
-    for first, second in zip(points, points[1:]):
-        quad = _ribbon(pose, ground, first, second, half)
-        if quad is not None:
-            cv2.fillPoly(grid, [quad], int(code))
-
-
-def _ribbon(pose, ground, first, second, half):
-    import math
-
-    lat1, lon1 = first
-    lat2, lon2 = second
-    scale = math.cos(math.radians(lat1))
-    dx = (lon2 - lon1) * 111_320.0 * scale
-    dy = (lat2 - lat1) * 110_540.0
-    span = math.hypot(dx, dy)
-    if span < 1e-6:
-        return None
-    ox = -dy / span * half
-    oy = dx / span * half
-    corners = []
-    for lat, lon in ((lat1, lon1), (lat2, lon2)):
-        base = ground.at(lat, lon)
-        for way in (1, -1):
-            plat = lat + way * oy / 110_540.0
-            plon = lon + way * ox / (111_320.0 * scale)
-            seen = project(pose, plat, plon, base)
-            if not _in_reach(seen):
-                return None
-            corners.append((seen[0] * GRID_W, seen[1] * GRID_H))
-    quad = np.array([corners[0], corners[1], corners[3], corners[2]], dtype=np.int32)
-    return quad
+def _sky_mask(zones: dict, width: int, height: int) -> np.ndarray:
+    mask = np.zeros((height, width), dtype=np.uint8)
+    polygon = (zones.get("polygons") or {}).get("sky")
+    if not polygon:
+        return mask
+    shape = np.array([[point[0] * width, point[1] * height] for point in polygon], dtype=np.int32)
+    cv2.fillPoly(mask, [shape], 1)
+    return mask
 
 
 def _fit_position(pose: Pose, marks: list[dict]):

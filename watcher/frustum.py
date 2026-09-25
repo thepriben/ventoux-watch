@@ -74,6 +74,59 @@ def project(pose: Pose, lat: float, lon: float, ele: float) -> tuple[float, floa
     return 0.5 + x / 2, 0.5 - y / 2
 
 
+def axes(pose: Pose) -> tuple[tuple, tuple, tuple]:
+    """Right, forward and up of the camera, in the east-north-up frame."""
+    yaw = math.radians(pose.yaw)
+    pitch = math.radians(pose.pitch)
+    right = (math.cos(yaw), -math.sin(yaw), 0.0)
+    flat = (math.sin(yaw), math.cos(yaw), 0.0)
+    forward = (flat[0] * math.cos(pitch), flat[1] * math.cos(pitch), -math.sin(pitch))
+    upward = (flat[0] * math.sin(pitch), flat[1] * math.sin(pitch), math.cos(pitch))
+    return right, forward, upward
+
+
+def ray(pose: Pose, sx: float, sy: float) -> tuple[float, float, float]:
+    """The direction the camera looks at this point of the picture."""
+    right, forward, upward = axes(pose)
+    half = math.tan(math.radians(pose.hfov) / 2)
+    nx = (sx - 0.5) * 2 * half
+    ny = (0.5 - sy) * 2 * half / pose.aspect
+    vector = tuple(forward[i] + nx * right[i] + ny * upward[i] for i in range(3))
+    length = math.sqrt(sum(value * value for value in vector))
+    return (vector[0] / length, vector[1] / length, vector[2] / length)
+
+
+def march(pose: Pose, sx: float, sy: float, terrain, reach_m: float, near_m: float = 3.0):
+    """Follow the line of sight until it meets the ground.
+
+    Returns the spot in metres east and north of the camera, and how far it is.
+    None means the line of sight leaves over the skyline: that is sky.
+    """
+    east_d, north_d, up_d = ray(pose, sx, sy)
+    eye = pose.ele + pose.height_m
+    distance = near_m
+    previous = None
+    while distance < reach_m:
+        east, north = east_d * distance, north_d * distance
+        gap = (eye + up_d * distance) - terrain.height(east, north)
+        if gap <= 0:
+            if previous is not None:
+                low, high = previous, distance
+                for _ in range(24):
+                    middle = (low + high) / 2
+                    probe = (eye + up_d * middle) - terrain.height(east_d * middle, north_d * middle)
+                    if probe <= 0:
+                        high = middle
+                    else:
+                        low = middle
+                distance = high
+            return east_d * distance, north_d * distance, distance
+        previous = distance
+        distance *= 1.02
+        distance += 0.5
+    return None
+
+
 def distance_m(pose: Pose, lat: float, lon: float) -> float:
     east, north, _up = enu(pose, lat, lon, pose.ele)
     return math.hypot(east, north)

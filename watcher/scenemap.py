@@ -10,6 +10,7 @@ camera only needs its position and its direction.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 LETTERS = {
@@ -28,6 +29,7 @@ CODES = {name: letter for letter, name in LETTERS.items() if name}
 
 DRIVABLE = {"road", "roundabout", "parking"}
 WALKABLE = DRIVABLE | {"path"}
+FLAMMABLE = {"forest", "meadow", "scree"}
 
 
 class SceneMap:
@@ -36,6 +38,7 @@ class SceneMap:
         self.rows: list[str] = list(payload.get("grid") or [])
         self.landmarks: list[dict] = list(payload.get("landmarks") or [])
         self.pose: dict = dict(payload.get("pose") or {})
+        self.reach: list[list[int]] = list(payload.get("reach") or [])
         self.height = len(self.rows)
         self.width = len(self.rows[0]) if self.rows else 0
 
@@ -79,6 +82,28 @@ class SceneMap:
         if not votes:
             return ""
         return max(votes, key=lambda key: (votes[key], key in DRIVABLE))
+
+    def distance_at(self, x: float, y: float) -> float:
+        """How far the ground is at this point of the picture, in metres."""
+        if not self.reach:
+            return 0.0
+        rows, columns = len(self.reach), len(self.reach[0])
+        row = min(rows - 1, max(0, int(y * rows)))
+        column = min(columns - 1, max(0, int(x * columns)))
+        return float(self.reach[row][column])
+
+    def metres_across(self, box: tuple[float, float, float, float]) -> float:
+        """The width of this box on the ground, in metres.
+
+        A hundred pixels are a metre at the roundabout and thirty metres on the
+        far slope. Without this, a plume and a parked van look the same size.
+        """
+        x, y, w, h = box
+        span = self.distance_at(min(0.999, x + w / 2), min(0.999, y + h))
+        hfov = float(self.pose.get("hfov") or 0)
+        if span <= 0 or hfov <= 0:
+            return 0.0
+        return w * 2 * span * math.tan(math.radians(hfov) / 2)
 
     def landmark_at(self, box: tuple[float, float, float, float]) -> dict | None:
         """A fixed thing of the map that this box is drawn around.

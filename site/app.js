@@ -186,6 +186,9 @@ const LABELS = {
   "Voiture avec carriole": "Car with a trailer",
   "Repère éclairé": "Lit landmark",
   "Mouvement hors chaussée": "Motion off the road",
+  "Tache trop large": "Patch too wide",
+  "Départ de feu": "Fire starting",
+  "Masse sur la pente": "Mass on the slope",
   "Lueur du soir": "Evening glow",
   "Lueur dans la météo": "Glow in the weather",
 };

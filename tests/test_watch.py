@@ -203,6 +203,36 @@ class NamingTests(unittest.TestCase):
         )
         self.assertEqual(decision.type, "bus")
 
+    def test_a_walker_the_size_of_a_bus_is_not_a_walker(self):
+        decision = decide(
+            Observation(zone="roundabout", travel=0.05, surface="roundabout", width_m=15.8,
+                        detections=[Detection("person", 0.7)])
+        )
+        self.assertEqual(decision.type, "motion")
+
+    def test_a_blob_wider_than_a_lorry_is_light(self):
+        decision = decide(Observation(zone="road", travel=0.2, surface="road", width_m=40.0))
+        self.assertEqual(decision.reason, "oversized")
+
+    def test_a_plume_over_the_forest_is_a_fire_starting(self):
+        decision = decide(
+            Observation(surface="forest", duration_s=40, area_grow=2.0, smoke_ratio=0.5, rise=0.02, width_m=12)
+        )
+        self.assertEqual(decision.type, "fire")
+        self.assertEqual(decision.reason, "plume_rising")
+
+    def test_a_plume_that_does_not_climb_is_not_a_fire(self):
+        decision = decide(
+            Observation(surface="forest", duration_s=40, area_grow=2.0, smoke_ratio=0.5, rise=0.0)
+        )
+        self.assertEqual(decision.type, "motion")
+
+    def test_a_plume_over_the_roadway_is_not_a_fire(self):
+        decision = decide(
+            Observation(surface="road", zone="road", duration_s=40, area_grow=2.0, smoke_ratio=0.5, rise=0.02)
+        )
+        self.assertNotEqual(decision.type, "fire")
+
     def test_crowd_needs_enough_people(self):
         self.assertFalse(decide(Observation(kind="crowd", person_count=2)).publish)
         decision = decide(Observation(kind="crowd", person_count=5))
