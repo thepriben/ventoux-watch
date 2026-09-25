@@ -41,11 +41,12 @@
   </header>
 
   <main>
-  <div class="stage">
+  <div class="board">
     <section class="live" data-i18n-aria="live" aria-label="Live webcam">
       <video id="player" controls autoplay muted playsinline></video>
     </section>
 
+    <div class="place-col">
     <section class="place" data-i18n-aria="camera" aria-label="Camera">
       <div class="frame">
         <div id="map"></div>
@@ -57,22 +58,21 @@
         <p class="cap"><span data-i18n="cameraText">Fixed, facing 140°.</span></p>
       </div>
     </section>
-  </div>
 
-  <section class="sequence" id="sequence" hidden>
-    <div class="history-head">
-      <h2 data-i18n="around">Around</h2>
-      <p class="sub"><span id="sequence-meta"></span> · <a id="sequence-osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <span id="seq-count"></span></p>
+    <section class="sequence" id="sequence" hidden>
+      <div class="history-head">
+        <h2 data-i18n="around">Around</h2>
+        <p class="sub"><span id="sequence-meta"></span> · <a id="sequence-osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <span id="seq-count"></span></p>
+      </div>
+      <div class="carousel">
+        <button type="button" id="seq-prev" aria-label="Previous">‹</button>
+        <a id="seq-frame" target="_blank" rel="noopener noreferrer"><img id="seq-img" alt=""></a>
+        <button type="button" id="seq-next" aria-label="Next">›</button>
+      </div>
+    </section>
     </div>
-    <div class="carousel">
-      <button type="button" id="seq-prev" aria-label="Previous">‹</button>
-      <a id="seq-frame" target="_blank" rel="noopener noreferrer"><img id="seq-img" alt=""></a>
-      <button type="button" id="seq-next" aria-label="Next">›</button>
-    </div>
-  </section>
 
-  <div class="lower">
-  <section class="pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
+    <section class="pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
       <h2 data-i18n="pipeline">Pipeline</h2>
       <ol class="steps">
         <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
@@ -86,6 +86,7 @@
         <li><strong data-i18n="rest">Unknown</strong><span data-i18n="restText">We don't know what it is. Every movement is shown, with its photo.</span></li>
       </ol>
     </section>
+  </div>
 
   <section class="history">
     <div class="history-head">
@@ -105,7 +106,6 @@
     <ol id="list" class="cards"></ol>
   </section>
 
-  </div>
   <p class="tags">#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur</p>
   </main>
   <script src="app.js"></script>

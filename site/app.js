@@ -271,7 +271,7 @@ function render() {
   list.innerHTML = shown.map((event) => {
     const when = new Date(event.t).toLocaleString(locale(), { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" });
     const picture = event.thumb
-      ? `<img src="${event.thumb}" alt="">`
+      ? `<img src="${event.thumb}" alt="" loading="lazy">`
       : `<span class="placeholder"></span>`;
     const clip = event.clip_url ? `<a href="${event.clip_url}">${escapeHtml(t("clip"))}</a>` : "";
     const extra = detail(event);
@@ -405,12 +405,13 @@ function paintCamera() {
   cameraMark.bindTooltip(t("camera"), { permanent: true, direction: "top", offset: [0, -8] });
 }
 
+let sequenceFrames = [];
+let sequenceIndex = 0;
+
 applyLang();
 setInterval(tick, 1000);
 loadWeather();
 setInterval(loadWeather, 600000);
-let sequenceFrames = [];
-let sequenceIndex = 0;
 
 function paintSequence() {
   const frame = sequenceFrames[sequenceIndex];
