@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T15-54-07Z-habit-20",
+      "t": "2026-09-25T15:54:07Z",
+      "type": "habit",
+      "label": "Habitude du cadrage",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T15-54-07Z-habit-20.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Cet endroit a bougé plusieurs fois sans événement nouveau. Le cadrage le reconnaît maintenant.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T15-51-50Z-motion-19",
       "t": "2026-09-25T15:51:50Z",
       "type": "motion",
