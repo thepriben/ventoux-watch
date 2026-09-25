@@ -1,6 +1,78 @@
 {
   "events": [
     {
+      "id": "2026-09-25T10-00-42Z-plane-767",
+      "t": "2026-09-25T10:00:42Z",
+      "type": "plane",
+      "label": "EJU529H",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-00-42Z-plane-767.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "44023f",
+        "callsign": "EJU529H",
+        "altitude_m": 9845.04,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-00-32Z-plane-766",
+      "t": "2026-09-25T10:00:32Z",
+      "type": "plane",
+      "label": "EJU529H",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-00-32Z-plane-766.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "44023f",
+        "callsign": "EJU529H",
+        "altitude_m": 9845.04,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-00-31Z-plane-765",
+      "t": "2026-09-25T10:00:31Z",
+      "type": "plane",
+      "label": "EJU529H",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-00-31Z-plane-765.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "44023f",
+        "callsign": "EJU529H",
+        "altitude_m": 9845.04,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-00-23Z-plane-764",
+      "t": "2026-09-25T10:00:23Z",
+      "type": "plane",
+      "label": "EJU529H",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-00-23Z-plane-764.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "44023f",
+        "callsign": "EJU529H",
+        "altitude_m": 9845.04,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T09-59-55Z-motion-763",
       "t": "2026-09-25T09:59:55Z",
       "type": "motion",
