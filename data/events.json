@@ -1,6 +1,37 @@
 {
   "events": [
     {
+      "id": "2026-09-25T14-34-34Z-car-1976",
+      "t": "2026-09-25T14:34:34Z",
+      "type": "car",
+      "label": "Camion",
+      "zone": "roundabout",
+      "confidence": 0.494,
+      "thumb": "data/thumbs/2026-09-25T14-34-34Z-car-1976.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T14-34-34Z-motion-1977",
+      "t": "2026-09-25T14:34:34Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-34-34Z-motion-1977.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T14-33-09Z-motion-1973",
       "t": "2026-09-25T14:33:09Z",
       "type": "motion",
