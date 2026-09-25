@@ -1,6 +1,70 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-51-35Z-motion-83",
+      "t": "2026-09-25T05:51:35Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-51-35Z-motion-83.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-51-28Z-motion-82",
+      "t": "2026-09-25T05:51:28Z",
+      "type": "motion",
+      "label": "Véhicule incertain",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-51-28Z-motion-82.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "La forme rappelle un bus, sans assez de certitude ni une seule course à l'horaire.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-51-21Z-motion-81",
+      "t": "2026-09-25T05:51:21Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-51-21Z-motion-81.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-50-51Z-motion-80",
+      "t": "2026-09-25T05:50:51Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-50-51Z-motion-80.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-50-08Z-motion-78",
       "t": "2026-09-25T05:50:08Z",
       "type": "motion",
