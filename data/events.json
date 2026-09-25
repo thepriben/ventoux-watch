@@ -1,6 +1,38 @@
 {
   "events": [
     {
+      "id": "2026-09-25T15-38-33Z-motion-2064",
+      "t": "2026-09-25T15:38:33Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T15-38-33Z-motion-2064.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T15-38-33Z-motion-2065",
+      "t": "2026-09-25T15:38:33Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T15-38-33Z-motion-2065.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T15-28-54Z-motion-2063",
       "t": "2026-09-25T15:28:54Z",
       "type": "motion",
