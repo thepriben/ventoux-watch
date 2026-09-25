@@ -1,6 +1,70 @@
 {
   "events": [
     {
+      "id": "2026-09-25T09-54-53Z-motion-747",
+      "t": "2026-09-25T09:54:53Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T09-54-53Z-motion-747.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T09-54-48Z-motion-744",
+      "t": "2026-09-25T09:54:48Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T09-54-48Z-motion-744.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T09-54-48Z-motion-745",
+      "t": "2026-09-25T09:54:48Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T09-54-48Z-motion-745.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T09-54-48Z-motion-746",
+      "t": "2026-09-25T09:54:48Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T09-54-48Z-motion-746.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T09-54-38Z-motion-743",
       "t": "2026-09-25T09:54:38Z",
       "type": "motion",
