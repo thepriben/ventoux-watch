@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T06-39-39Z-plane-140",
+      "t": "2026-09-25T06:39:39Z",
+      "type": "plane",
+      "label": "EWG6DH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-39-39Z-plane-140.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c49cc",
+        "callsign": "EWG6DH",
+        "altitude_m": 11292.84,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T06-36-51Z-plane-138",
       "t": "2026-09-25T06:36:51Z",
       "type": "plane",
