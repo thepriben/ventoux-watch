@@ -1,6 +1,105 @@
 {
   "events": [
     {
+      "id": "2026-09-25T08-43-31Z-plane-433",
+      "t": "2026-09-25T08:43:31Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-43-31Z-plane-433.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2263.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-43-25Z-motion-430",
+      "t": "2026-09-25T08:43:25Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T08-43-25Z-motion-430.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-43-25Z-car-431",
+      "t": "2026-09-25T08:43:25Z",
+      "type": "car",
+      "label": "Camion",
+      "zone": "roundabout",
+      "confidence": 0.876,
+      "thumb": "data/thumbs/2026-09-25T08-43-25Z-car-431.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-43-25Z-motion-432",
+      "t": "2026-09-25T08:43:25Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T08-43-25Z-motion-432.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-43-24Z-plane-429",
+      "t": "2026-09-25T08:43:24Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-43-24Z-plane-429.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2263.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-43-17Z-motion-428",
+      "t": "2026-09-25T08:43:17Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T08-43-17Z-motion-428.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T08-42-55Z-plane-427",
       "t": "2026-09-25T08:42:55Z",
       "type": "plane",
