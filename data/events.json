@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T14-42-19Z-motion-1983",
+      "t": "2026-09-25T14:42:19Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T14-42-19Z-motion-1983.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T14-39-45Z-motion-1982",
       "t": "2026-09-25T14:39:45Z",
       "type": "motion",
