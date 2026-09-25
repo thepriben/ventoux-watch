@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-54-25Z-plane-84",
+      "t": "2026-09-25T05:54:25Z",
+      "type": "plane",
+      "label": "EWG3HE",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-54-25Z-plane-84.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c49c8",
+        "callsign": "EWG3HE",
+        "altitude_m": 10668,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-51-35Z-motion-83",
       "t": "2026-09-25T05:51:35Z",
       "type": "motion",
