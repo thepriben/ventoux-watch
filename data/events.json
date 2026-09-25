@@ -1,6 +1,69 @@
 {
   "events": [
     {
+      "id": "2026-09-25T12-14-13Z-car-1664",
+      "t": "2026-09-25T12:14:13Z",
+      "type": "car",
+      "label": "Camion",
+      "zone": "roundabout",
+      "confidence": 0.676,
+      "thumb": "data/thumbs/2026-09-25T12-14-13Z-car-1664.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-14-12Z-motion-1661",
+      "t": "2026-09-25T12:14:12Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-14-12Z-motion-1661.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-14-12Z-motion-1662",
+      "t": "2026-09-25T12:14:12Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-14-12Z-motion-1662.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-14-12Z-motion-1663",
+      "t": "2026-09-25T12:14:12Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-14-12Z-motion-1663.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T12-12-14Z-motion-1659",
       "t": "2026-09-25T12:12:14Z",
       "type": "motion",
