@@ -1,6 +1,78 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-43-22Z-plane-69",
+      "t": "2026-09-25T05:43:22Z",
+      "type": "plane",
+      "label": "EWG49X",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-43-22Z-plane-69.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c48f1",
+        "callsign": "EWG49X",
+        "altitude_m": 10972.8,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-43-00Z-plane-67",
+      "t": "2026-09-25T05:43:00Z",
+      "type": "plane",
+      "label": "EWG49X",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-43-00Z-plane-67.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c48f1",
+        "callsign": "EWG49X",
+        "altitude_m": 10972.8,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-43-00Z-plane-68",
+      "t": "2026-09-25T05:43:00Z",
+      "type": "plane",
+      "label": "EWG49X",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-43-00Z-plane-68.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c48f1",
+        "callsign": "EWG49X",
+        "altitude_m": 10972.8,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-42-53Z-plane-66",
+      "t": "2026-09-25T05:42:53Z",
+      "type": "plane",
+      "label": "EWG49X",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-42-53Z-plane-66.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c48f1",
+        "callsign": "EWG49X",
+        "altitude_m": 10972.8,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-42-39Z-plane-65",
       "t": "2026-09-25T05:42:39Z",
       "type": "plane",
