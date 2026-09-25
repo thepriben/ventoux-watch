@@ -189,6 +189,8 @@ const LABELS = {
   "Tache trop large": "Patch too wide",
   "Départ de feu": "Fire starting",
   "Masse sur la pente": "Mass on the slope",
+  "Camionnette": "Van",
+  "Voiture garée": "Parked car",
   "Lueur du soir": "Evening glow",
   "Lueur dans la météo": "Glow in the weather",
 };
@@ -478,9 +480,28 @@ function reviewUrl(event, verdict, label, classe) {
   return `https://github.com/thepriben/ventoux-watch/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${label}`;
 }
 
+// Colours are written after the word and spelt to agree with it, so English
+// needs both spellings back.
+const TINTS = {
+  blanche: "white", blanc: "white",
+  noire: "black", noir: "black",
+  grise: "grey", gris: "grey",
+  rouge: "red", orange: "orange", jaune: "yellow",
+  verte: "green", vert: "green",
+  bleue: "blue", bleu: "blue",
+  marron: "brown",
+};
+
 function showText(value) {
   if (!value || lang === "fr") return value || "";
-  return LABELS[value] || value;
+  if (LABELS[value]) return LABELS[value];
+  const parts = value.split(" ");
+  const tint = TINTS[parts[parts.length - 1]];
+  if (tint) {
+    const rest = showText(parts.slice(0, -1).join(" "));
+    return `${tint.charAt(0).toUpperCase()}${tint.slice(1)} ${rest.toLowerCase()}`;
+  }
+  return value;
 }
 
 function paintCounts() {

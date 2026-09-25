@@ -115,7 +115,7 @@ class NamingTests(unittest.TestCase):
     def test_car_on_the_road_is_published(self):
         decision = decide(Observation(zone="road", travel=0.08, detections=[Detection("car", 0.8)]))
         self.assertEqual(decision.type, "vehicle")
-        self.assertEqual(decision.label, "Véhicule")
+        self.assertEqual(decision.label, "Voiture")
 
     def test_bus_with_one_trip_uses_the_line(self):
         trip = Trip("Navette", "Mont Serein", "Chalet", "10:00:00", "transcove")
@@ -210,6 +210,28 @@ class NamingTests(unittest.TestCase):
             )
         )
         self.assertEqual(decision.type, "bus")
+
+    def test_a_lorry_needs_the_width_of_a_lorry(self):
+        narrow = decide(Observation(zone="road", travel=0.08, surface="road", width_m=2.6,
+                                    detections=[Detection("truck", 0.8)]))
+        wide = decide(Observation(zone="road", travel=0.08, surface="road", width_m=7.0,
+                                  detections=[Detection("truck", 0.8)]))
+        self.assertEqual(narrow.label, "Voiture")
+        self.assertEqual(wide.label, "Camion")
+
+    def test_the_colour_agrees_with_the_word(self):
+        car = decide(Observation(zone="road", travel=0.08, surface="road", width_m=2.5, colour="blanc",
+                                 detections=[Detection("car", 0.8)]))
+        lorry = decide(Observation(zone="road", travel=0.08, surface="road", width_m=7.0, colour="blanc",
+                                   detections=[Detection("truck", 0.8)]))
+        self.assertEqual(car.label, "Voiture blanche")
+        self.assertEqual(lorry.label, "Camion blanc")
+
+    def test_a_still_car_on_a_car_park_is_parked(self):
+        decision = decide(Observation(zone="other", travel=0.0, surface="parking",
+                                      detections=[Detection("car", 0.8)]))
+        self.assertEqual(decision.type, "motion")
+        self.assertEqual(decision.reason, "parked")
 
     def test_a_walker_the_size_of_a_bus_is_not_a_walker(self):
         decision = decide(

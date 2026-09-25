@@ -37,6 +37,18 @@ REFRAME = {
         "draw": (298, 250, 378, 269),
     },
     "2026-09-25T15:56:28Z": {"erase": [(345, 205, 390, 270)]},
+    "2026-09-25T12:42:12Z": {
+        "type": "car",
+        "label": "Voiture blanche",
+        "erase": [(115, 147, 179, 192)],  # la cabane, building=kiosk
+        "keep": (25, 187, 103, 231),
+    },
+    "2026-09-25T12:19:07Z": {
+        "type": "car",
+        "label": "Voiture",
+        "erase": [(33, 160, 69, 191)],  # une voiture garée dans la découpe
+        "keep": (32, 197, 121, 270),
+    },
 }
 DROP = {
     "2026-09-25T19:31:07Z": "le halo des phares sur la chaussée, rien dedans",
@@ -120,7 +132,9 @@ def _reframe(event: dict, order: dict) -> None:
     rect = order.get("draw")
     if rect is not None:
         cv2.rectangle(image, rect[:2], rect[2:], (0, 0, 210), 1)
-        detail["box"] = _raw_box(rect, image.shape[1], image.shape[0])
+    kept = rect or order.get("keep")
+    if kept is not None:
+        detail["box"] = _raw_box(kept, image.shape[1], image.shape[0])
     else:
         detail.pop("box", None)
     cv2.imwrite(str(thumb), image, [int(cv2.IMWRITE_JPEG_QUALITY), 82])

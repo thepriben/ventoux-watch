@@ -5416,13 +5416,154 @@
   ],
   "landmarks": [
     {
+      "name": "Mémorial de Tom Simpson",
+      "kind": "memorial",
+      "osm": "node/1334315594",
+      "x": 0.5138,
+      "y": 0.4483,
+      "r": 0.0138,
+      "size_m": 2.0,
+      "distance_m": 2447.4
+    },
+    {
+      "name": "Monument Brugge - Mont Ventoux",
+      "kind": "memorial",
+      "osm": "node/12234473684",
+      "x": 0.4409,
+      "y": 0.3729,
+      "r": 0.0139,
+      "size_m": 2.0,
+      "distance_m": 1941.4
+    },
+    {
+      "name": "mémorial",
+      "kind": "memorial",
+      "osm": "node/12605365328",
+      "x": 0.5072,
+      "y": 0.4381,
+      "r": 0.0138,
+      "size_m": 2.0,
+      "distance_m": 2360.1
+    },
+    {
+      "name": "croix",
+      "kind": "wayside_cross",
+      "osm": "node/12605398498",
+      "x": 0.6027,
+      "y": 0.2981,
+      "r": 0.014,
+      "size_m": 2.0,
+      "distance_m": 1563.5
+    },
+    {
+      "name": "mémorial",
+      "kind": "memorial",
+      "osm": "node/13072388107",
+      "x": 0.5184,
+      "y": 0.3035,
+      "r": 0.0139,
+      "size_m": 2.0,
+      "distance_m": 1718.3
+    },
+    {
+      "name": "mémorial",
+      "kind": "memorial",
+      "osm": "node/13072388108",
+      "x": 0.5279,
+      "y": 0.3015,
+      "r": 0.0139,
+      "size_m": 2.0,
+      "distance_m": 1694.6
+    },
+    {
       "name": "statue",
       "kind": "statue",
       "osm": "node/14215729333",
       "x": 0.5601,
       "y": 0.8011,
       "r": 0.039,
+      "size_m": 2.0,
       "distance_m": 24.0
+    },
+    {
+      "name": "bâtiment",
+      "kind": "yes",
+      "osm": "way/83911326",
+      "x": 0.5275,
+      "y": 0.2954,
+      "r": 0.0151,
+      "size_m": 8.5,
+      "distance_m": 1657.3
+    },
+    {
+      "name": "bâtiment",
+      "kind": "yes",
+      "osm": "way/821244983",
+      "x": 0.0543,
+      "y": 0.5686,
+      "r": 0.0147,
+      "size_m": 1.5,
+      "distance_m": 524.9
+    },
+    {
+      "name": "bâtiment",
+      "kind": "yes",
+      "osm": "way/821244984",
+      "x": 0.0604,
+      "y": 0.5638,
+      "r": 0.016,
+      "size_m": 4.2,
+      "distance_m": 528.5
+    },
+    {
+      "name": "bâtiment",
+      "kind": "yes",
+      "osm": "way/821244985",
+      "x": 0.1407,
+      "y": 0.5332,
+      "r": 0.0177,
+      "size_m": 8.0,
+      "distance_m": 598.4
+    },
+    {
+      "name": "bâtiment",
+      "kind": "yes",
+      "osm": "way/977547184",
+      "x": 0.0535,
+      "y": 0.605,
+      "r": 0.0175,
+      "size_m": 3.4,
+      "distance_m": 266.4
+    },
+    {
+      "name": "cabane",
+      "kind": "kiosk",
+      "osm": "way/977547185",
+      "x": 0.3383,
+      "y": 0.6679,
+      "r": 0.0532,
+      "size_m": 7.7,
+      "distance_m": 59.1
+    },
+    {
+      "name": "bâtiment",
+      "kind": "yes",
+      "osm": "way/984808966",
+      "x": 0.6206,
+      "y": 0.2933,
+      "r": 0.0141,
+      "size_m": 2.7,
+      "distance_m": 1526.6
+    },
+    {
+      "name": "local technique",
+      "kind": "service",
+      "osm": "way/1313523570",
+      "x": 0.4896,
+      "y": 0.2982,
+      "r": 0.0143,
+      "size_m": 3.9,
+      "distance_m": 1674.8
     }
   ]
 }

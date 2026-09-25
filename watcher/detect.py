@@ -88,6 +88,50 @@ def car_lights(frame: np.ndarray, bbox: tuple[int, int, int, int] | None = None)
     return min(1.0, lit)
 
 
+def body_colour(frame: np.ndarray, bbox: tuple[int, int, int, int] | None = None) -> str:
+    """The colour of a body, or nothing when it is not plain enough to say.
+
+    Only the middle of the blob is read, because its edges are road and grass.
+    Grey and black are held to a higher bar than the rest: tarmac and shadow
+    are grey and black too, and a wrong colour is worse than no colour.
+    """
+    crop = frame if bbox is None else _crop(frame, bbox, margin=-0.22)
+    if crop is None or crop.size < 24:
+        return ""
+    hue, saturation, value = (channel.astype(np.int16) for channel in cv2.split(cv2.cvtColor(_balanced(frame, crop), cv2.COLOR_BGR2HSV)))
+    names = np.full(hue.shape, "", dtype=object)
+    names[:] = "rouge"
+    names[(hue >= 8) & (hue < 20)] = "orange"
+    names[(hue >= 20) & (hue < 33)] = "jaune"
+    names[(hue >= 33) & (hue < 85)] = "vert"
+    names[(hue >= 85) & (hue < 130)] = "bleu"
+    names[(hue >= 8) & (hue < 20) & (value < 130)] = "marron"
+    names[saturation < 58] = "gris"
+    names[(saturation < 58) & (value > 160)] = "blanc"
+    names[value < 55] = "noir"
+    counts: dict[str, int] = {}
+    for name in names.ravel():
+        counts[name] = counts.get(name, 0) + 1
+    winner = max(counts, key=lambda key: counts[key])
+    share = counts[winner] / float(names.size)
+    floor = 0.60 if winner in {"gris", "noir"} else 0.40
+    return winner if share >= floor else ""
+
+
+def _balanced(frame: np.ndarray, crop: np.ndarray) -> np.ndarray:
+    """Undo the colour of the light before naming the colour of the paint.
+
+    At dusk the whole scene turns blue and a white van reads as a blue one.
+    Taking the frame as a whole to be grey on average, and scaling the channels
+    until it is, leaves the paint and drops the hour of the day.
+    """
+    means = frame.reshape(-1, 3).mean(axis=0)
+    if float(means.min()) < 1:
+        return crop
+    gain = means.mean() / means
+    return np.clip(crop.astype(np.float32) * gain, 0, 255).astype(np.uint8)
+
+
 def _crop(frame: np.ndarray, bbox: tuple[int, int, int, int], margin: float) -> np.ndarray:
     height, width = frame.shape[:2]
     x, y, w, h = bbox

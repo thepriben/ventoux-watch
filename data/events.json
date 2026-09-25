@@ -321,7 +321,7 @@
       "id": "2026-09-25T12-42-12Z-motion-1737",
       "t": "2026-09-25T12:42:12Z",
       "type": "car",
-      "label": "Camion",
+      "label": "Voiture blanche",
       "zone": "roundabout",
       "confidence": 0.782,
       "thumb": "data/thumbs/2026-09-25T12-43-01Z-car-1744.jpg",
@@ -330,8 +330,17 @@
         "period": "day",
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
-        "count": 9
-      }
+        "count": 9,
+        "box": [
+          0.0906,
+          0.7312,
+          0.0855,
+          0.0858
+        ],
+        "correction": "Voiture blanche",
+        "reading": "Voiture blanche, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T12-41-03Z-motion-1727",
@@ -428,7 +437,7 @@
       "id": "2026-09-25T12-19-07Z-motion-1679",
       "t": "2026-09-25T12:19:07Z",
       "type": "car",
-      "label": "Camion",
+      "label": "Voiture",
       "zone": "roundabout",
       "confidence": 0.61,
       "thumb": "data/thumbs/2026-09-25T12-19-53Z-car-1681.jpg",
@@ -437,8 +446,17 @@
         "period": "day",
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
-        "count": 3
-      }
+        "count": 3,
+        "box": [
+          0.1106,
+          0.7937,
+          0.0976,
+          0.1423
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T12-14-12Z-motion-1661",

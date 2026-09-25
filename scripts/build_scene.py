@@ -1,6 +1,10 @@
 """Draw the map into the frame of one camera.
 
-    .venv/bin/python -m scripts.build_scene
+    .venv/bin/python -m scripts.build_scene [--fresh]
+
+`--fresh` throws away the copy of OpenStreetMap kept on disk and asks again,
+which is what to do after drawing something new on the map. The elevations are
+kept: the ground does not change.
 
 This is the install step of a camera. It reads the pose declared in
 OpenStreetMap, fits the direction, the tilt and the field of view on a few
@@ -35,6 +39,7 @@ from watcher.terrain import Terrain
 GRID_W, GRID_H = 192, 108
 REACH_W, REACH_H = 96, 54
 LANDMARK_SIZE_M = 2.0
+LANDMARK_BIGGEST_M = 9.0
 MAP_STEP_M = 4.0
 ROAD_SLACK_M = 2.5
 PAINT_ORDER = ["meadow", "scree", "forest", "parking", "path", "road", "roundabout", "building"]
@@ -82,7 +87,10 @@ def main() -> int:
         terrain.level(apron, levels[len(levels) // 2])
         print(f"Terrain : replat à {levels[len(levels) // 2]:.0f} m sur {apron:.0f} m")
 
-    data = around(pose.lat, pose.lon, reach, root / "data" / "osm" / "around.json")
+    fresh = "--fresh" in sys.argv
+    data = around(pose.lat, pose.lon, reach, root / "data" / "osm" / "around.json", max_age_s=0 if fresh else 30 * 86400)
+    if fresh:
+        print("Carte   : relue depuis OpenStreetMap")
     land, codes = _land(data, pose, reach)
     print(f"Carte   : {int((land > 0).sum() * MAP_STEP_M ** 2 / 10_000)} ha de surfaces connues autour")
 
@@ -116,7 +124,7 @@ def main() -> int:
                 "pose": {**pose.as_dict(), "rms": round(rms, 5), "reach_m": reach},
                 "grid": rows,
                 "reach": _shrink(far),
-                "landmarks": _landmarks(data, pose, terrain, rms, apron),
+                "landmarks": _landmarks(data, pose, terrain, rms, reach),
             },
             ensure_ascii=False,
             indent=2,
@@ -180,38 +188,78 @@ def _land(data: dict, pose: Pose, reach: float) -> tuple[np.ndarray, dict]:
     return image, codes
 
 
-def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, apron: float) -> list[dict]:
+def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, reach_m: float) -> list[dict]:
+    """The small fixed things a camera keeps mistaking for a passer-by.
+
+    A wooden statue, a hut, a shelter: they never move, so a box drawn tightly
+    around one is a light or a shadow sweeping over it, never an event. Only
+    objects small enough to be confused with a person or a car are kept; a
+    whole chalet is a surface, not a landmark.
+    """
     out = []
     for element in data.get("elements") or []:
         tags = element.get("tags") or {}
-        if element.get("type") != "node":
+        spot, size = _fixture(element, tags)
+        if spot is None or size > LANDMARK_BIGGEST_M:
             continue
-        if not (tags.get("tourism") == "artwork" or tags.get("historic")):
+        lat, lon = spot
+        span = distance_m(pose, lat, lon)
+        if span > reach_m:
             continue
-        span = distance_m(pose, element["lat"], element["lon"])
-        if span > apron * 2:
-            continue
-        east = (element["lon"] - pose.lon) * 111_320.0 * math.cos(math.radians(pose.lat))
-        north = (element["lat"] - pose.lat) * 110_540.0
-        seen = project(pose, element["lat"], element["lon"], terrain.height(east, north) + 1.0)
+        east = (lon - pose.lon) * 111_320.0 * math.cos(math.radians(pose.lat))
+        north = (lat - pose.lat) * 110_540.0
+        seen = project(pose, lat, lon, terrain.height(east, north) + size / 2)
         if seen is None or not (0 <= seen[0] <= 1 and 0 <= seen[1] <= 1):
             continue
-        half = math.degrees(math.atan2(LANDMARK_SIZE_M / 2, max(span, 5.0)))
-        size = math.tan(math.radians(half)) / (2 * math.tan(math.radians(pose.hfov / 2)))
+        half = math.degrees(math.atan2(max(size, LANDMARK_SIZE_M) / 2, max(span, 5.0)))
+        width = math.tan(math.radians(half)) / (2 * math.tan(math.radians(pose.hfov / 2)))
         out.append(
             {
-                "name": tags.get("name") or tags.get("artwork_type") or tags.get("historic") or "artwork",
-                "kind": tags.get("artwork_type") or tags.get("historic") or tags.get("tourism") or "",
-                "osm": f"node/{element['id']}",
+                "name": tags.get("name") or _plain(tags),
+                "kind": tags.get("artwork_type") or tags.get("building") or tags.get("historic") or tags.get("tourism") or "",
+                "osm": f"{element['type']}/{element['id']}",
                 "x": round(seen[0], 4),
                 "y": round(seen[1], 4),
                 # Widened by how well the view is calibrated: we know where the
                 # statue is to within that much, no better.
-                "r": round(max(0.010, min(0.08, size + rms)), 4),
+                "r": round(max(0.010, min(0.08, width + rms)), 4),
+                "size_m": round(size, 1),
                 "distance_m": round(span, 1),
             }
         )
     return out
+
+
+WORDS = {"kiosk": "cabane", "hut": "cabane", "shed": "cabane", "shelter": "abri", "statue": "statue",
+         "memorial": "mémorial", "wayside_cross": "croix", "service": "local technique", "yes": "bâtiment"}
+
+
+def _plain(tags: dict) -> str:
+    """A landmark reads back in the history, so it needs a plain French word."""
+    for key in ("artwork_type", "building", "historic", "tourism"):
+        word = tags.get(key)
+        if word:
+            return WORDS.get(word, word)
+    return "repère"
+
+
+def _fixture(element: dict, tags: dict) -> tuple[tuple[float, float] | None, float]:
+    """Where a fixed thing stands and how wide it is, in metres."""
+    if element.get("type") == "node":
+        if not (tags.get("tourism") == "artwork" or tags.get("historic")):
+            return None, 0.0
+        return (element["lat"], element["lon"]), LANDMARK_SIZE_M
+    if not tags.get("building"):
+        return None, 0.0
+    points = element.get("geometry") or []
+    if len(points) < 3:
+        return None, 0.0
+    lat = sum(point["lat"] for point in points) / len(points)
+    lon = sum(point["lon"] for point in points) / len(points)
+    scale = math.cos(math.radians(lat))
+    across = [(point["lon"] - lon) * 111_320.0 * scale for point in points]
+    along = [(point["lat"] - lat) * 110_540.0 for point in points]
+    return (lat, lon), max(max(across) - min(across), max(along) - min(along))
 
 
 def _shrink(far: np.ndarray) -> list[list[int]]:

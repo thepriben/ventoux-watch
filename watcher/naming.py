@@ -61,6 +61,7 @@ class Observation:
     weather: str = ""
     surface: str = ""
     near_road: bool = True
+    colour: str = ""
     landmark: str = ""
     lit_ratio: float = 0.0
     camera_lat: float = 44.183501
@@ -112,6 +113,44 @@ def choose_aircraft(aircraft: list[dict]) -> tuple[dict | None, str]:
         if nxt["altitude_m"] > 0 and lowest["altitude_m"] < 0.5 * nxt["altitude_m"]:
             return lowest, "much_lower"
     return None, "ambiguous"
+
+
+# Adjectives, feminine then masculine, so the colour agrees with the word it
+# follows.
+TINTS = {
+    "blanc": ("blanche", "blanc"),
+    "noir": ("noire", "noir"),
+    "gris": ("grise", "gris"),
+    "rouge": ("rouge", "rouge"),
+    "orange": ("orange", "orange"),
+    "jaune": ("jaune", "jaune"),
+    "vert": ("verte", "vert"),
+    "bleu": ("bleue", "bleu"),
+    "marron": ("marron", "marron"),
+}
+FEMININE = {"Voiture", "Camionnette"}
+
+
+def _tinted(word: str, colour: str) -> str:
+    """Put the colour after the word, spelt to agree with it."""
+    pair = TINTS.get(colour)
+    if not pair:
+        return word
+    return f"{word} {pair[0] if word in FEMININE else pair[1]}"
+
+
+def _vehicle_word(obs: Observation, vehicle: Detection | None, bus: Detection | None) -> str:
+    """A lorry only when the model says so and the thing really is that wide.
+
+    The model calls half the cars lorries. The ground width settles it: at this
+    place a car covers about two and a half metres, a lorry more than five.
+    """
+    if vehicle is None and bus is None:
+        return "Véhicule"
+    heavy = (vehicle is not None and vehicle.cls == "truck") or bus is not None
+    if heavy and obs.width_m > 5.5:
+        return "Camion"
+    return "Voiture"
 
 
 def _fits(obs: Observation, cls: str) -> bool:
@@ -261,6 +300,8 @@ def decide(obs: Observation) -> Decision:
             )
         if obs.surface in NOT_DRIVABLE and not obs.near_road and vehicle is not None and person is None:
             return _motion(obs, "off_road", "Mouvement hors chaussée", "Aucune voiture ne roule là.")
+        if obs.surface == "parking" and obs.travel < obs.min_travel:
+            return _motion(obs, "parked", "Voiture garée", "Sur une aire de stationnement, et ça n'a pas bougé.")
         if obs.period in {"night", "twilight"} and obs.surface in DRIVABLE and bus is None and vehicle is None:
             # After dark the model reads a car body as a walker. On the roadway
             # at that hour, what moves is a vehicle unless the shape is plain.
@@ -272,7 +313,7 @@ def decide(obs: Observation) -> Decision:
                     Decision(
                         "publish",
                         "vehicle",
-                        "Véhicule",
+                        _tinted("Véhicule", obs.colour),
                         reason="car_lights" if lit else "night_road",
                         confidence=min(0.85, 0.5 + obs.lit_ratio),
                     ),
@@ -287,7 +328,13 @@ def decide(obs: Observation) -> Decision:
             and person.conf >= 0.4
         ):
             return _stamp(
-                Decision("publish", "vehicle", "Voiture et piéton", reason="car_and_person", confidence=min(vehicle.conf, person.conf)),
+                Decision(
+                    "publish",
+                    "vehicle",
+                    "Voiture et piéton",
+                    reason="car_and_person",
+                    confidence=min(vehicle.conf, person.conf),
+                ),
                 obs,
             )
         if bus is not None and bus.conf >= conf["bus"] and len(obs.trips) == 1:
@@ -310,7 +357,17 @@ def decide(obs: Observation) -> Decision:
                 obs,
             )
         if vehicle is not None and vehicle.conf >= conf["car"]:
-            return _stamp(Decision("publish", "vehicle", "Véhicule", reason=vehicle.cls, confidence=vehicle.conf), obs)
+            return _stamp(
+                Decision(
+                    "publish",
+                    "vehicle",
+                    _tinted(_vehicle_word(obs, vehicle, bus), obs.colour),
+                    reason=vehicle.cls,
+                    detail={"width_m": round(obs.width_m, 1)} if obs.width_m else {},
+                    confidence=vehicle.conf,
+                ),
+                obs,
+            )
         if person is not None and person.conf >= 0.4:
             return _stamp(Decision("publish", "person", "Piéton", reason="person", confidence=person.conf), obs)
         if obs.travel < obs.min_travel:

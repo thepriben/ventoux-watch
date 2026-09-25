@@ -14,7 +14,7 @@ import cv2
 import numpy as np
 
 from watcher.config import load_config
-from watcher.detect import YoloDetector, car_lights, count_persons
+from watcher.detect import YoloDetector, body_colour, car_lights, count_persons
 from watcher.drive import DriveUploader
 from watcher.geometry import load_zones
 from watcher.gtfs import GtfsIndex, PARIS
@@ -148,6 +148,7 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         weather=current.weather,
         surface=surface,
         near_road=scene_map.drivable_near(box) if box else True,
+        colour=body_colour(frame, track.best_bbox) if frame is not None and current.period == "day" else "",
         landmark=(landmark or {}).get("name", ""),
         lit_ratio=lit,
         camera_lat=float(cfg["camera"]["lat"]),
