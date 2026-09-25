@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,60 +12,64 @@
     <div>
       <p class="eyebrow">Mont Ventoux</p>
       <h1>Mont Serein</h1>
+      <p class="langs">
+        <button type="button" data-lang="en" class="on">EN</button>
+        <button type="button" data-lang="fr">FR</button>
+      </p>
     </div>
     <dl class="facts">
       <div>
-        <dt>Heure de Paris</dt>
+        <dt data-i18n="paris">Paris time</dt>
         <dd id="clock">—</dd>
         <dd class="sub" id="clock-date"></dd>
       </div>
       <div>
-        <dt>Météo</dt>
+        <dt data-i18n="weather">Weather</dt>
         <dd id="weather">—</dd>
         <dd class="sub" id="station"></dd>
       </div>
       <div>
-        <dt>Passages</dt>
+        <dt data-i18n="passes">Passes</dt>
         <dd id="seen">—</dd>
         <dd class="sub" id="named"></dd>
       </div>
     </dl>
   </header>
 
-  <section class="live" aria-label="Webcam en direct">
+  <section class="live" data-i18n-aria="live" aria-label="Live webcam">
     <video id="player" controls autoplay muted playsinline></video>
   </section>
 
-  <section class="pipeline" aria-label="Pipeline">
-      <h2>Pipeline</h2>
+  <section class="pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
+      <h2 data-i18n="pipeline">Pipeline</h2>
       <ol class="steps">
-        <li><strong>Image</strong><span>1 image/s. ffmpeg lit le flux HLS.</span></li>
-        <li><strong>Mouvement</strong><span>OpenCV MOG2, image ramenée à 640 px. Si plus de 35 % change, c’est la lumière, on ignore. La balise rouge du sommet est exclue.</span></li>
-        <li><strong>Suivi</strong><span>Une tache compacte, suivie au moins 3 images.</span></li>
-        <li><strong>Classe</strong><span>YOLO11 nano, en ONNX, seulement sur le rectangle. Personne, voiture, bus, camion.</span></li>
-        <li><strong>Avion</strong><span>Le ciel ne passe pas par la classe avion du modèle. OpenSky. L’indicatif n’est écrit que s’il n’y a qu’un avion, ou un seul beaucoup plus bas.</span></li>
-        <li><strong>Bus</strong><span>Trans'CoVe ou ZOU. Une seule course à ±15 min donne la ligne. Sinon « Bus », à partir d’une confiance de 0,6.</span></li>
-        <li><strong>Attroupement</strong><span>4 personnes ou plus, tenues 8 secondes.</span></li>
-        <li><strong>Feu</strong><span>Sur la pente, 20 s, surface ×1,5, au moins 8 % de pixels chauds. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.</span></li>
-        <li><strong>Reste</strong><span>La photo est gardée, sans nom inventé. Huit fois le même coin : habitude. Ensuite, une carte au plus toutes les 6 h.</span></li>
+        <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
+        <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
+        <li><strong data-i18n="track">Track</strong><span data-i18n="trackText">A compact blob, tracked for at least 3 frames.</span></li>
+        <li><strong data-i18n="class">Class</strong><span data-i18n="classText">YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.</span></li>
+        <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">The sky does not use the model’s airplane class. OpenSky. A callsign is written only when there is one aircraft, or one much lower than the others.</span></li>
+        <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
+        <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
+        <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
+        <li><strong data-i18n="rest">Rest</strong><span data-i18n="restText">The photo is kept, with no invented name. The same spot eight times: a habit. Then at most one card every 6 h.</span></li>
       </ol>
     </section>
 
   <section class="history">
     <div class="history-head">
-      <h2>Historique</h2>
+      <h2 data-i18n="history">History</h2>
       <div class="filters" role="tablist">
-        <button type="button" class="on" data-filter="all">Tout</button>
-        <button type="button" data-filter="plane">Avions</button>
-        <button type="button" data-filter="car">Voitures</button>
-        <button type="button" data-filter="bus">Bus</button>
-        <button type="button" data-filter="crowd">Attroupements</button>
-        <button type="button" data-filter="fire">Incendies</button>
-        <button type="button" data-filter="motion">Mouvements</button>
-        <button type="button" data-filter="habit">Habitudes</button>
+        <button type="button" class="on" data-filter="all" data-i18n="all">All</button>
+        <button type="button" data-filter="plane" data-i18n="planes">Planes</button>
+        <button type="button" data-filter="car" data-i18n="cars">Cars</button>
+        <button type="button" data-filter="bus" data-i18n="buses">Buses</button>
+        <button type="button" data-filter="crowd" data-i18n="crowds">Crowds</button>
+        <button type="button" data-filter="fire" data-i18n="fires">Fires</button>
+        <button type="button" data-filter="motion" data-i18n="motions">Motion</button>
+        <button type="button" data-filter="habit" data-i18n="habits">Habits</button>
       </div>
     </div>
-    <p id="empty" class="empty" hidden>Rien pour l’instant.</p>
+    <p id="empty" class="empty" data-i18n="empty" hidden>Nothing yet.</p>
     <ol id="list" class="cards"></ol>
   </section>
 

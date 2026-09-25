@@ -7,14 +7,165 @@ const STATIONS = [
   { name: "Cavaillon", lat: 43.838, lon: 5.038 },
   { name: "Pertuis", lat: 43.695, lon: 5.503 },
 ];
-const WEATHER = {
-  0: "Ciel dégagé", 1: "Dégagé", 2: "Nuageux", 3: "Couvert",
-  45: "Brouillard", 48: "Brouillard", 51: "Bruine", 53: "Bruine", 55: "Bruine",
-  61: "Pluie légère", 63: "Pluie", 65: "Forte pluie", 71: "Neige légère",
-  73: "Neige", 75: "Forte neige", 77: "Grésil", 80: "Averses", 81: "Averses",
-  82: "Fortes averses", 85: "Averses de neige", 86: "Averses de neige",
-  95: "Orage", 96: "Orage", 99: "Orage violent",
+const COPY = {
+  en: {
+    paris: "Paris time",
+    weather: "Weather",
+    passes: "Passes",
+    namedLine: (named, habits) => `${named} named · ${habits} habits`,
+    live: "Live webcam",
+    pipeline: "Pipeline",
+    image: "Frame",
+    imageText: "1 frame/s. ffmpeg reads the HLS stream.",
+    motion: "Motion",
+    motionText: "OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.",
+    track: "Track",
+    trackText: "A compact blob, tracked for at least 3 frames.",
+    class: "Class",
+    classText: "YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.",
+    plane: "Plane",
+    planeText: "The sky does not use the model’s airplane class. OpenSky. A callsign is written only when there is one aircraft, or one much lower than the others.",
+    bus: "Bus",
+    busText: "Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.",
+    crowd: "Crowd",
+    crowdText: "4 people or more, held for 8 seconds.",
+    fire: "Fire",
+    fireText: "On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.",
+    rest: "Rest",
+    restText: "The photo is kept, with no invented name. The same spot eight times: a habit. Then at most one card every 6 h.",
+    history: "History",
+    all: "All",
+    planes: "Planes",
+    cars: "Cars",
+    buses: "Buses",
+    crowds: "Crowds",
+    fires: "Fires",
+    motions: "Motion",
+    habits: "Habits",
+    empty: "Nothing yet.",
+    people: "people",
+    clip: "Clip",
+    right: "Right",
+    wrong: "Wrong",
+    confirmed: "confirmed",
+    rejected: "rejected",
+    fireNote: "A warm patch grew. This is not an alert.",
+    weatherCodes: {
+      0: "Clear", 1: "Clear", 2: "Cloudy", 3: "Overcast",
+      45: "Fog", 48: "Fog", 51: "Drizzle", 53: "Drizzle", 55: "Drizzle",
+      61: "Light rain", 63: "Rain", 65: "Heavy rain", 71: "Light snow",
+      73: "Snow", 75: "Heavy snow", 77: "Graupel", 80: "Showers", 81: "Showers",
+      82: "Heavy showers", 85: "Snow showers", 86: "Snow showers",
+      95: "Thunderstorm", 96: "Thunderstorm", 99: "Violent thunderstorm",
+    },
+  },
+  fr: {
+    paris: "Heure de Paris",
+    weather: "Météo",
+    passes: "Passages",
+    namedLine: (named, habits) => `${named} nommés · ${habits} habitudes`,
+    live: "Webcam en direct",
+    pipeline: "Pipeline",
+    image: "Image",
+    imageText: "1 image/s. ffmpeg lit le flux HLS.",
+    motion: "Mouvement",
+    motionText: "OpenCV MOG2, image ramenée à 640 px. Si plus de 35 % change, c’est la lumière, on ignore. La balise rouge du sommet est exclue.",
+    track: "Suivi",
+    trackText: "Une tache compacte, suivie au moins de 3 images.",
+    class: "Classe",
+    classText: "YOLO11 nano, en ONNX, seulement sur le rectangle. Personne, voiture, bus, camion.",
+    plane: "Avion",
+    planeText: "Le ciel ne passe pas par la classe avion du modèle. OpenSky. L’indicatif n’est écrit que s’il n’y a qu’un avion, ou un seul beaucoup plus bas.",
+    bus: "Bus",
+    busText: "Trans'CoVe ou ZOU. Une seule course à ±15 min donne la ligne. Sinon « Bus », à partir d’une confiance de 0,6.",
+    crowd: "Attroupement",
+    crowdText: "4 personnes ou plus, tenues 8 secondes.",
+    fire: "Feu",
+    fireText: "Sur la pente, 20 s, surface ×1,5, au moins 8 % de pixels chauds. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.",
+    rest: "Reste",
+    restText: "La photo est gardée, sans nom inventé. Huit fois le même coin : habitude. Ensuite, une carte au plus toutes les 6 h.",
+    history: "Historique",
+    all: "Tout",
+    planes: "Avions",
+    cars: "Voitures",
+    buses: "Bus",
+    crowds: "Attroupements",
+    fires: "Incendies",
+    motions: "Mouvements",
+    habits: "Habitudes",
+    empty: "Rien pour l’instant.",
+    people: "personnes",
+    clip: "Extrait",
+    right: "Juste",
+    wrong: "Faux",
+    confirmed: "validé",
+    rejected: "rejeté",
+    fireNote: "Tache chaude qui a grossi. Ce n’est pas une alerte.",
+    weatherCodes: {
+      0: "Ciel dégagé", 1: "Dégagé", 2: "Nuageux", 3: "Couvert",
+      45: "Brouillard", 48: "Brouillard", 51: "Bruine", 53: "Bruine", 55: "Bruine",
+      61: "Pluie légère", 63: "Pluie", 65: "Forte pluie", 71: "Neige légère",
+      73: "Neige", 75: "Forte neige", 77: "Grésil", 80: "Averses", 81: "Averses",
+      82: "Fortes averses", 85: "Averses de neige", 86: "Averses de neige",
+      95: "Orage", 96: "Orage", 99: "Orage violent",
+    },
+  },
 };
+
+const LABELS = {
+  "Voiture": "Car",
+  "Camion": "Truck",
+  "Attroupement": "Crowd",
+  "Incendie": "Fire",
+  "Habitude du cadrage": "Habit of the frame",
+  "Mouvement": "Motion",
+  "Mouvement sur la route": "Motion on the road",
+  "Mouvement dans le ciel": "Motion in the sky",
+  "Masse dans le ciel": "Mass in the sky",
+  "Point dans le ciel": "Point in the sky",
+  "Presque immobile": "Almost still",
+  "Véhicule incertain": "Uncertain vehicle",
+  "Lueur du soir": "Evening glow",
+  "Lueur dans la météo": "Glow in the weather",
+};
+
+let lang = localStorage.getItem("ventoux-lang") === "fr" ? "fr" : "en";
+let weatherNow = null;
+let counts = null;
+
+function t(key) {
+  return COPY[lang][key];
+}
+
+function locale() {
+  return lang === "fr" ? "fr-FR" : "en-GB";
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    const value = t(node.dataset.i18n);
+    if (typeof value === "string") node.textContent = value;
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach((node) => {
+    node.setAttribute("aria-label", t(node.dataset.i18nAria));
+  });
+  document.querySelectorAll(".langs button").forEach((button) => {
+    button.classList.toggle("on", button.dataset.lang === lang);
+  });
+  tick();
+  paintWeather();
+  paintCounts();
+  render();
+}
+
+document.querySelectorAll(".langs button").forEach((button) => {
+  button.addEventListener("click", () => {
+    lang = button.dataset.lang === "fr" ? "fr" : "en";
+    localStorage.setItem("ventoux-lang", lang);
+    applyLang();
+  });
+});
 
 function km(a, b) {
   const rad = Math.PI / 180;
@@ -29,25 +180,34 @@ const station = STATIONS.slice().sort((a, b) => km(CAMERA, a) - km(CAMERA, b))[0
 
 function tick() {
   const now = new Date();
-  document.querySelector("#clock").textContent = now.toLocaleTimeString("fr-FR", {
+  document.querySelector("#clock").textContent = now.toLocaleTimeString(locale(), {
     timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit",
   });
-  document.querySelector("#clock-date").textContent = now.toLocaleDateString("fr-FR", {
+  document.querySelector("#clock-date").textContent = now.toLocaleDateString(locale(), {
     timeZone: "Europe/Paris", weekday: "short", day: "numeric", month: "short",
   });
 }
 
-async function loadWeather() {
+function paintWeather() {
   const place = document.querySelector("#station");
-  place.textContent = `${station.name} · ${Math.round(km(CAMERA, station))} km`;
+  const distance = `${Math.round(km(CAMERA, station))} km`;
+  if (!weatherNow) {
+    place.textContent = `${station.name} · ${distance}`;
+    return;
+  }
+  const label = t("weatherCodes")[weatherNow.code] || "";
+  document.querySelector("#weather").textContent = Number.isFinite(weatherNow.temp) ? `${weatherNow.temp} °C` : "—";
+  place.textContent = [station.name, distance, label].filter(Boolean).join(" · ");
+}
+
+async function loadWeather() {
+  paintWeather();
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${station.lat}&longitude=${station.lon}&current=temperature_2m,weather_code&timezone=Europe/Paris`;
     const data = await fetch(url, { cache: "no-store" }).then((response) => response.json());
     const current = data.current || {};
-    const temp = Math.round(current.temperature_2m);
-    const label = WEATHER[current.weather_code] || "";
-    document.querySelector("#weather").textContent = Number.isFinite(temp) ? `${temp} °C` : "—";
-    place.textContent = [station.name, `${Math.round(km(CAMERA, station))} km`, label].filter(Boolean).join(" · ");
+    weatherNow = { temp: Math.round(current.temperature_2m), code: current.weather_code };
+    paintWeather();
   } catch (_) {
     document.querySelector("#weather").textContent = "—";
   }
@@ -90,10 +250,10 @@ function detail(event) {
   if (event.type === "bus" && info.route) {
     return `${info.headsign || info.route} · ${info.scheduled || ""} · ${info.source || ""}`.trim();
   }
-  if (event.type === "crowd") return `${info.persons} personnes`;
-  if (event.type === "fire") return info.reading || "Tache chaude qui a grossi. Ce n’est pas une alerte.";
-  if (info.reading) return [info.context, info.reading].filter(Boolean).join(" · ");
-  if (info.context) return info.context;
+  if (event.type === "crowd") return `${info.persons} ${t("people")}`;
+  if (event.type === "fire") return showText(info.reading) || t("fireNote");
+  if (info.reading) return [showText(info.context), showText(info.reading)].filter(Boolean).join(" · ");
+  if (info.context) return showText(info.context);
   return "";
 }
 
@@ -101,28 +261,39 @@ function render() {
   const shown = events.filter((event) => filter === "all" || event.type === filter);
   empty.hidden = shown.length > 0;
   list.innerHTML = shown.map((event) => {
-    const when = new Date(event.t).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" });
+    const when = new Date(event.t).toLocaleString(locale(), { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" });
     const picture = event.thumb
       ? `<img src="${event.thumb}" alt="">`
       : `<span class="placeholder"></span>`;
-    const clip = event.clip_url ? `<a href="${event.clip_url}">Extrait</a>` : "";
+    const clip = event.clip_url ? `<a href="${event.clip_url}">${escapeHtml(t("clip"))}</a>` : "";
     const extra = detail(event);
     const review = reviewControls(event);
-    const state = event.review === "accepted" ? "validé" : event.review === "rejected" ? "rejeté" : "";
-    return `<li class="${event.review || ""}">${picture}<div><h3>${escapeHtml(event.label)}</h3><p class="meta">${when}${extra ? " · " + escapeHtml(extra) : ""}${state ? " · " + state : ""}</p>${clip}${review}</div></li>`;
+    const state = event.review === "accepted" ? t("confirmed") : event.review === "rejected" ? t("rejected") : "";
+    return `<li class="${event.review || ""}">${picture}<div><h3>${escapeHtml(showText(event.label))}</h3><p class="meta">${when}${extra ? " · " + escapeHtml(extra) : ""}${state ? " · " + state : ""}</p>${clip}${review}</div></li>`;
   }).join("");
 }
 
 function reviewControls(event) {
   const accepted = event.review === "accepted" ? " on" : "";
   const rejected = event.review === "rejected" ? " on" : "";
-  return `<p class="verdict"><a class="yes${accepted}" href="${reviewUrl(event, "accepted", "valide")}">Juste</a><a class="no${rejected}" href="${reviewUrl(event, "rejected", "rejete")}">Faux</a></p>`;
+  return `<p class="verdict"><a class="yes${accepted}" href="${reviewUrl(event, "accepted", "valide")}">${escapeHtml(t("right"))}</a><a class="no${rejected}" href="${reviewUrl(event, "rejected", "rejete")}">${escapeHtml(t("wrong"))}</a></p>`;
 }
 
 function reviewUrl(event, verdict, label) {
   const title = `revue ${event.id}`;
   const body = `event_id: ${event.id}\nverdict: ${verdict}\nlecture: ${event.label}\n`;
   return `https://github.com/thepriben/ventoux-watch/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${label}`;
+}
+
+function showText(value) {
+  if (!value || lang === "fr") return value || "";
+  return LABELS[value] || value;
+}
+
+function paintCounts() {
+  if (!counts) return;
+  document.querySelector("#seen").textContent = String(counts.seen || 0);
+  document.querySelector("#named").textContent = t("namedLine")(counts.named || 0, counts.habits || 0);
 }
 
 function escapeHtml(value) {
@@ -139,16 +310,15 @@ async function load() {
   try {
     const learning = await fetch("data/learning.json", { cache: "no-store" });
     if (learning.ok) {
-      const counts = await learning.json();
-      document.querySelector("#seen").textContent = String(counts.seen || 0);
-      document.querySelector("#named").textContent = `${counts.named || 0} nommés · ${counts.habits || 0} habitudes`;
+      counts = await learning.json();
+      paintCounts();
     }
   } catch (_) {
     /* Le compteur apparaît quand le Pi a commencé à apprendre. */
   }
 }
 
-tick();
+applyLang();
 setInterval(tick, 1000);
 loadWeather();
 setInterval(loadWeather, 600000);
