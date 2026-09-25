@@ -223,7 +223,8 @@ def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, reach_m: fl
     for element in data.get("elements") or []:
         tags = element.get("tags") or {}
         spot, size = _fixture(element, tags)
-        if spot is None or size > LANDMARK_BIGGEST_M:
+        lift = _lift(tags)
+        if spot is None or (size > LANDMARK_BIGGEST_M and not lift):
             continue
         lat, lon = spot
         span = distance_m(pose, lat, lon)
@@ -231,21 +232,33 @@ def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, reach_m: fl
             continue
         east = (lon - pose.lon) * 111_320.0 * math.cos(math.radians(pose.lat))
         north = (lat - pose.lat) * 110_540.0
-        seen = project(pose, lat, lon, terrain.height(east, north) + size / 2)
+        # A mast is a column, not a point: its lamp may sit anywhere up it, and
+        # on the Ventoux transmitter it sits two thirds of the way. The mark is
+        # put at mid-height and made tall enough to claim the whole column.
+        seen = project(pose, lat, lon, terrain.height(east, north) + (lift / 2 if lift else size / 2))
         if seen is None or not (0 <= seen[0] <= 1 and 0 <= seen[1] <= 1):
             continue
         half = math.degrees(math.atan2(max(size, LANDMARK_SIZE_M) / 2, max(span, 5.0)))
         width = math.tan(math.radians(half)) / (2 * math.tan(math.radians(pose.hfov / 2)))
+        tall = width
+        if lift:
+            rise = math.degrees(math.atan2(lift / 2, max(span, 5.0)))
+            tall = math.tan(math.radians(rise)) / (2 * math.tan(math.radians(pose.hfov / 2))) * pose.aspect
+            # OpenStreetMap gives the outline of the building at the foot; the
+            # lamp is on a pole that need not stand over its middle. The taller
+            # the structure, the further off to the side its light can be.
+            width = max(width, tall / 2)
         out.append(
             {
                 "name": tags.get("name") or _plain(tags),
-                "kind": tags.get("artwork_type") or tags.get("building") or tags.get("historic") or tags.get("tourism") or "",
+                "kind": tags.get("man_made") or tags.get("artwork_type") or tags.get("building") or tags.get("historic") or tags.get("tourism") or "",
                 "osm": f"{element['type']}/{element['id']}",
                 "x": round(seen[0], 4),
                 "y": round(seen[1], 4),
                 # Widened by how well the view is calibrated: we know where the
                 # statue is to within that much, no better.
                 "r": round(max(0.010, min(0.08, width + rms)), 4),
+                "ry": round(max(0.010, min(0.10, tall + rms)), 4),
                 "size_m": round(size, 1),
                 "distance_m": round(span, 1),
             }
@@ -254,25 +267,47 @@ def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, reach_m: fl
 
 
 WORDS = {"kiosk": "cabane", "hut": "cabane", "shed": "cabane", "shelter": "abri", "statue": "statue",
-         "memorial": "mémorial", "wayside_cross": "croix", "service": "local technique", "yes": "bâtiment"}
+         "memorial": "mémorial", "wayside_cross": "croix", "service": "local technique", "yes": "bâtiment",
+         "tower": "tour", "mast": "pylône", "communications_tower": "tour hertzienne",
+         "monitoring_station": "radar", "antenna": "antenne"}
 
 
 def _plain(tags: dict) -> str:
     """A landmark reads back in the history, so it needs a plain French word."""
-    for key in ("artwork_type", "building", "historic", "tourism"):
+    for key in ("man_made", "artwork_type", "building", "historic", "tourism"):
         word = tags.get(key)
         if word:
             return WORDS.get(word, word)
     return "repère"
 
 
+MASTS = {"tower", "mast", "communications_tower", "monitoring_station", "antenna"}
+
+
+def _lift(tags: dict) -> float:
+    """How far above the ground the light of a mast sits, in metres.
+
+    A tower on a summit carries a red lamp at its top for aircraft. Seen from
+    here at night it is a warm point that blinks in place, and at a kilometre
+    and a half it looks exactly like the first flame of a fire. Projecting the
+    tower at its foot would put the landmark below the lamp and leave the lamp
+    unclaimed, so the top is what gets marked.
+    """
+    if tags.get("man_made") not in MASTS:
+        return 0.0
+    try:
+        return max(0.0, float(str(tags.get("height") or tags.get("est_height") or 20).split()[0]))
+    except (TypeError, ValueError):
+        return 20.0
+
+
 def _fixture(element: dict, tags: dict) -> tuple[tuple[float, float] | None, float]:
     """Where a fixed thing stands and how wide it is, in metres."""
     if element.get("type") == "node":
-        if not (tags.get("tourism") == "artwork" or tags.get("historic")):
+        if not (tags.get("tourism") == "artwork" or tags.get("historic") or tags.get("man_made") in MASTS):
             return None, 0.0
         return (element["lat"], element["lon"]), LANDMARK_SIZE_M
-    if not tags.get("building"):
+    if not tags.get("building") and tags.get("man_made") not in MASTS:
         return None, 0.0
     points = element.get("geometry") or []
     if len(points) < 3:

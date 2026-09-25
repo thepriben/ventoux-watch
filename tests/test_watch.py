@@ -449,6 +449,21 @@ class SkyTests(unittest.TestCase):
                                detections=[Detection(cls="car", conf=0.8)], min_conf={"car": 0.4})
         self.assertEqual(decide(crossing).type, "vehicle")
 
+    def test_the_lamp_of_the_summit_mast_is_not_a_fire(self):
+        common = dict(zone="slope", surface="forest", duration_s=30, warm_ratio=0.5,
+                      area_grow=4.0, travel=0.0, period="night", width_m=6.0)
+        lamp = Observation(landmark="Émetteur du mont Ventoux", **common)
+        self.assertEqual(decide(lamp).type, "motion")
+        self.assertEqual(decide(lamp).reason, "beacon")
+        self.assertEqual(decide(Observation(**common)).type, "fire")
+
+    def test_what_has_just_caught_is_a_start_not_a_blaze(self):
+        common = dict(zone="slope", surface="forest", duration_s=30, warm_ratio=0.5,
+                      area_grow=4.0, travel=0.0, period="night", width_m=6.0)
+        self.assertEqual(decide(Observation(**common)).label, "Départ de feu")
+        held = dict(common, duration_s=900)
+        self.assertEqual(decide(Observation(**held)).label, "Incendie")
+
     def test_a_plume_that_climbs_into_the_sky_keeps_its_track(self):
         detector = MotionDetector(ZONES, motion_width=640, min_track_frames=1)
         detector.tracks = [Track(id=1, zone="slope", frames=4, centroid=(0.5, 0.5), first_centroid=(0.5, 0.62))]

@@ -77,6 +77,10 @@ def around(lat: float, lon: float, radius_m: float, cache: Path, max_age_s: int 
         f'node["tourism"="artwork"]({box});'
         f'node["historic"]({box});'
         f'node["natural"="tree"]({box});'
+        # Masts carry a red lamp for aircraft. At night it blinks in place and
+        # reads like the first flame of a fire, so it has to be on the map.
+        f'way["man_made"]({box});'
+        f'node["man_made"]({box});'
         ");out body geom;"
     )
     payload = _ask(query)

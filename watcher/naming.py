@@ -16,6 +16,10 @@ BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
 # Nothing that drives or walks stands lower than this. Below it, on the
 # roadway, what moved is the tarmac itself catching the light.
 LOWEST_M = 0.6
+# How long something has to burn before the word "incendie" is used. The width
+# of a plume says nothing: smoke spreads over a hundred metres in a minute
+# above a fire the size of a car. How long it has held does say something.
+BLAZE_S = 600.0
 
 
 @dataclass
@@ -232,6 +236,15 @@ def decide(obs: Observation) -> Decision:
         # trees, minutes before any flame is large enough to colour a pixel.
         plume = obs.smoke_ratio >= obs.fire_smoke and obs.rise >= obs.fire_rise
         if (flame or plume) and obs.area_grow >= obs.fire_grow:
+            if obs.landmark and obs.travel < obs.min_travel:
+                # The red lamp on the summit mast blinks in place all night.
+                # It grows and it is warm, and it is not a fire.
+                return _motion(
+                    obs,
+                    "beacon",
+                    "Feu de balisage",
+                    f"{obs.landmark} porte une lampe. Elle clignote sans bouger.",
+                )
             if obs.period == "twilight" and not plume:
                 return _motion(obs, "sunset", "Lueur du soir", "La pente rougit au crépuscule. Ce n'est pas retenu comme un incendie.")
             if obs.weather in {"brouillard", "neige", "pluie"} and obs.warm_ratio < 0.2:
@@ -242,7 +255,10 @@ def decide(obs: Observation) -> Decision:
                 Decision(
                     "publish",
                     "fire",
-                    "Incendie" if flame else "Départ de feu",
+                    # Caught within seconds, it is a start. "Incendie" is kept
+                    # for something that has held, so the word still means
+                    # something the day it is used.
+                    "Incendie" if obs.duration_s >= BLAZE_S else "Départ de feu",
                     reason="warm_growing" if flame else "plume_rising",
                     detail={
                         "warm_ratio": round(obs.warm_ratio, 3),

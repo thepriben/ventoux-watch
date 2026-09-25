@@ -154,8 +154,11 @@ class SceneMap:
         for mark in self.landmarks:
             mx, my = mark.get("x", -1), mark.get("y", -1)
             reach = float(mark.get("r") or 0.02)
-            if w > 5 * reach or h > 7 * reach:
+            # A mast reaches much further up than across, so the two are read
+            # apart. Everything else is as wide as it is tall.
+            rise = float(mark.get("ry") or reach)
+            if w > 5 * reach or h > 7 * rise:
                 continue
-            if x - reach <= mx <= x + w + reach and y - reach <= my <= y + h + reach:
+            if x - reach <= mx <= x + w + reach and y - rise <= my <= y + h + rise:
                 return mark
         return None
