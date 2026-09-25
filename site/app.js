@@ -358,7 +358,9 @@ const map = L.map("map", {
   doubleClickZoom: false,
   boxZoom: false,
   keyboard: false,
+  attributionControl: false,
 });
+L.control.attribution({ prefix: false }).addTo(map);
 L.tileLayer("https://data.geopf.fr/wmts?LAYER=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/jpeg&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}", {
   maxZoom: 19,
   attribution: "© IGN",
