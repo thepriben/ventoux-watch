@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-08-59Z-motion-1458",
+      "t": "2026-09-25T11:08:59Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-08-59Z-motion-1458.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T11-06-19Z-motion-1455",
       "t": "2026-09-25T11:06:19Z",
       "type": "motion",
