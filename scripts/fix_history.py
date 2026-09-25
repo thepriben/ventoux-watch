@@ -59,7 +59,7 @@ REFRAME = {
         "type": "car",
         "label": "Voiture blanche",
         "erase": [(0, 145, 182, 269)],  # le halo des phares sur le rond-point
-        "draw": (281, 239, 390, 269),
+        "draw": (283, 245, 369, 269),
     },
     "2026-09-25T08:23:34Z": {
         "type": "bus",
@@ -146,12 +146,18 @@ def _reframe(event: dict, order: dict) -> None:
     image = cv2.imread(str(thumb))
     if image is None:
         raise SystemExit(f"photo manquante {thumb}")
-    for stale in order.get("erase") or []:
-        image = _erase(image, stale)
     detail = dict(event.get("detail") or {})
     rect = order.get("draw")
+    done = detail.get("drawn")
+    if done == list(rect or []):
+        return
+    for stale in (order.get("erase") or []) + ([done] if done else []):
+        # A stroke this script drew on an earlier run is erased like any other:
+        # without it, correcting a correction leaves two rectangles.
+        image = _erase(image, tuple(stale))
     if rect is not None:
         cv2.rectangle(image, rect[:2], rect[2:], (0, 0, 210), 1)
+        detail["drawn"] = list(rect)
     kept = rect or order.get("keep")
     if kept is not None:
         detail["box"] = _raw_box(kept, image.shape[1], image.shape[0])
