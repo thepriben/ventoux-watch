@@ -40,7 +40,20 @@ body {
   padding-bottom: 8px;
 }
 
-main { padding-top: 12px; padding-bottom: 36px; }
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-top: 20px;
+  padding-bottom: 48px;
+}
+
+.block {
+  background: var(--card);
+  border: 1px solid #cfc6b6;
+  border-radius: 12px;
+  padding: 12px;
+}
 
 .eyebrow {
   margin: 0;
@@ -120,14 +133,14 @@ h2 {
 .board {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 28px;
   align-items: start;
 }
 
 .place-col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 28px;
   min-width: 0;
 }
 
@@ -233,9 +246,16 @@ h2 {
   border-color: var(--pine);
 }
 
-.pipeline { margin: 0; min-width: 0; }
+.pipeline {
+  margin: 2.6rem 0 0;
+  min-width: 0;
+}
 
-.history { margin-top: 18px; }
+.history { margin: 0; }
+
+.history h2,
+.pipeline h2,
+.sequence h2 { margin-bottom: 12px; }
 
 .steps {
   list-style: none;
@@ -343,5 +363,6 @@ h2 {
   .top-inner { align-items: flex-start; flex-wrap: wrap; }
   .facts { margin-left: 0; }
   .board { grid-template-columns: 1fr; }
+  .pipeline { margin-top: 0; }
   .steps li { grid-template-columns: 1fr; gap: 2px; }
 }

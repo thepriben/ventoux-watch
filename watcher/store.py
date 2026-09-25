@@ -6,6 +6,12 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import cv2
+import numpy as np
+
+THUMB_WIDTH = 480
+THUMB_QUALITY = 52
+
 
 class Store:
     def __init__(self, root: Path, history_days: int = 30):
@@ -25,7 +31,7 @@ class Store:
         event_id = f"{stamp}-{type_}-{self._seq}"
         thumb_name = f"{event_id}.jpg"
         if jpeg:
-            (self.thumbs / thumb_name).write_bytes(jpeg)
+            (self.thumbs / thumb_name).write_bytes(small_jpeg(jpeg))
         event = {
             "id": event_id,
             "t": when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -91,3 +97,17 @@ class Store:
     def _write(self) -> None:
         payload = {"events": self.events}
         self.events_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALITY) -> bytes:
+    image = cv2.imdecode(np.frombuffer(jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
+    if image is None or image.size == 0:
+        return jpeg
+    height, frame_width = image.shape[:2]
+    if frame_width > width:
+        scale = width / float(frame_width)
+        image = cv2.resize(image, (width, max(1, int(round(height * scale)))), interpolation=cv2.INTER_AREA)
+    ok, encoded = cv2.imencode(".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
+    if not ok:
+        return jpeg
+    return encoded.tobytes()
