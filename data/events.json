@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T07-26-09Z-plane-245",
+      "t": "2026-09-25T07:26:09Z",
+      "type": "plane",
+      "label": "RYR76VL",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T07-26-09Z-plane-245.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d2518",
+        "callsign": "RYR76VL",
+        "altitude_m": 11277.6,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T07-24-02Z-plane-244",
       "t": "2026-09-25T07:24:02Z",
       "type": "plane",
