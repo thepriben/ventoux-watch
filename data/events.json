@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T08-46-47Z-plane-443",
+      "t": "2026-09-25T08:46:47Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-46-47Z-plane-443.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2293.62,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T08-45-49Z-plane-442",
       "t": "2026-09-25T08:45:49Z",
       "type": "plane",
