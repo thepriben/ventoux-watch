@@ -123,6 +123,9 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         weather=current.weather,
     )
     decision = decide(obs)
+    if decision.type == "motion" and track.zone == "sky":
+        store.add_candidate(when, track.zone, decision.reason, decision.detail)
+        return
     if not decision.publish:
         store.add_candidate(when, track.zone, decision.reason, decision.detail)
         log.info("Candidat %s %s", track.zone, decision.reason)
