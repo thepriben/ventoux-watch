@@ -24,6 +24,7 @@ LETTERS = {
     "b": "building",
     "s": "sky",
     "e": "scree",
+    "i": "island",
 }
 CODES = {name: letter for letter, name in LETTERS.items() if name}
 
@@ -104,6 +105,21 @@ class SceneMap:
         if span <= 0 or hfov <= 0:
             return 0.0
         return w * 2 * span * math.tan(math.radians(hfov) / 2)
+
+    def metres_tall(self, box: tuple[float, float, float, float]) -> float:
+        """How tall this box stands on the ground, in metres.
+
+        Read the same way as the width, through the vertical field of view.
+        A car is over a metre tall wherever it stands; a band of tarmac that
+        catches the light is a few centimetres.
+        """
+        x, y, w, h = box
+        span = self.distance_at(min(0.999, x + w / 2), min(0.999, y + h))
+        hfov = float(self.pose.get("hfov") or 0)
+        aspect = float(self.pose.get("aspect") or (16 / 9))
+        if span <= 0 or hfov <= 0 or aspect <= 0:
+            return 0.0
+        return h * 2 * span * math.tan(math.radians(hfov) / 2) / aspect
 
     def drivable_near(self, box: tuple[float, float, float, float], slack: float = 0.025) -> bool:
         """Is there roadway close enough that a car here would still be on it?

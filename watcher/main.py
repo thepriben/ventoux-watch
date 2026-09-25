@@ -28,6 +28,9 @@ from watcher.scenemap import FLAMMABLE, SceneMap
 from watcher.store import Store
 
 log = logging.getLogger("ventoux")
+# Above this, on the ground, the thing is longer than a car and the timetable
+# is worth opening.
+BUS_LENGTH_M = 5.5
 CLIP_TYPES = {"plane", "bus", "fire", "crowd"}
 
 
@@ -51,6 +54,7 @@ def main() -> None:
         cfg["opensky"]["retain_days"],
         cfg["opensky"].get("username") or "",
         cfg["opensky"].get("password") or "",
+        cfg["opensky"].get("quiet_s", 240),
     )
     camera = cfg["camera"]
     gtfs = GtfsIndex(root / "data" / "gtfs", cfg["gtfs"], camera["lat"], camera["lon"], cfg["gtfs_radius_m"])
@@ -69,7 +73,7 @@ def main() -> None:
     crowd_hits: deque[tuple[float, int]] = deque()
     last_crowd = 0.0
     last_fire: dict[str, float] = {}
-    last_sky = 0.0
+    alerted: set[int] = set()
     last_gtfs = 0.0
     last_publish = 0.0
     last_view = 0.0
@@ -81,9 +85,6 @@ def main() -> None:
                 ok, encoded = cv2.imencode(".jpg", frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
                 if ok:
                     ring.append((now, encoded.tobytes()))
-                if now - last_sky >= cfg["opensky"]["poll_s"]:
-                    sky.poll(now)
-                    last_sky = now
                 if now - last_gtfs >= cfg["gtfs_refresh_s"]:
                     gtfs.refresh()
                     last_gtfs = now
@@ -94,6 +95,8 @@ def main() -> None:
                     last_view = now
                 step = motion.step(frame, now)
                 for track in step.ended:
+                    _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory, scene_map)
+                for track in _burning(motion.tracks, now, cfg, scene_map, alerted):
                     _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory, scene_map)
                 if step.roundabout_motion:
                     last_crowd = _crowd(frame, now, cfg, yolo, zones, crowd_hits, last_crowd, store, pending)
@@ -118,8 +121,9 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
     surface = scene_map.surface_under(box) if box else ""
     landmark = scene_map.landmark_at(box) if box else None
     lit = car_lights(frame, track.bbox) if frame is not None and current.period != "day" else 0.0
-    aircraft = sky.around(track.updated, cfg["opensky"]["match_window_s"]) if track.zone == "sky" else []
-    trips = gtfs.trips_at(when.astimezone(PARIS), cfg["gtfs_window_min"]) if track.zone in {"road", "roundabout"} else []
+    aircraft = sky.ask(track.updated, cfg["opensky"]["match_window_s"]) if _crossed_sky(track, cfg) else []
+    width_m = scene_map.metres_across(box) if box else 0.0
+    trips = gtfs.trips_at(when.astimezone(PARIS), cfg["gtfs_window_min"]) if _might_be_bus(track, detections, width_m, cfg) else []
     duration = max(0.0, track.updated - track.started)
     on_fuel = surface in FLAMMABLE or (track.zone == "slope" and not surface)
     fire_ready = on_fuel and now - last_fire.get("fire", 0.0) >= cfg["fire"]["cooldown_s"]
@@ -134,7 +138,8 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         warm_ratio=warm_ratio(track.best_jpeg, track.best_bbox) if fire_ready else 0.0,
         smoke_ratio=smoke_ratio(track.best_jpeg, track.best_bbox) if fire_ready else 0.0,
         rise=track.rise,
-        width_m=scene_map.metres_across(box) if box else 0.0,
+        width_m=width_m,
+        height_m=scene_map.metres_tall(box) if box else 0.0,
         area_grow=track.area_grow,
         min_travel=cfg["min_travel"],
         max_sky_area=cfg["max_sky_area"],
@@ -178,9 +183,68 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
     if box:
         decision.detail["box"] = [round(value, 4) for value in box]
     event = store.add_event(when, decision.type, decision.label, track.zone, decision.confidence, track.best_jpeg, decision.detail)
+    if width_m >= BUS_LENGTH_M:
+        close = store.keep_closeup(event, frame, track.best_bbox)
+        if close:
+            log.info("Recadrage gardé pour %s : %s", decision.label, close)
     log.info("Publié %s %s", decision.type, decision.label)
     if decision.type in CLIP_TYPES:
         pending.append({"id": event["id"], "after": now + 4, "started": track.started - 8})
+
+
+def _burning(tracks, now, cfg, scene_map, alerted: set) -> list:
+    """Tracks that must be judged now, without waiting for them to end.
+
+    A car is read when it has gone, which is soon enough. A fire never goes:
+    the plume keeps growing and the track stays open, so waiting for the end
+    would mean waiting for the fire to burn out. Once a shape has held on
+    flammable ground for the sustain time, it is judged where it stands.
+    """
+    sustain = float(cfg["fire"]["sustain_s"])
+    due = []
+    live = {track.id for track in tracks}
+    alerted.intersection_update(live)
+    for track in tracks:
+        if track.id in alerted or now - track.started < sustain:
+            continue
+        surface = scene_map.surface_under(_norm_box_of(track)) if scene_map.ready else ""
+        if surface in FLAMMABLE or (track.zone == "slope" and not surface):
+            alerted.add(track.id)
+            due.append(track)
+    return due
+
+
+def _norm_box_of(track) -> tuple[float, float, float, float] | None:
+    box = track.best_bbox if any(track.best_bbox) else track.bbox
+    if not any(box) or not track.best_jpeg:
+        return None
+    frame = cv2.imdecode(np.frombuffer(track.best_jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
+    return _norm_box(frame, track)
+
+
+def _might_be_bus(track, detections, width_m, cfg) -> bool:
+    """Worth opening the timetable.
+
+    A car has no departure time, so it is not worth reading the timetable for
+    every one that passes. Either the model saw something long, or the ground
+    width says the thing is longer than a car.
+    """
+    if track.zone not in {"road", "roundabout"}:
+        return False
+    if width_m >= BUS_LENGTH_M:
+        return True
+    return any(item.cls in {"bus", "truck"} and item.conf >= cfg["min_conf"] for item in detections)
+
+
+def _crossed_sky(track, cfg) -> bool:
+    """Worth asking OpenSky who was up there.
+
+    A point that stayed put is a star or the mast beacon, and a wide patch is
+    a cloud. Neither has a flight number, so neither spends a question.
+    """
+    if track.zone != "sky":
+        return False
+    return track.travel >= cfg["min_travel"] and track.area_ratio <= cfg["max_sky_area"]
 
 
 def _norm_box(frame, track) -> tuple[float, float, float, float] | None:

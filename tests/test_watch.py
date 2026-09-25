@@ -1,5 +1,6 @@
 import json
 import math
+import time
 import unittest
 from datetime import datetime
 from pathlib import Path
@@ -10,7 +11,8 @@ import numpy as np
 
 from watcher.geometry import assign_zone
 from watcher.gtfs import GtfsIndex, load_feed
-from watcher.motion import MotionDetector
+from watcher.main import _crossed_sky, _might_be_bus
+from watcher.motion import MotionDetector, Track
 from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
 from watcher.review import apply_review, parse_review
 from watcher.opensky import SkyArchive
@@ -405,6 +407,73 @@ class SkyTests(unittest.TestCase):
         found = archive.around(1505, 30)
         path.unlink()
         self.assertEqual([item["callsign"] for item in found], ["NOW"])
+
+    def test_a_reading_already_held_spends_no_question(self):
+        path = ROOT / "data" / "sky-test.jsonl"
+        archive = SkyArchive(path, [44.0, 5.0, 44.3, 5.5])
+        archive.poll = lambda now=None: self.fail("OpenSky ne devrait pas être appelé")
+        path.write_text(
+            json.dumps({"t": 1500, "aircraft": [{"icao24": "bbb", "callsign": "NOW"}]}) + "\n",
+            encoding="utf-8",
+        )
+        found = archive.ask(1505, 30)
+        path.unlink()
+        self.assertEqual([item["callsign"] for item in found], ["NOW"])
+
+    def test_two_crossings_in_the_same_quiet_period_share_one_question(self):
+        path = ROOT / "data" / "sky-test.jsonl"
+        archive = SkyArchive(path, [44.0, 5.0, 44.3, 5.5], quiet_s=600)
+        asked = []
+        archive.poll = lambda now=None: asked.append(now)
+        archive.ask(time.time(), 30)
+        archive.ask(time.time(), 30)
+        if path.exists():
+            path.unlink()
+        self.assertEqual(len(asked), 1)
+
+    def test_a_band_too_low_on_the_roadway_is_the_tarmac(self):
+        flat = Observation(zone="roundabout", surface="roundabout", travel=0.2, width_m=2.2, height_m=0.29,
+                           detections=[Detection(cls="car", conf=0.8)])
+        self.assertEqual(decide(flat).type, "motion")
+        self.assertEqual(decide(flat).reason, "tarmac")
+        car = Observation(zone="roundabout", surface="roundabout", travel=0.2, width_m=2.5, height_m=0.79,
+                          detections=[Detection(cls="car", conf=0.8)], min_conf={"car": 0.4})
+        self.assertEqual(decide(car).type, "vehicle")
+
+    def test_what_stands_still_on_the_island_is_the_furniture(self):
+        planted = Observation(zone="roundabout", surface="island", travel=0.0, width_m=1.6, height_m=1.26,
+                              detections=[Detection(cls="person", conf=0.73)])
+        self.assertEqual(decide(planted).type, "motion")
+        self.assertEqual(decide(planted).reason, "island")
+        crossing = Observation(zone="roundabout", surface="island", travel=0.2, width_m=3.0, height_m=1.4,
+                               detections=[Detection(cls="car", conf=0.8)], min_conf={"car": 0.4})
+        self.assertEqual(decide(crossing).type, "vehicle")
+
+    def test_a_plume_that_climbs_into_the_sky_keeps_its_track(self):
+        detector = MotionDetector(ZONES, motion_width=640, min_track_frames=1)
+        detector.tracks = [Track(id=1, zone="slope", frames=4, centroid=(0.5, 0.5), first_centroid=(0.5, 0.62))]
+        self.assertEqual(detector._match(0.5, 0.42, "sky", {0}), 0)
+        self.assertEqual(detector.tracks[0].zone, "slope")
+
+    def test_only_something_longer_than_a_car_opens_the_timetable(self):
+        cfg = {"min_conf": 0.35}
+        road = Track(id=1, zone="road")
+        sky = Track(id=2, zone="sky")
+        car = [Detection(cls="car", conf=0.9)]
+        coach = [Detection(cls="bus", conf=0.6)]
+        self.assertFalse(_might_be_bus(road, car, 3.2, cfg))
+        self.assertTrue(_might_be_bus(road, car, 11.0, cfg))
+        self.assertTrue(_might_be_bus(road, coach, 3.2, cfg))
+        self.assertFalse(_might_be_bus(sky, coach, 11.0, cfg))
+
+    def test_a_point_that_did_not_move_asks_nothing(self):
+        cfg = {"min_travel": 0.01, "max_sky_area": 0.02}
+        still = Track(id=1, zone="sky", area_ratio=0.001, first_centroid=(0.5, 0.5), centroid=(0.5, 0.5))
+        cloud = Track(id=2, zone="sky", area_ratio=0.5, first_centroid=(0.1, 0.5), centroid=(0.9, 0.5))
+        plane = Track(id=3, zone="sky", area_ratio=0.001, first_centroid=(0.1, 0.5), centroid=(0.9, 0.5))
+        self.assertFalse(_crossed_sky(still, cfg))
+        self.assertFalse(_crossed_sky(cloud, cfg))
+        self.assertTrue(_crossed_sky(plane, cfg))
 
 
 class StoreTests(unittest.TestCase):

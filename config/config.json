@@ -18,7 +18,7 @@
     "cooldown_s": 600
   },
   "fire": {
-    "sustain_s": 20,
+    "sustain_s": 5,
     "grow_ratio": 1.5,
     "warm_ratio": 0.08,
     "cooldown_s": 1800,
@@ -76,7 +76,7 @@
       44.35,
       5.5
     ],
-    "poll_s": 60,
+    "quiet_s": 240,
     "retain_days": 14,
     "match_window_s": 120,
     "username": "",

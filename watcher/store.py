@@ -21,6 +21,7 @@ class Store:
         self.history_days = history_days
         self.events_path = root / "events.json"
         self.thumbs = root / "thumbs"
+        self.closeups = root / "closeups"
         self.candidates_path = root / "candidates.jsonl"
         self.thumbs.mkdir(parents=True, exist_ok=True)
         self.dirty = False
@@ -62,6 +63,33 @@ class Store:
         self.dirty = True
         return event
 
+    def keep_closeup(self, event: dict, frame, bbox) -> str:
+        """Keep the vehicle at full resolution, so the lettering can be read.
+
+        The thumbnail is 480 px wide and the stream is 1920: an operator's name
+        on the side of a coach is four pixels tall in the thumbnail and sixteen
+        here. Only long vehicles earn one, so the folder stays small.
+        """
+        if frame is None or not bbox or not any(bbox):
+            return ""
+        height, width = frame.shape[:2]
+        x, y, w, h = bbox
+        pad_x, pad_y = int(w * 0.15) + 8, int(h * 0.25) + 8
+        x0, y0 = max(0, x - pad_x), max(0, y - pad_y)
+        x1, y1 = min(width, x + max(w, 1) + pad_x), min(height, y + max(h, 1) + pad_y)
+        if x1 - x0 < 16 or y1 - y0 < 16:
+            return ""
+        self.closeups.mkdir(parents=True, exist_ok=True)
+        name = f"{event['id']}.jpg"
+        ok, encoded = cv2.imencode(".jpg", frame[y0:y1, x0:x1], [int(cv2.IMWRITE_JPEG_QUALITY), 92])
+        if not ok:
+            return ""
+        (self.closeups / name).write_bytes(encoded.tobytes())
+        event["closeup"] = f"data/closeups/{name}"
+        self._write()
+        self.dirty = True
+        return event["closeup"]
+
     def add_candidate(self, when: datetime, zone: str, reason: str, detail: dict) -> None:
         row = {
             "t": when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -91,6 +119,9 @@ class Store:
             thumb = self.root / "thumbs" / Path(event.get("thumb") or "").name
             if thumb.is_file():
                 thumb.unlink()
+            closeup = self.closeups / Path(event.get("closeup") or "").name
+            if event.get("closeup") and closeup.is_file():
+                closeup.unlink()
         self.events = kept
 
     def _load(self) -> list[dict]:

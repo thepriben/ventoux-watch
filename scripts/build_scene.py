@@ -40,11 +40,12 @@ GRID_W, GRID_H = 192, 108
 REACH_W, REACH_H = 96, 54
 LANDMARK_SIZE_M = 2.0
 LANDMARK_BIGGEST_M = 9.0
-MAP_STEP_M = 4.0
+# Fine enough to hold the island of a roundabout sixteen metres across.
+MAP_STEP_M = 1.0
 ROAD_SLACK_M = 2.5
 # Later wins. A car park is drawn corner by corner and a road is only a centre
 # line with a guessed width, so the car park has the last word over the tarmac.
-PAINT_ORDER = ["meadow", "scree", "forest", "path", "road", "roundabout", "parking", "building"]
+PAINT_ORDER = ["meadow", "scree", "forest", "path", "road", "roundabout", "island", "parking", "building"]
 
 
 def main() -> int:
@@ -183,11 +184,31 @@ def _land(data: dict, pose: Pose, reach: float) -> tuple[np.ndarray, dict]:
                 # keeps a car on the road; erring narrow calls it off-road.
                 thick = max(1, int(round((road_width_m(tags) + 2 * ROAD_SLACK_M) / MAP_STEP_M)))
                 cv2.polylines(image, [shape], False, int(codes[name]), thick)
+                _island(image, shape, tags, codes)
             elif len(points) > 3 and points[0] == points[-1]:
                 cv2.fillPoly(image, [shape], int(codes[name]))
             else:
                 cv2.polylines(image, [shape], False, int(codes[name]), 2)
     return image, codes
+
+
+def _island(image: np.ndarray, shape: np.ndarray, tags: dict, codes: dict) -> None:
+    """The planted middle of a roundabout, which the tarmac has just covered.
+
+    A roundabout is one closed ring sixteen metres across, and painting it with
+    a road's width plus its verges fills the circle. What belongs in the middle
+    is not roadway: it is the planted island, with its stones and its wooden
+    figures, where nothing drives and nobody stands still. Only the carriageway
+    is taken back out here, without the verge — a verge may spill onto grass,
+    never onto the island.
+    """
+    if tags.get("junction") != "roundabout" or len(shape) < 4 or not np.array_equal(shape[0], shape[-1]):
+        return
+    carriage = max(1, int(round(road_width_m(tags) / MAP_STEP_M)))
+    inner = np.zeros(image.shape, dtype=np.uint8)
+    cv2.fillPoly(inner, [shape], 1)
+    cv2.polylines(inner, [shape], True, 0, carriage)
+    image[inner.astype(bool)] = int(codes["island"])
 
 
 def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, reach_m: float) -> list[dict]:

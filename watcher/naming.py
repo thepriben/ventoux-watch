@@ -7,12 +7,15 @@ from dataclasses import dataclass, field
 
 from watcher.scenemap import DRIVABLE, FLAMMABLE
 
-NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree"}
+NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree", "island"}
 
 # The widest a thing of that kind can be where it stands, in metres. The scene
 # map turns a box into ground metres, so a walker eight metres across is light
 # or shadow whatever the model reads into it.
 BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
+# Nothing that drives or walks stands lower than this. Below it, on the
+# roadway, what moved is the tarmac itself catching the light.
+LOWEST_M = 0.6
 
 
 @dataclass
@@ -45,6 +48,7 @@ class Observation:
     smoke_ratio: float = 0.0
     rise: float = 0.0
     width_m: float = 0.0
+    height_m: float = 0.0
     area_grow: float = 1.0
     person_count: int = 0
     kind: str = "track"
@@ -285,6 +289,13 @@ def decide(obs: Observation) -> Decision:
                 "Tache trop large",
                 f"Environ {obs.width_m:.0f} m au sol. Rien ne roule et ne marche à cette taille : de la lumière ou de l'ombre.",
             )
+        if obs.surface in DRIVABLE and 0 < obs.height_m < LOWEST_M:
+            return _motion(
+                obs,
+                "tarmac",
+                "Motif sur la chaussée",
+                f"Environ {obs.height_m * 100:.0f} cm de haut au sol. C'est le revêtement qui prend la lumière, pas un véhicule.",
+            )
         if not _fits(obs, "person"):
             person = None
         if vehicle is not None and not _fits(obs, vehicle.cls):
@@ -300,6 +311,13 @@ def decide(obs: Observation) -> Decision:
             )
         if obs.surface in NOT_DRIVABLE and not obs.near_road and vehicle is not None and person is None:
             return _motion(obs, "off_road", "Mouvement hors chaussée", "Aucune voiture ne roule là.")
+        if obs.surface == "island" and obs.travel < obs.min_travel:
+            return _motion(
+                obs,
+                "island",
+                "Décor de l'îlot",
+                "Sur l'îlot central du rond-point, et ça n'a pas bougé. Les pierres et les figures y sont plantées.",
+            )
         if obs.surface == "parking" and obs.travel < obs.min_travel:
             return _motion(obs, "parked", "Voiture garée", "Sur une aire de stationnement, et ça n'a pas bougé.")
         if obs.period in {"night", "twilight"} and obs.surface in DRIVABLE and bus is None and vehicle is None:

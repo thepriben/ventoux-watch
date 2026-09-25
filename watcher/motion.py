@@ -133,7 +133,6 @@ class MotionDetector:
             track.bbox = blob["bbox"]
             track.area_ratio = blob["area_ratio"]
             track.updated = now
-            track.zone = zone
             if blob["area_ratio"] >= track.best_area:
                 track.best_area = blob["area_ratio"]
                 track.best_bbox = blob["bbox"]
@@ -154,17 +153,25 @@ class MotionDetector:
         return MotionStep(ended=ended, roundabout_motion=roundabout)
 
     def _match(self, cx: float, cy: float, zone: str, unused: set[int]) -> int | None:
-        limit = 0.28 if zone == "sky" else 0.18
+        """Nearest open track, whatever zone the blob has drifted into.
+
+        A track keeps the zone it was born in. A plume climbs off the slope and
+        its centre ends up in the sky, but it is the same fire, rooted in the
+        same place: refusing the match would restart the clock every time and
+        no fire would ever last long enough to be called one.
+        """
         best_index = None
-        best_distance = limit
+        best_distance = 0.0
         for index in unused:
             track = self.tracks[index]
-            if track.zone != zone:
-                continue
+            limit = 0.28 if "sky" in {zone, track.zone} else 0.18
             distance = ((track.centroid[0] - cx) ** 2 + (track.centroid[1] - cy) ** 2) ** 0.5
-            if distance <= best_distance:
-                best_distance = distance
-                best_index = index
+            if distance > limit:
+                continue
+            if best_index is not None and distance > best_distance:
+                continue
+            best_distance = distance
+            best_index = index
         return best_index
 
 

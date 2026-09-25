@@ -32,7 +32,7 @@ const COPY = {
     crowd: "Crowd",
     crowdText: "4 people or more, held for 8 seconds.",
     fire: "Fire",
-    fireText: "On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.",
+    fireText: "On the slope, 5 s, area ×1.5, at least 8% warm pixels or a rising plume. Not at dusk. In rain, fog, or snow, it takes 20%.",
     rest: "Unknown",
     restText: "We don't know what it is. Every movement is shown, with its photo.",
     history: "History",
@@ -55,7 +55,7 @@ const COPY = {
     places: {
       road: "Road", roundabout: "Roundabout", parking: "Car park", path: "Path",
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
-      sky: "Sky", other: "Off the road",
+      sky: "Sky", island: "Roundabout island", scree: "Scree", other: "Off the road",
     },
     notInFrame: "Not in the picture",
     colCam: "Webcam",
@@ -108,7 +108,7 @@ const COPY = {
     crowd: "Attroupement",
     crowdText: "4 personnes ou plus, tenues 8 secondes.",
     fire: "Feu",
-    fireText: "Sur la pente, 20 s, surface ×1,5, au moins 8 % de pixels chauds. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.",
+    fireText: "Sur la pente, 5 s, surface ×1,5, au moins 8 % de pixels chauds ou un panache qui monte. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.",
     rest: "Inconnu",
     restText: "On ne sait pas ce que c’est. Chaque mouvement est affiché, avec sa photo.",
     history: "Historique",
@@ -131,7 +131,7 @@ const COPY = {
     places: {
       road: "Chaussée", roundabout: "Rond-point", parking: "Parking", path: "Sentier",
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
-      sky: "Ciel", other: "Hors chaussée",
+      sky: "Ciel", island: "Îlot central", scree: "Éboulis", other: "Hors chaussée",
     },
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",
@@ -192,6 +192,10 @@ const LABELS = {
   "Camionnette": "Van",
   "Voiture garée": "Parked car",
   "Lueur du soir": "Evening glow",
+  "Simulation : incendie": "Simulation: fire",
+  "Simulation : départ de feu": "Simulation: fire starting",
+  "Motif sur la chaussée": "Pattern on the roadway",
+  "Décor de l’îlot": "Roundabout island furniture",
   "Lueur dans la météo": "Glow in the weather",
 };
 

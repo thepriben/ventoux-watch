@@ -55,8 +55,15 @@ REFRAME = {
         "erase": [(33, 160, 69, 191)],  # une voiture garée dans la découpe
         "keep": (32, 197, 121, 270),
     },
+    "2026-09-25T08:23:34Z": {
+        "type": "bus",
+        "label": "Bus",
+        "draw": (53, 169, 121, 209),
+    },
 }
 DROP = {
+    "2026-09-25T22:11:35Z": "l'îlot central du rond-point, ses pierres et ses figures",
+    "2026-09-25T21:39:29Z": "le revêtement de la chaussée qui prend la lumière",
     "2026-09-25T19:31:07Z": "le halo des phares sur la chaussée, rien dedans",
     "2026-09-25T17:08:06Z": "ombre et soleil à la lisière",
     "2026-09-25T17:02:48Z": "la statue en bois",

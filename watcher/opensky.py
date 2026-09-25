@@ -14,13 +14,32 @@ log = logging.getLogger("ventoux.opensky")
 
 
 class SkyArchive:
-    def __init__(self, path: Path, bbox: list[float], retain_days: int = 14, username: str = "", password: str = ""):
+    def __init__(self, path: Path, bbox: list[float], retain_days: int = 14, username: str = "", password: str = "", quiet_s: float = 60.0):
         self.path = path
         self.bbox = bbox
         self.retain_days = retain_days
         self.username = username
         self.password = password
+        self.quiet_s = quiet_s
+        self.asked = 0.0
         self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def ask(self, when: float, window_s: float = 120) -> list[dict]:
+        """Who was flying over, at the moment something crossed the sky.
+
+        OpenSky counts the questions, so only a crossing asks one. A reading
+        already in the archive answers for free, and two crossings in the same
+        minute share a single call.
+        """
+        known = self.around(when, window_s)
+        if known:
+            return known
+        now = time.time()
+        if now - self.asked < self.quiet_s:
+            return []
+        self.asked = now
+        self.poll(now)
+        return self.around(when, window_s)
 
     def poll(self, now: float | None = None) -> int:
         now = time.time() if now is None else now

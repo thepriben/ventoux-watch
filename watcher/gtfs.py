@@ -30,14 +30,26 @@ class GtfsIndex:
         self.refreshed_at = 0.0
 
     def refresh(self, force: bool = False) -> None:
+        """Fetch the timetable once, then read it off the disk.
+
+        A timetable is a few thousand stops that change a couple of times a
+        year. Downloading it again, or walking it again, buys nothing: the
+        index stays in memory until a new archive lands.
+        """
         self.root.mkdir(parents=True, exist_ok=True)
-        self.rows = []
+        fetched = False
         for feed in self.feeds:
             folder = self.root / feed["name"]
             archive = folder.with_suffix(".zip")
             fresh = archive.is_file() and time.time() - archive.stat().st_mtime < 20 * 3600
             if force or not fresh:
                 self._download(feed["url"], archive, folder)
+                fetched = True
+        if self.rows and not fetched and not force:
+            return
+        self.rows = []
+        for feed in self.feeds:
+            folder = self.root / feed["name"]
             if folder.is_dir():
                 self.rows.extend(load_feed(folder, feed["name"], self.lat, self.lon, self.radius_m))
         self.refreshed_at = time.time()
