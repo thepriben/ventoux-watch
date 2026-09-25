@@ -1,6 +1,70 @@
 {
   "events": [
     {
+      "id": "2026-09-25T12-27-08Z-motion-1693",
+      "t": "2026-09-25T12:27:08Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-27-08Z-motion-1693.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-27-07Z-motion-1691",
+      "t": "2026-09-25T12:27:07Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-27-07Z-motion-1691.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-27-07Z-motion-1692",
+      "t": "2026-09-25T12:27:07Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-27-07Z-motion-1692.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-26-14Z-motion-1690",
+      "t": "2026-09-25T12:26:14Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-26-14Z-motion-1690.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T12-26-12Z-motion-1689",
       "t": "2026-09-25T12:26:12Z",
       "type": "motion",
