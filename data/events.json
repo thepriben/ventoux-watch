@@ -1,6 +1,69 @@
 {
   "events": [
     {
+      "id": "2026-09-25T12-20-30Z-motion-1685",
+      "t": "2026-09-25T12:20:30Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-20-30Z-motion-1685.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-20-29Z-car-1684",
+      "t": "2026-09-25T12:20:29Z",
+      "type": "car",
+      "label": "Voiture",
+      "zone": "road",
+      "confidence": 0.635,
+      "thumb": "data/thumbs/2026-09-25T12-20-29Z-car-1684.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-20-13Z-motion-1682",
+      "t": "2026-09-25T12:20:13Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-20-13Z-motion-1682.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-20-13Z-motion-1683",
+      "t": "2026-09-25T12:20:13Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-20-13Z-motion-1683.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T12-19-53Z-car-1681",
       "t": "2026-09-25T12:19:53Z",
       "type": "car",
