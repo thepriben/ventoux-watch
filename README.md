@@ -8,7 +8,7 @@ Le flux est celui déjà utilisé par [dataroads-fr84.info](https://dataroads-fr
 
 *24 septembre 2026, 23:41, heure de Paris. La photo a été prise à 14:41 à Los Angeles.*
 
-#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur
+Hashtags : #MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur
 
 ## Pipeline
 
@@ -18,7 +18,7 @@ Le flux est celui déjà utilisé par [dataroads-fr84.info](https://dataroads-fr
 
 Un avion n’est publié avec son indicatif que s’il n’y en a qu’un dans le créneau OpenSky, ou un seul vraiment plus bas que les autres. Un bus prend le nom de la ligne Trans'CoVe ou ZOU seulement s’il n’y a qu’une course à ±15 minutes. Les autres passages restent dans l’historique avec une lecture : jour ou nuit, météo, et ce qu’on a pu en dire. Une lueur au crépuscule n’est pas un incendie. Les animaux ne sont pas encore une classe.
 
-Le modèle s’améliore sur cette caméra. Le jour, la nuit et la météo changent la lecture. Chaque passage est conservé. Un endroit qui bouge souvent sans événement nouveau devient une habitude du cadrage, comptée dans `data/learning.json`.
+Cette caméra devient plus familière avec le temps. Le jour, la nuit et la météo changent la lecture. Les passages sont gardés, photo comprise. Un coin qui bouge souvent pour rien, compté dans `data/learning.json`, finit par être traité comme une habitude.
 
 ## Sur le Mac, avant le Pi
 
