@@ -91,19 +91,21 @@
     {
       "id": "2026-09-25T15-54-07Z-habit-20",
       "t": "2026-09-25T15:54:07Z",
-      "type": "habit",
-      "label": "Habitude du cadrage",
+      "type": "vehicle",
+      "label": "Voiture",
       "zone": "road",
       "confidence": 0.3,
       "thumb": "data/thumbs/2026-09-25T15-54-07Z-habit-20.jpg",
       "clip_url": "",
       "detail": {
-        "reading": "Cet endroit a bougé plusieurs fois sans événement nouveau. Le cadrage le reconnaît maintenant.",
+        "reading": "Voiture, indiquée à la main.",
         "period": "day",
         "weather": "ciel dégagé",
         "context": "de jour, ciel dégagé",
-        "count": 1
-      }
+        "count": 1,
+        "correction": "Voiture"
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T15-51-39Z-habit-17",
