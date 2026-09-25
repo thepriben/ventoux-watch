@@ -1,3 +1,20 @@
 {
-  "events": []
+  "events": [
+    {
+      "id": "2026-09-25T05-23-52Z-motion",
+      "t": "2026-09-25T05:23:52Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-23-52Z-motion.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    }
+  ]
 }
