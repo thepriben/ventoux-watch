@@ -49,6 +49,7 @@ const COPY = {
     compare: "Weather",
     colTime: "Time",
     colPhoto: "Photo",
+    colEvent: "Event",
     colReading: "Reading",
     notInFrame: "Not in the picture",
     colCam: "Webcam",
@@ -114,6 +115,7 @@ const COPY = {
     compare: "Météo",
     colTime: "Heure",
     colPhoto: "Photo",
+    colEvent: "Événement",
     colReading: "Lecture",
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",
@@ -381,21 +383,15 @@ function render() {
   if (count) count.textContent = shown.length ? String(shown.length) : "";
   list.innerHTML = shown.map((event) => {
     const moment = new Date(event.t);
-    const clock = moment.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
-    const day = moment.toLocaleDateString(locale(), { day: "numeric", month: "short", timeZone: "Europe/Paris" });
+    const clock = moment.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "Europe/Paris" });
+    const day = moment.toLocaleDateString(locale(), { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Paris" });
     const picture = event.thumb
       ? `<img src="${escapeHtml(event.thumb)}" alt="">`
       : `<span class="placeholder"></span>`;
-    const extra = detail(event);
-    const review = reviewControls(event);
-    const state = event.review === "accepted" ? t("confirmed") : event.review === "rejected" ? t("rejected") : "";
     const info = event.detail || {};
     const people = Number(info.persons || 0);
     const title = people > 1 ? `${showText(event.label)} (${people})` : showText(event.label);
-    const piled = Number(info.count || 1);
-    const times = !info.correction && piled > 1 ? ` · ${piled}` : "";
-    const note = [extra, times.replace(/^ · /, ""), state].filter(Boolean).join(" · ");
-    return `<tr class="${event.review || ""}"><td class="when"><time>${clock}</time><span>${day}</span></td><td class="shot">${picture}</td><td><strong>${escapeHtml(title)}</strong><p class="meta">${escapeHtml(note)}</p>${review}</td></tr>`;
+    return `<tr><td class="when"><time>${clock}</time><span>${day}</span></td><td class="event">${escapeHtml(title)}</td><td class="shot">${picture}</td></tr>`;
   }).join("");
 }
 

@@ -300,7 +300,7 @@ class ThumbTests(unittest.TestCase):
         height, width = marked.shape[:2]
         subject = marked[int(0.41 * height), int(0.45 * width)]
         self.assertLess(int(subject[2]), 80)
-        self.assertGreater(int(marked[:, :, 2].max()), 180)
+        self.assertGreater(int(marked[:, :, 2].max()), 120)
 
 
 class ReviewTests(unittest.TestCase):

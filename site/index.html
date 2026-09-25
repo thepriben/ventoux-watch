@@ -109,14 +109,12 @@
       <p class="count" id="count"></p>
       <div class="filters" role="tablist">
         <button type="button" class="on" data-filter="all" data-i18n="all">All</button>
-        <button type="button" data-filter="motion" data-i18n="motions">Motion</button>
         <button type="button" data-filter="vehicle" data-i18n="vehicles">Vehicles</button>
         <button type="button" data-filter="person" data-i18n="pedestrians">Pedestrians</button>
         <button type="button" data-filter="bus" data-i18n="buses">Buses</button>
         <button type="button" data-filter="crowd" data-i18n="crowds">Crowds</button>
         <button type="button" data-filter="fire" data-i18n="fires">Fires</button>
         <button type="button" data-filter="plane" data-i18n="planes">Planes</button>
-        <button type="button" data-filter="habit" data-i18n="habits">Habits</button>
       </div>
     </div>
     <p id="empty" class="empty" data-i18n="empty" hidden>Nothing yet.</p>
@@ -124,15 +122,14 @@
       <thead>
         <tr>
           <th data-i18n="colTime">Time</th>
+          <th data-i18n="colEvent">Event</th>
           <th data-i18n="colPhoto">Photo</th>
-          <th data-i18n="colReading">Reading</th>
         </tr>
       </thead>
       <tbody id="list"></tbody>
     </table>
   </section>
 
-  <p class="tags">#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur</p>
   <div id="loupe" hidden><img alt=""></div>
   </main>
   <script src="app.js"></script>

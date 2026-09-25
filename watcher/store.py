@@ -317,7 +317,7 @@ def _outline(image: np.ndarray, box) -> None:
     y1 = min(height - 1, y + max(h, 1) + pad_y)
     if x1 - x0 < 4 or y1 - y0 < 4:
         return
-    cv2.rectangle(image, (x0, y0), (x1, y1), (0, 0, 220), 2)
+    cv2.rectangle(image, (x0, y0), (x1, y1), (0, 0, 210), 1)
 
 
 def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALITY, box=None) -> bytes:

@@ -146,6 +146,9 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
     if memory.observe(track.zone, track.centroid, decision) != "record":
         log.info("Compté sans nouvelle carte %s", decision.label)
         return
+    if decision.type in {"motion", "habit"}:
+        store.add_candidate(when, track.zone, decision.reason, decision.detail)
+        return
     if decision.type == "fire":
         last_fire["fire"] = now
     _attach_box(decision.detail, track)
