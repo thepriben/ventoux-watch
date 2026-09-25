@@ -101,8 +101,11 @@ def body_colour(frame: np.ndarray, bbox: tuple[int, int, int, int] | None = None
     hue, saturation, value = (channel.astype(np.int16) for channel in cv2.split(cv2.cvtColor(_balanced(frame, crop), cv2.COLOR_BGR2HSV)))
     names = np.full(hue.shape, "", dtype=object)
     names[:] = "rouge"
-    names[(hue >= 8) & (hue < 20)] = "orange"
-    names[(hue >= 20) & (hue < 33)] = "jaune"
+    # A camera warms what it sees: the yellow of a post van reads near hue 17,
+    # where a colour chart would call it amber. The boundary follows the camera,
+    # not the chart.
+    names[(hue >= 8) & (hue < 15)] = "orange"
+    names[(hue >= 15) & (hue < 33)] = "jaune"
     names[(hue >= 33) & (hue < 85)] = "vert"
     names[(hue >= 85) & (hue < 130)] = "bleu"
     names[(hue >= 8) & (hue < 20) & (value < 130)] = "marron"

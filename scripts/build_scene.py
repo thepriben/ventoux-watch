@@ -42,7 +42,9 @@ LANDMARK_SIZE_M = 2.0
 LANDMARK_BIGGEST_M = 9.0
 MAP_STEP_M = 4.0
 ROAD_SLACK_M = 2.5
-PAINT_ORDER = ["meadow", "scree", "forest", "parking", "path", "road", "roundabout", "building"]
+# Later wins. A car park is drawn corner by corner and a road is only a centre
+# line with a guessed width, so the car park has the last word over the tarmac.
+PAINT_ORDER = ["meadow", "scree", "forest", "path", "road", "roundabout", "parking", "building"]
 
 
 def main() -> int:

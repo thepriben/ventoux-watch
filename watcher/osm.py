@@ -33,6 +33,7 @@ SURFACE_TAGS = {
     ("natural", "heath"): "meadow",
     ("natural", "scree"): "scree",
     ("amenity", "parking"): "parking",
+    ("amenity", "parking_space"): "parking",
     ("building", "*"): "building",
 }
 
@@ -72,7 +73,7 @@ def around(lat: float, lon: float, radius_m: float, cache: Path, max_age_s: int 
         f'way["building"]({box});'
         f'way["landuse"]({box});'
         f'way["natural"]({box});'
-        f'way["amenity"="parking"]({box});'
+        f'way["amenity"~"^(parking|parking_space)$"]({box});'
         f'node["tourism"="artwork"]({box});'
         f'node["historic"]({box});'
         f'node["natural"="tree"]({box});'

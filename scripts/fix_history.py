@@ -43,6 +43,12 @@ REFRAME = {
         "erase": [(115, 147, 179, 192)],  # la cabane, building=kiosk
         "keep": (25, 187, 103, 231),
     },
+    "2026-09-25T10:59:48Z": {
+        "type": "car",
+        "label": "Camionnette jaune",
+        "erase": [(0, 203, 137, 270)],
+        "draw": (28, 221, 103, 262),
+    },
     "2026-09-25T12:19:07Z": {
         "type": "car",
         "label": "Voiture",
@@ -92,13 +98,14 @@ def _erase(image: np.ndarray, rect: tuple[int, int, int, int]) -> np.ndarray:
 
     Around the place where it was drawn, a line of the frame is red almost all
     the way across. That is the stroke. A red roof or a tail light is red only
-    here and there, so it stays.
+    here and there, so it stays. The stroke is pure red, with green and blue
+    both far below: a yellow van is red and green together, and survives.
     """
     height, width = image.shape[:2]
     x0, y0 = max(0, rect[0] - 12), max(0, rect[1] - 12)
     x1, y1 = min(width, rect[2] + 13), min(height, rect[3] + 13)
     blue, green, red = cv2.split(image[y0:y1, x0:x1].astype(np.int16))
-    ink = ((red - np.maximum(green, blue) > 14) & (red > 70)).astype(np.uint8)
+    ink = ((red - green > 30) & (red - blue > 30) & (red > 70)).astype(np.uint8)
     line = np.zeros(ink.shape, dtype=np.uint8)
     line[ink.sum(axis=1) >= ink.shape[1] * 0.5, :] = 1
     line[:, ink.sum(axis=0) >= ink.shape[0] * 0.5] = 1

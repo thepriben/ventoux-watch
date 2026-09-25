@@ -542,7 +542,7 @@
       "id": "2026-09-25T10-59-48Z-motion-1291",
       "t": "2026-09-25T10:59:48Z",
       "type": "car",
-      "label": "Camion",
+      "label": "Camionnette jaune",
       "zone": "roundabout",
       "confidence": 0.783,
       "thumb": "data/thumbs/2026-09-25T10-59-55Z-car-1293.jpg",
@@ -551,8 +551,17 @@
         "period": "day",
         "weather": "ciel dégagé",
         "context": "de jour, ciel dégagé",
-        "count": 10
-      }
+        "count": 10,
+        "box": [
+          0.0953,
+          0.8556,
+          0.0822,
+          0.0778
+        ],
+        "correction": "Camionnette jaune",
+        "reading": "Camionnette jaune, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T10-50-56Z-habit-1224",
