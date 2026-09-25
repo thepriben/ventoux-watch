@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T10-24-39Z-plane-875",
+      "t": "2026-09-25T10:24:39Z",
+      "type": "plane",
+      "label": "AJD214K",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-24-39Z-plane-875.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d214f",
+        "callsign": "AJD214K",
+        "altitude_m": 8176.26,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T10-23-22Z-motion-872",
       "t": "2026-09-25T10:23:22Z",
       "type": "motion",
