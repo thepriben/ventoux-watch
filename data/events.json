@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T06-58-30Z-plane-209",
+      "t": "2026-09-25T06:58:30Z",
+      "type": "plane",
+      "label": "FPO533",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-58-30Z-plane-209.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39666f",
+        "callsign": "FPO533",
+        "altitude_m": 11277.6,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T06-57-08Z-motion-187",
       "t": "2026-09-25T06:57:08Z",
       "type": "motion",
