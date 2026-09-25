@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T06-56-49Z-motion-161",
+      "t": "2026-09-25T06:56:49Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T06-56-49Z-motion-161.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T06-52-16Z-motion-156",
       "t": "2026-09-25T06:52:16Z",
       "type": "motion",
