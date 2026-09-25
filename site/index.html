@@ -44,7 +44,14 @@
 
   <section class="place" data-i18n-aria="camera" aria-label="Camera">
     <h2 data-i18n="camera">Camera</h2>
-    <div id="map"></div>
+    <div class="frame">
+      <div id="map"></div>
+      <div class="zooms" role="group" aria-label="Zoom">
+        <button type="button" data-zoom="0">1</button>
+        <button type="button" data-zoom="1" class="on">2</button>
+        <button type="button" data-zoom="2">3</button>
+      </div>
+    </div>
     <p class="sub" data-i18n="cameraText">Fixed, facing 140°.</p>
   </section>
 

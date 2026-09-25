@@ -346,21 +346,33 @@ function viewWedge() {
   return points;
 }
 
-const map = L.map("map", { scrollWheelZoom: false });
+const ZOOMS = [
+  { zoom: 18, along: 0 },
+  { zoom: 16, along: VIEW_REACH * 0.35 },
+  { zoom: 14, along: VIEW_REACH * 0.4 },
+];
+
+const map = L.map("map", {
+  scrollWheelZoom: false,
+  zoomControl: false,
+  doubleClickZoom: false,
+  boxZoom: false,
+  keyboard: false,
+});
 L.tileLayer("https://data.geopf.fr/wmts?LAYER=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/jpeg&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}", {
   maxZoom: 19,
   attribution: "© IGN",
 }).addTo(map);
-const wedge = L.polygon(viewWedge(), {
-  color: "#243f34",
+L.polygon(viewWedge(), {
+  color: "#c4b094",
   weight: 1.5,
-  fillColor: "#243f34",
-  fillOpacity: 0.28,
+  fillColor: "#f3efe6",
+  fillOpacity: 0.62,
 }).addTo(map);
 L.polyline([
   [CAMERA.lat, CAMERA.lon],
   offset(CAMERA.lat, CAMERA.lon, CAMERA.bearing, VIEW_REACH),
-], { color: "#243f34", weight: 2, dashArray: "4 6" }).addTo(map);
+], { color: "#c4b094", weight: 2, dashArray: "4 6" }).addTo(map);
 const cameraMark = L.circleMarker([CAMERA.lat, CAMERA.lon], {
   radius: 6,
   color: "#f4f1ea",
@@ -368,7 +380,19 @@ const cameraMark = L.circleMarker([CAMERA.lat, CAMERA.lon], {
   fillColor: "#243f34",
   fillOpacity: 1,
 }).addTo(map);
-map.fitBounds(wedge.getBounds(), { padding: [28, 28] });
+
+function showZoom(index) {
+  const level = ZOOMS[index];
+  map.setView(offset(CAMERA.lat, CAMERA.lon, CAMERA.bearing, level.along), level.zoom);
+  document.querySelectorAll(".zooms button").forEach((button) => {
+    button.classList.toggle("on", Number(button.dataset.zoom) === index);
+  });
+}
+
+document.querySelectorAll(".zooms button").forEach((button) => {
+  button.addEventListener("click", () => showZoom(Number(button.dataset.zoom)));
+});
+showZoom(1);
 
 function paintCamera() {
   cameraMark.unbindTooltip();

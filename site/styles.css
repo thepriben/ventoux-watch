@@ -111,6 +111,8 @@ h2 {
 
 .place { margin-top: 22px; }
 
+.frame { position: relative; }
+
 #map {
   width: 100%;
   height: 380px;
@@ -118,6 +120,33 @@ h2 {
   border-radius: 6px;
   outline: none;
   background: #d5d0c6;
+}
+
+.zooms {
+  position: absolute;
+  z-index: 500;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zooms button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 13px/1 ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.zooms button.on {
+  background: var(--pine);
+  color: #f6f3ec;
+  border-color: var(--pine);
 }
 
 .place .sub { margin: 8px 0 0; font-size: 13px; }
