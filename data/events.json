@@ -1,6 +1,96 @@
 {
   "events": [
     {
+      "id": "2026-09-25T06-36-51Z-plane-138",
+      "t": "2026-09-25T06:36:51Z",
+      "type": "plane",
+      "label": "AFR38AZ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-36-51Z-plane-138.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39bda8",
+        "callsign": "AFR38AZ",
+        "altitude_m": 8077.2,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T06-36-51Z-plane-139",
+      "t": "2026-09-25T06:36:51Z",
+      "type": "plane",
+      "label": "AFR38AZ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-36-51Z-plane-139.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39bda8",
+        "callsign": "AFR38AZ",
+        "altitude_m": 8077.2,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T06-36-30Z-plane-137",
+      "t": "2026-09-25T06:36:30Z",
+      "type": "plane",
+      "label": "AFR38AZ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-36-30Z-plane-137.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39bda8",
+        "callsign": "AFR38AZ",
+        "altitude_m": 8077.2,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T06-36-19Z-plane-136",
+      "t": "2026-09-25T06:36:19Z",
+      "type": "plane",
+      "label": "AFR38AZ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-36-19Z-plane-136.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39bda8",
+        "callsign": "AFR38AZ",
+        "altitude_m": 8077.2,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T06-36-13Z-plane-135",
+      "t": "2026-09-25T06:36:13Z",
+      "type": "plane",
+      "label": "AFR38AZ",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T06-36-13Z-plane-135.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "39bda8",
+        "callsign": "AFR38AZ",
+        "altitude_m": 8077.2,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T06-35-16Z-plane-134",
       "t": "2026-09-25T06:35:16Z",
       "type": "plane",
