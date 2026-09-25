@@ -1,6 +1,38 @@
 {
   "events": [
     {
+      "id": "2026-09-25T12-08-22Z-motion-1655",
+      "t": "2026-09-25T12:08:22Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-08-22Z-motion-1655.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-08-22Z-motion-1656",
+      "t": "2026-09-25T12:08:22Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-08-22Z-motion-1656.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T12-07-09Z-car-1652",
       "t": "2026-09-25T12:07:09Z",
       "type": "car",
