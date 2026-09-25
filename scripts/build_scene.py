@@ -36,6 +36,7 @@ GRID_W, GRID_H = 192, 108
 REACH_W, REACH_H = 96, 54
 LANDMARK_SIZE_M = 2.0
 MAP_STEP_M = 4.0
+ROAD_SLACK_M = 2.5
 PAINT_ORDER = ["meadow", "scree", "forest", "parking", "path", "road", "roundabout", "building"]
 
 
@@ -167,7 +168,10 @@ def _land(data: dict, pose: Pose, reach: float) -> tuple[np.ndarray, dict]:
         for tags, points in shapes[name]:
             shape = to_pixels(points)
             if tags.get("highway"):
-                thick = max(1, int(round(road_width_m(tags) / MAP_STEP_M)))
+                # OpenStreetMap draws a centre line and the width is a guess, so
+                # the tarmac is painted with a verge on either side. Erring wide
+                # keeps a car on the road; erring narrow calls it off-road.
+                thick = max(1, int(round((road_width_m(tags) + 2 * ROAD_SLACK_M) / MAP_STEP_M)))
                 cv2.polylines(image, [shape], False, int(codes[name]), thick)
             elif len(points) > 3 and points[0] == points[-1]:
                 cv2.fillPoly(image, [shape], int(codes[name]))

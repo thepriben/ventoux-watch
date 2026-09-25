@@ -60,6 +60,7 @@ class Observation:
     period: str = "day"
     weather: str = ""
     surface: str = ""
+    near_road: bool = True
     landmark: str = ""
     lit_ratio: float = 0.0
     camera_lat: float = 44.183501
@@ -258,7 +259,7 @@ def decide(obs: Observation) -> Decision:
                 "Repère éclairé",
                 f"{obs.landmark} n'a pas bougé. Une lumière est passée dessus.",
             )
-        if obs.surface in NOT_DRIVABLE and vehicle is not None and person is None:
+        if obs.surface in NOT_DRIVABLE and not obs.near_road and vehicle is not None and person is None:
             return _motion(obs, "off_road", "Mouvement hors chaussée", "Aucune voiture ne roule là.")
         if obs.period in {"night", "twilight"} and obs.surface in DRIVABLE and bus is None and vehicle is None:
             # After dark the model reads a car body as a walker. On the roadway

@@ -148,9 +148,17 @@ class NamingTests(unittest.TestCase):
 
     def test_a_car_cannot_drive_through_the_forest(self):
         decision = decide(
-            Observation(zone="other", travel=0.08, surface="forest", detections=[Detection("car", 0.8)])
+            Observation(zone="other", travel=0.08, surface="forest", near_road=False,
+                        detections=[Detection("car", 0.8)])
         )
         self.assertEqual(decision.type, "motion")
+
+    def test_a_car_on_the_verge_is_still_a_car(self):
+        decision = decide(
+            Observation(zone="road", travel=0.08, surface="meadow", near_road=True,
+                        detections=[Detection("car", 0.8)])
+        )
+        self.assertEqual(decision.type, "vehicle")
 
     def test_car_lights_name_a_vehicle_at_night(self):
         decision = decide(

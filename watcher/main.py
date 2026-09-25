@@ -147,6 +147,7 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         period=current.period,
         weather=current.weather,
         surface=surface,
+        near_road=scene_map.drivable_near(box) if box else True,
         landmark=(landmark or {}).get("name", ""),
         lit_ratio=lit,
         camera_lat=float(cfg["camera"]["lat"]),

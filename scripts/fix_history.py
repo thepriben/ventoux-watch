@@ -39,6 +39,7 @@ REFRAME = {
     "2026-09-25T15:56:28Z": {"erase": [(345, 205, 390, 270)]},
 }
 DROP = {
+    "2026-09-25T19:31:07Z": "le halo des phares sur la chaussée, rien dedans",
     "2026-09-25T17:08:06Z": "ombre et soleil à la lisière",
     "2026-09-25T17:02:48Z": "la statue en bois",
     "2026-09-25T17:01:45Z": "la statue en bois",

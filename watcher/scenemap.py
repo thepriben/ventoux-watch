@@ -105,6 +105,28 @@ class SceneMap:
             return 0.0
         return w * 2 * span * math.tan(math.radians(hfov) / 2)
 
+    def drivable_near(self, box: tuple[float, float, float, float], slack: float = 0.025) -> bool:
+        """Is there roadway close enough that a car here would still be on it?
+
+        The map is drawn from centre lines and the view is fitted to about a
+        hundredth of the frame. A car a few pixels off the painted tarmac is
+        driving, not flying, so the answer has to be generous.
+        """
+        if not self.ready:
+            return True
+        x, y, w, h = box
+        foot = min(0.999, y + h)
+        steps = [-slack, -slack / 2, 0.0, slack / 2, slack]
+        for down in steps:
+            for across in steps:
+                sample = self.surface_at(
+                    min(0.999, max(0.0, x + w / 2 + across)),
+                    min(0.999, max(0.0, foot + down)),
+                )
+                if sample in DRIVABLE:
+                    return True
+        return False
+
     def landmark_at(self, box: tuple[float, float, float, float]) -> dict | None:
         """A fixed thing of the map that this box is drawn around.
 
