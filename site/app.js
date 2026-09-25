@@ -33,8 +33,8 @@ const COPY = {
     crowdText: "4 people or more, held for 8 seconds.",
     fire: "Fire",
     fireText: "On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.",
-    rest: "Unnamed",
-    restText: "If it cannot be named, the photo still goes into the history. The same spot moving eight times becomes a habit of the frame: it is no longer an incident. It is then shown at most once every 6 hours.",
+    rest: "Unknown",
+    restText: "We don't know what it is. The photo is kept. If it comes back in the same place, one new photo every 6 hours, no more.",
     history: "History",
     all: "All",
     planes: "Planes",
@@ -45,6 +45,7 @@ const COPY = {
     motions: "Motion",
     habits: "Habits",
     empty: "Nothing yet.",
+    around: "Around",
     people: "people",
     clip: "Clip",
     right: "Right",
@@ -86,8 +87,8 @@ const COPY = {
     crowdText: "4 personnes ou plus, tenues 8 secondes.",
     fire: "Feu",
     fireText: "Sur la pente, 20 s, surface ×1,5, au moins 8 % de pixels chauds. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.",
-    rest: "Sans nom",
-    restText: "Si on ne peut pas le nommer, la photo va quand même dans l’historique. Le même endroit qui bouge huit fois devient une habitude du cadrage : ce n’est plus un incident. On ne l’affiche plus qu’une fois toutes les 6 heures.",
+    rest: "Inconnu",
+    restText: "On ne sait pas ce que c’est. La photo est gardée. Si ça revient au même endroit, une nouvelle photo toutes les 6 heures, pas plus.",
     history: "Historique",
     all: "Tout",
     planes: "Avions",
@@ -98,6 +99,7 @@ const COPY = {
     motions: "Mouvements",
     habits: "Habitudes",
     empty: "Rien pour l’instant.",
+    around: "Autour",
     people: "personnes",
     clip: "Extrait",
     right: "Juste",
@@ -162,6 +164,7 @@ function applyLang() {
   paintWeather();
   paintCounts();
   render();
+  paintSequenceMeta();
 }
 
 document.querySelectorAll(".langs button").forEach((button) => {
@@ -365,29 +368,6 @@ L.tileLayer("https://data.geopf.fr/wmts?LAYER=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=im
   maxZoom: 19,
   attribution: "© IGN",
 }).addTo(map);
-if (window.L && L.vectorGrid) {
-  const coverage = { rendererFactory: L.canvas.tile, interactive: false, maxZoom: 19 };
-  L.vectorGrid.protobuf("https://api.panoramax.xyz/api/map/{z}/{x}/{y}.mvt", {
-    ...coverage,
-    attribution: "© Panoramax",
-    maxNativeZoom: 15,
-    vectorTileLayerStyles: {
-      sequences: { weight: 2.5, color: "#7C3AED", opacity: 0.9 },
-      pictures: () => ({ radius: 2, fill: true, fillColor: "#7C3AED", fillOpacity: 0.7, stroke: false }),
-      grid: () => ({ radius: 3, fill: true, fillColor: "#7C3AED", fillOpacity: 0.45, stroke: false }),
-    },
-  }).addTo(map);
-  L.vectorGrid.protobuf("https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=MLY%7C26158465847163536%7C0186af2cabb143cd46cccc023e7f0d81", {
-    ...coverage,
-    attribution: "© Mapillary",
-    maxNativeZoom: 14,
-    vectorTileLayerStyles: {
-      sequence: { weight: 2.5, color: "#05CB63", opacity: 0.9 },
-      overview: () => ({ radius: 2, fill: true, fillColor: "#05CB63", fillOpacity: 0.6, stroke: false }),
-      image: () => ({ radius: 2, fill: true, fillColor: "#05CB63", fillOpacity: 0.55, stroke: false }),
-    },
-  }).addTo(map);
-}
 L.polygon(viewWedge(), {
   color: "#c4b094",
   weight: 1.5,
@@ -429,5 +409,61 @@ applyLang();
 setInterval(tick, 1000);
 loadWeather();
 setInterval(loadWeather, 600000);
+let sequenceWhen = null;
+
+function paintSequenceMeta() {
+  if (!sequenceWhen) return;
+  const date = new Date(sequenceWhen).toLocaleDateString(locale(), { month: "long", year: "numeric" });
+  document.querySelector("#sequence-meta").textContent = `Mapillary · ${date}`;
+}
+
+async function mly(pathname, params) {
+  const url = new URL(pathname ? `https://graph.mapillary.com/${pathname}` : "https://graph.mapillary.com/");
+  url.searchParams.set("access_token", "MLY|26158465847163536|0186af2cabb143cd46cccc023e7f0d81");
+  Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(String(response.status));
+  return response.json();
+}
+
+async function loadSequence() {
+  const pad = 0.015;
+  const bbox = [CAMERA.lon - pad, CAMERA.lat - pad, CAMERA.lon + pad, CAMERA.lat + pad].join(",");
+  const nearby = await mly("images", { fields: "id,sequence,computed_geometry", bbox, limit: "100" });
+  const closest = new Map();
+  (nearby.data || []).forEach((img) => {
+    const coords = (img.computed_geometry || {}).coordinates;
+    if (!coords || !img.sequence) return;
+    const dist = km(CAMERA, { lat: coords[1], lon: coords[0] });
+    const known = closest.get(img.sequence);
+    if (known == null || dist < known) closest.set(img.sequence, dist);
+  });
+  const sequence = [...closest.entries()].sort((a, b) => a[1] - b[1])[0];
+  if (!sequence) return;
+  const listed = await mly("image_ids", { sequence_id: sequence[0] });
+  const ids = (listed.data || []).map((item) => item.id);
+  if (!ids.length) return;
+  const details = await mly("", { fields: "id,thumb_256_url,computed_geometry,captured_at", ids: ids.join(",") });
+  const ordered = ids.map((id) => details[id]).filter((img) => img && img.thumb_256_url && img.computed_geometry);
+  const within = (limit) => ordered.filter((img) => {
+    const [lon, lat] = img.computed_geometry.coordinates;
+    return km(CAMERA, { lat, lon }) < limit;
+  });
+  const shown = within(0.6).length >= 4 ? within(0.6) : within(1.2);
+  if (!shown.length) return;
+  sequenceWhen = shown[0].captured_at;
+  L.polyline(shown.map((img) => {
+    const [lon, lat] = img.computed_geometry.coordinates;
+    return [lat, lon];
+  }), { color: "#243f34", weight: 3, opacity: 0.8 }).addTo(map);
+  document.querySelector("#film").innerHTML = shown.map((img) => {
+    const href = `https://www.mapillary.com/app/?pKey=${encodeURIComponent(img.id)}&focus=photo`;
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(img.thumb_256_url)}" alt=""></a>`;
+  }).join("");
+  document.querySelector("#sequence").hidden = false;
+  paintSequenceMeta();
+}
+
 load();
 setInterval(load, 60000);
+loadSequence();
