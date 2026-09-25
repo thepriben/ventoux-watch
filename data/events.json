@@ -1,6 +1,56 @@
 {
   "events": [
     {
+      "id": "2026-09-25T10-06-19Z-motion-787",
+      "t": "2026-09-25T10:06:19Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-06-19Z-motion-787.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-06-19Z-motion-788",
+      "t": "2026-09-25T10:06:19Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-06-19Z-motion-788.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-06-05Z-plane-786",
+      "t": "2026-09-25T10:06:05Z",
+      "type": "plane",
+      "label": "VJT409",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-06-05Z-plane-786.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d24a1",
+        "callsign": "VJT409",
+        "altitude_m": 8755.38,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T10-05-47Z-plane-785",
       "t": "2026-09-25T10:05:47Z",
       "type": "plane",
