@@ -14,6 +14,10 @@ def publish(repo: Path) -> bool:
         log.info("Pas de dépôt git, publication ignorée")
         return False
     paths = ["data/events.json", "data/thumbs", "data/learning.json"]
+    try:
+        _git(repo, "pull", "--rebase", "origin", "main")
+    except subprocess.CalledProcessError:
+        log.warning("Historique distant non rapatrié")
     status = _git(repo, "status", "--porcelain", "--", *paths)
     if not status.strip():
         return False

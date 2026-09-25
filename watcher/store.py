@@ -35,6 +35,12 @@ class Store:
             "clip_url": "",
             "detail": detail,
         }
+        previous = next((item for item in self.events if item.get("id") == event_id), None)
+        if previous:
+            if previous.get("review"):
+                event["review"] = previous["review"]
+            if previous.get("clip_url"):
+                event["clip_url"] = previous["clip_url"]
         self.events = [item for item in self.events if item["id"] != event_id]
         self.events.append(event)
         self.events.sort(key=lambda item: item["t"], reverse=True)

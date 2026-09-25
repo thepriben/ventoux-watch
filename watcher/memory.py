@@ -61,7 +61,13 @@ class Memory:
 
     def _write(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        public = {"seen": self.state["seen"], "named": self.state["named"], "habits": self.state["habits"]}
+        public = {
+            "seen": self.state.get("seen", 0),
+            "named": self.state.get("named", 0),
+            "habits": self.state.get("habits", 0),
+            "accepted": self.state.get("accepted", 0),
+            "rejected": self.state.get("rejected", 0),
+        }
         self.path.write_text(json.dumps(public, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         full = self.path.with_name("learning-cells.json")
         full.write_text(json.dumps(self.state, ensure_ascii=False), encoding="utf-8")
