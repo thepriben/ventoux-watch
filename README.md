@@ -1,6 +1,6 @@
 # Mont Serein — veille
 
-Le Raspberry Pi 5 regarde la webcam du Mont Serein. Il ne publie un passage qu’après l’avoir nommé : un avion précis, une voiture, un bus, un attroupement, ou une fumée. L’expo est le site dans `site/`, publié par GitHub Pages.
+Le Raspberry Pi 5 regarde la webcam du Mont Serein. Chaque mouvement est gardé et interprété avec le jour, la nuit et la météo. Un avion, une voiture, un bus, un attroupement ou un incendie ne sont nommés que lorsque la lecture est assez sûre. Le dépôt est privé. Le site dans `site/` se consulte en local : sur un compte gratuit, GitHub Pages ne reste pas publié depuis un dépôt privé.
 
 Le flux est celui déjà utilisé par [dataroads-fr84.info](https://dataroads-fr84.info/), source Vision-Environnement. Le site affiche ce direct. Il ne réhéberge pas la vidéo continue.
 
@@ -10,7 +10,9 @@ Le flux est celui déjà utilisé par [dataroads-fr84.info](https://dataroads-fr
 2. YOLO nano, en ONNX, seulement sur le rectangle de ce passage.
 3. Une règle pose le nom. Sans nom, la ligne reste dans `data/candidates.jsonl` sur le Pi et n’entre pas dans l’historique.
 
-Un avion n’est publié que s’il n’y en a qu’un dans le créneau OpenSky, ou un seul vraiment plus bas que les autres. Un bus prend le nom de la ligne Trans'CoVe ou ZOU seulement s’il n’y a qu’une course à ±15 minutes. Les animaux ne sont pas encore classés : un mouvement sur la pente qui n’est rien d’autre devient un candidat.
+Un avion n’est publié avec son indicatif que s’il n’y en a qu’un dans le créneau OpenSky, ou un seul vraiment plus bas que les autres. Un bus prend le nom de la ligne Trans'CoVe ou ZOU seulement s’il n’y a qu’une course à ±15 minutes. Les autres passages restent dans l’historique avec une lecture : jour ou nuit, météo, et ce qu’on a pu en dire. Une lueur au crépuscule n’est pas un incendie. Les animaux ne sont pas encore une classe.
+
+Le modèle s’améliore sur cette caméra. Le jour, la nuit et la météo changent la lecture. Chaque passage est conservé. Un endroit qui bouge souvent sans événement nouveau devient une habitude du cadrage, comptée dans `data/learning.json`.
 
 ## Sur le Mac, avant le Pi
 
@@ -57,7 +59,7 @@ Secrets, uniquement sur le Pi, dans `config/local.json` :
 
 OpenSky et Drive sont facultatifs. Sans compte OpenSky, l’archive des avions reste anonyme et plus limitée. Sans clé Drive, les photos sont publiées, pas les extraits. La clé Google et le jeton git ne vont pas dans le dépôt.
 
-Le service pousse `data/events.json` et `data/thumbs/` au plus toutes les quinze minutes. GitHub Pages reconstruit le site. L’adresse prévue est `https://thepriben.github.io/ventoux-watch/`.
+Le service pousse `data/events.json`, `data/learning.json` et `data/thumbs/` au plus toutes les quinze minutes. Le dépôt étant privé, cette poussée met le code à jour sans rouvrir le site au public.
 
 Pour les extraits : `pip install -r requirements-drive.txt`, un compte de service, et le dossier Drive partagé avec ce compte.
 

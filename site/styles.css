@@ -117,4 +117,6 @@ h2 { margin: 0; font-weight: 500; }
 
 .cards a { color: var(--pine); }
 
-footer { margin-top: 36px; font-size: 14px; }
+.learning { margin-top: 36px; }
+.learning ol { padding-left: 1.2em; max-width: 68ch; }
+.learning li { margin: 8px 0; }

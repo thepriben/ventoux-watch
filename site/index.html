@@ -11,7 +11,7 @@
   <header class="top">
     <p class="eyebrow">Mont Ventoux · station du Mont Serein</p>
     <h1>Veille de la webcam</h1>
-    <p class="lede">Le direct, puis seulement les passages qu’on a pu nommer : un avion précis, une voiture, un bus, un attroupement, une fumée.</p>
+    <p class="lede">Chaque mouvement du flux est gardé et lu avec le moment : jour, nuit, crépuscule, météo. Un avion n’est nommé que si on sait lequel. Une lueur du soir n’est pas un incendie.</p>
   </header>
 
   <section class="live" aria-label="Webcam en direct">
@@ -29,15 +29,24 @@
         <button type="button" data-filter="bus">Bus</button>
         <button type="button" data-filter="crowd">Attroupements</button>
         <button type="button" data-filter="fire">Incendies</button>
+        <button type="button" data-filter="motion">Mouvements</button>
+        <button type="button" data-filter="habit">Habitudes</button>
       </div>
     </div>
     <p id="empty" class="empty" hidden>Aucun événement nommé pour l’instant.</p>
     <ol id="list" class="cards"></ol>
   </section>
 
-  <footer>
-    <p>Les animaux ne sont pas encore classés. Une fumée publiée ici n’est pas une alerte de secours.</p>
-  </footer>
+  <section class="learning">
+    <h2>Comment le modèle s’améliore</h2>
+    <p>Le modèle ne se réentraîne pas tout seul la nuit. Il s’améliore sur cette caméra, en trois temps.</p>
+    <ol>
+      <li>Le jour, la nuit, le crépuscule et la météo changent la lecture des mêmes pixels. Le soleil couchant rougit la pente : ce n’est pas un feu.</li>
+      <li>Chaque passage est gardé, avec sa photo et sa lecture, même quand la classe n’est pas sûre. Rien du flux nommé ou non ne disparaît sans trace.</li>
+      <li>Un endroit qui bouge souvent sans événement nouveau devient une habitude du cadrage. La fois suivante, la lecture le dit, au lieu d’inventer un incident.</li>
+    </ol>
+    <p id="learning-count" class="credit"></p>
+  </section>
   <script src="app.js"></script>
 </body>
 </html>

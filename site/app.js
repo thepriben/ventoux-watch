@@ -36,7 +36,9 @@ function detail(event) {
     return `${info.headsign || info.route} · ${info.scheduled || ""} · ${info.source || ""}`.trim();
   }
   if (event.type === "crowd") return `${info.persons} personnes`;
-  if (event.type === "fire") return "Tache chaude qui a grossi. Ce n’est pas une alerte.";
+  if (event.type === "fire") return info.reading || "Tache chaude qui a grossi. Ce n’est pas une alerte.";
+  if (info.reading) return [info.context, info.reading].filter(Boolean).join(" · ");
+  if (info.context) return info.context;
   return "";
 }
 
@@ -65,6 +67,16 @@ async function load() {
   const payload = await response.json();
   events = payload.events || [];
   render();
+  try {
+    const learning = await fetch("data/learning.json", { cache: "no-store" });
+    if (learning.ok) {
+      const counts = await learning.json();
+      document.querySelector("#learning-count").textContent =
+        `${counts.seen || 0} passages vus · ${counts.named || 0} nommés · ${counts.habits || 0} habitudes du cadrage`;
+    }
+  } catch (_) {
+    /* Le compteur apparaît quand le Pi a commencé à apprendre. */
+  }
 }
 
 load();

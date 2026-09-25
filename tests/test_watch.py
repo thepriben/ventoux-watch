@@ -12,6 +12,7 @@ from watcher.gtfs import GtfsIndex, load_feed
 from watcher.motion import MotionDetector
 from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
 from watcher.opensky import SkyArchive
+from watcher.scene import solar_period, weather_label
 from watcher.store import Store
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,10 +44,27 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(reason, "much_lower")
         self.assertEqual(chosen["callsign"], "LOW1")
 
-    def test_sky_motion_without_a_single_plane_is_held(self):
-        decision = decide(Observation(zone="sky", travel=0.05, area_ratio=0.001, aircraft=[]))
-        self.assertFalse(decision.publish)
+    def test_sky_motion_without_a_single_plane_is_kept(self):
+        decision = decide(Observation(zone="sky", travel=0.05, area_ratio=0.001, aircraft=[], period="night"))
+        self.assertTrue(decision.publish)
+        self.assertEqual(decision.type, "motion")
         self.assertEqual(decision.reason, "none")
+        self.assertEqual(decision.detail["period"], "night")
+
+    def test_cloud_is_not_called_a_plane(self):
+        decision = decide(Observation(zone="sky", travel=0.2, area_ratio=0.2, aircraft=[{"icao24": "a", "callsign": "X", "altitude_m": 1000}]))
+        self.assertEqual(decision.type, "motion")
+        self.assertEqual(decision.label, "Masse dans le ciel")
+
+    def test_static_blob_is_not_a_car(self):
+        decision = decide(Observation(zone="roundabout", travel=0.0, detections=[Detection("car", 0.9)]))
+        self.assertEqual(decision.type, "motion")
+        self.assertNotEqual(decision.label, "Voiture")
+
+    def test_dusk_glow_is_not_a_fire(self):
+        decision = decide(Observation(zone="slope", duration_s=25, area_grow=2.0, warm_ratio=0.2, period="twilight"))
+        self.assertEqual(decision.type, "motion")
+        self.assertEqual(decision.label, "Lueur du soir")
 
     def test_sky_motion_publishes_the_callsign(self):
         decision = decide(
@@ -61,18 +79,10 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(decision.type, "plane")
         self.assertEqual(decision.label, "AFR472")
 
-    def test_cloud_sized_sky_blob_is_held(self):
-        decision = decide(Observation(zone="sky", travel=0.2, area_ratio=0.2, aircraft=[{"icao24": "a", "callsign": "X", "altitude_m": 1000}]))
-        self.assertFalse(decision.publish)
-
     def test_car_on_the_road_is_published(self):
         decision = decide(Observation(zone="road", travel=0.08, detections=[Detection("car", 0.8)]))
         self.assertEqual(decision.type, "car")
         self.assertEqual(decision.label, "Voiture")
-
-    def test_static_blob_is_not_a_car(self):
-        decision = decide(Observation(zone="roundabout", travel=0.0, detections=[Detection("car", 0.9)]))
-        self.assertFalse(decision.publish)
 
     def test_bus_with_one_trip_uses_the_line(self):
         trip = Trip("Navette", "Mont Serein", "Chalet", "10:00:00", "transcove")
@@ -149,7 +159,16 @@ class GtfsTests(unittest.TestCase):
         self.assertTrue(all(row["stop_name"] != "Avignon" for row in rows))
 
 
-class ModelTests(unittest.TestCase):
+class SceneTests(unittest.TestCase):
+    def test_noon_is_day_and_deep_night_is_night(self):
+        paris = ZoneInfo("Europe/Paris")
+        self.assertEqual(solar_period(datetime(2026, 6, 21, 13, 0, tzinfo=paris), 44.179, 5.2663), "day")
+        self.assertEqual(solar_period(datetime(2026, 6, 21, 2, 0, tzinfo=paris), 44.179, 5.2663), "night")
+
+    def test_weather_words(self):
+        self.assertEqual(weather_label(0), "ciel dégagé")
+        self.assertEqual(weather_label(45), "brouillard")
+        self.assertEqual(weather_label(95), "orage")
     def test_onnx_accepts_a_frame(self):
         path = ROOT / "models" / "yolo11n.onnx"
         if not path.is_file():

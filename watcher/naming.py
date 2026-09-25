@@ -40,6 +40,8 @@ class Observation:
     fire_sustain_s: float = 20.0
     fire_grow: float = 1.5
     fire_warm: float = 0.08
+    period: str = "day"
+    weather: str = ""
 
 
 @dataclass
@@ -100,13 +102,16 @@ def decide(obs: Observation) -> Decision:
     conf = obs.min_conf or {"bus": 0.45, "bus_unnamed": 0.6, "car": 0.4}
     if obs.kind == "crowd":
         if obs.person_count >= obs.crowd_min:
-            return Decision(
-                "publish",
-                "crowd",
-                "Attroupement",
-                reason="persons",
-                detail={"persons": obs.person_count},
-                confidence=1.0,
+            return _stamp(
+                Decision(
+                    "publish",
+                    "crowd",
+                    "Attroupement",
+                    reason="persons",
+                    detail={"persons": obs.person_count},
+                    confidence=1.0,
+                ),
+                obs,
             )
         return Decision("hold", reason="crowd_below_threshold", detail={"persons": obs.person_count})
 
@@ -116,65 +121,100 @@ def decide(obs: Observation) -> Decision:
         and obs.area_grow >= obs.fire_grow
         and obs.warm_ratio >= obs.fire_warm
     ):
-        return Decision(
-            "publish",
-            "fire",
-            "Incendie",
-            reason="warm_growing",
-            detail={"warm_ratio": round(obs.warm_ratio, 3), "grow": round(obs.area_grow, 2)},
-            confidence=min(0.99, obs.warm_ratio),
+        if obs.period == "twilight":
+            return _motion(obs, "sunset", "Lueur du soir", "La pente rougit au crépuscule. Ce n'est pas retenu comme un incendie.")
+        if obs.weather in {"brouillard", "neige", "pluie"} and obs.warm_ratio < 0.2:
+            return _motion(obs, "weather_glow", "Lueur dans la météo", "La tache chaude reste ambiguë par ce temps.")
+        return _stamp(
+            Decision(
+                "publish",
+                "fire",
+                "Incendie",
+                reason="warm_growing",
+                detail={"warm_ratio": round(obs.warm_ratio, 3), "grow": round(obs.area_grow, 2)},
+                confidence=min(0.99, obs.warm_ratio),
+            ),
+            obs,
         )
 
     if obs.zone == "sky":
-        if obs.travel < obs.min_travel or obs.area_ratio > obs.max_sky_area:
-            return Decision("hold", reason="sky_not_a_transit", detail={"travel": obs.travel, "area": obs.area_ratio})
+        if obs.area_ratio > obs.max_sky_area:
+            return _motion(obs, "sky_mass", "Masse dans le ciel", "Trop large pour un avion. Nuage, ou changement de lumière.")
+        if obs.travel < obs.min_travel:
+            return _motion(obs, "sky_still", "Point dans le ciel", "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.")
         chosen, why = choose_aircraft(obs.aircraft)
         if chosen is None:
-            return Decision("hold", reason=why, detail={"aircraft": obs.aircraft})
-        return Decision(
-            "publish",
-            "plane",
-            _aircraft_label(chosen),
-            reason=why,
-            detail=chosen,
-            confidence=0.9 if why == "unique" else 0.7,
+            return _motion(obs, why, "Mouvement dans le ciel", "Aucun avion unique dans le créneau. Le passage est gardé sans indicatif.")
+        return _stamp(
+            Decision(
+                "publish",
+                "plane",
+                _aircraft_label(chosen),
+                reason=why,
+                detail=chosen,
+                confidence=0.9 if why == "unique" else 0.7,
+            ),
+            obs,
         )
 
     if obs.zone in {"road", "roundabout"}:
         if obs.travel < obs.min_travel:
-            return Decision("hold", reason="static", detail={"travel": obs.travel})
+            return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
         bus = _best(obs.detections, {"bus"})
         vehicle = _best(obs.detections, {"car", "truck"})
         if bus is not None and bus.conf >= conf["bus"]:
             if len(obs.trips) == 1:
                 trip = obs.trips[0]
-                return Decision(
-                    "publish",
-                    "bus",
-                    f"Bus {trip.route}",
-                    reason="schedule",
-                    detail={
-                        "route": trip.route,
-                        "headsign": trip.headsign,
-                        "stop": trip.stop_name,
-                        "scheduled": trip.scheduled,
-                        "source": trip.source,
-                    },
-                    confidence=bus.conf,
+                return _stamp(
+                    Decision(
+                        "publish",
+                        "bus",
+                        f"Bus {trip.route}",
+                        reason="schedule",
+                        detail={
+                            "route": trip.route,
+                            "headsign": trip.headsign,
+                            "stop": trip.stop_name,
+                            "scheduled": trip.scheduled,
+                            "source": trip.source,
+                        },
+                        confidence=bus.conf,
+                    ),
+                    obs,
                 )
             if bus.conf >= conf["bus_unnamed"]:
-                return Decision(
-                    "publish",
-                    "bus",
-                    "Bus",
-                    reason="model_only",
-                    detail={"trips": [trip.__dict__ for trip in obs.trips]},
-                    confidence=bus.conf,
+                return _stamp(
+                    Decision(
+                        "publish",
+                        "bus",
+                        "Bus",
+                        reason="model_only",
+                        detail={"trips": [trip.__dict__ for trip in obs.trips]},
+                        confidence=bus.conf,
+                    ),
+                    obs,
                 )
-            return Decision("hold", reason="bus_uncertain", confidence=bus.conf)
+            return _motion(obs, "bus_uncertain", "Véhicule incertain", "La forme rappelle un bus, sans assez de certitude ni une seule course à l'horaire.")
         if vehicle is not None and vehicle.conf >= conf["car"]:
             label = "Camion" if vehicle.cls == "truck" else "Voiture"
-            return Decision("publish", "car", label, reason=vehicle.cls, detail={}, confidence=vehicle.conf)
-        return Decision("hold", reason="unnamed_vehicle")
+            return _stamp(Decision("publish", "car", label, reason=vehicle.cls, confidence=vehicle.conf), obs)
+        return _motion(obs, "unnamed_vehicle", "Mouvement sur la route", "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.")
 
-    return Decision("hold", reason="unclassified", detail={"zone": obs.zone})
+    return _motion(obs, "unclassified", "Mouvement", "Un passage a été vu. La classe viendra quand cet endroit aura été revu.")
+
+
+def _context(obs: Observation) -> str:
+    period = {"day": "de jour", "twilight": "au crépuscule", "night": "de nuit"}.get(obs.period, "")
+    return ", ".join(part for part in (period, obs.weather) if part)
+
+
+def _stamp(decision: Decision, obs: Observation) -> Decision:
+    decision.detail = {**decision.detail, "period": obs.period, "weather": obs.weather, "context": _context(obs)}
+    return decision
+
+
+def _motion(obs: Observation, reason: str, label: str, reading: str) -> Decision:
+    return _stamp(
+        Decision("publish", "motion", label, reason=reason, detail={"reading": reading}, confidence=0.3),
+        obs,
+    )

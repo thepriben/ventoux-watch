@@ -27,6 +27,7 @@ jobs:
           mkdir -p _site/data/thumbs
           cp -R site/. _site/
           cp data/events.json _site/data/events.json
+          if [ -f data/learning.json ]; then cp data/learning.json _site/data/learning.json; fi
           if [ -d data/thumbs ]; then cp -R data/thumbs/. _site/data/thumbs/; fi
       - uses: actions/upload-pages-artifact@v3
         with:

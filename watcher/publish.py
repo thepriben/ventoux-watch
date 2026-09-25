@@ -13,10 +13,11 @@ def publish(repo: Path) -> bool:
     if not (repo / ".git").is_dir():
         log.info("Pas de dépôt git, publication ignorée")
         return False
-    status = _git(repo, "status", "--porcelain", "--", "data/events.json", "data/thumbs")
+    paths = ["data/events.json", "data/thumbs", "data/learning.json"]
+    status = _git(repo, "status", "--porcelain", "--", *paths)
     if not status.strip():
         return False
-    _git(repo, "add", "--", "data/events.json", "data/thumbs")
+    _git(repo, "add", "--", *paths)
     staged = _git(repo, "diff", "--cached", "--name-only")
     blocked = [line for line in staged.splitlines() if line.startswith("secrets/") or line.endswith(".json") and "drive" in line]
     if blocked:

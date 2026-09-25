@@ -18,10 +18,12 @@ from watcher.detect import YoloDetector, count_persons
 from watcher.drive import DriveUploader
 from watcher.geometry import load_zones
 from watcher.gtfs import GtfsIndex, PARIS
+from watcher.memory import Memory
 from watcher.motion import MotionDetector, warm_ratio
 from watcher.naming import Observation, decide
 from watcher.opensky import SkyArchive
 from watcher.publish import publish
+from watcher.scene import SceneReader
 from watcher.store import Store
 
 log = logging.getLogger("ventoux")
@@ -52,6 +54,8 @@ def main() -> None:
     camera = cfg["camera"]
     gtfs = GtfsIndex(root / "data" / "gtfs", cfg["gtfs"], camera["lat"], camera["lon"], cfg["gtfs_radius_m"])
     store = Store(root / "data", cfg["history_days"])
+    scene = SceneReader(camera["lat"], camera["lon"])
+    memory = Memory(root / "data" / "learning.json")
     drive = DriveUploader(str(root / cfg["drive"]["credentials"]), cfg["drive"].get("folder_id") or "")
     ring: deque[tuple[float, bytes]] = deque(maxlen=14)
     pending: list[dict] = []
@@ -77,7 +81,7 @@ def main() -> None:
                     last_gtfs = now
                 step = motion.step(frame, now)
                 for track in step.ended:
-                    _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending)
+                    _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory)
                 if step.roundabout_motion:
                     last_crowd = _crowd(frame, now, cfg, yolo, zones, crowd_hits, last_crowd, store, pending)
                 _flush_clips(pending, ring, now, drive, store)
@@ -90,10 +94,11 @@ def main() -> None:
             time.sleep(10)
 
 
-def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending) -> None:
+def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory) -> None:
     frame = cv2.imdecode(np.frombuffer(track.best_jpeg, dtype=np.uint8), cv2.IMREAD_COLOR) if track.best_jpeg else None
     detections = yolo.detect(frame, track.bbox) if frame is not None else []
     when = datetime.fromtimestamp(track.updated, timezone.utc)
+    current = scene.read(frame, when)
     aircraft = sky.around(track.updated, cfg["opensky"]["match_window_s"]) if track.zone == "sky" else []
     trips = gtfs.trips_at(when.astimezone(PARIS), cfg["gtfs_window_min"]) if track.zone in {"road", "roundabout"} else []
     duration = max(0.0, track.updated - track.started)
@@ -114,11 +119,16 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending) -> No
         fire_sustain_s=cfg["fire"]["sustain_s"],
         fire_grow=cfg["fire"]["grow_ratio"],
         fire_warm=cfg["fire"]["warm_ratio"],
+        period=current.period,
+        weather=current.weather,
     )
     decision = decide(obs)
     if not decision.publish:
         store.add_candidate(when, track.zone, decision.reason, decision.detail)
         log.info("Candidat %s %s", track.zone, decision.reason)
+        return
+    if memory.observe(track.zone, track.centroid, decision) != "record":
+        log.info("Compté sans nouvelle carte %s", decision.label)
         return
     if decision.type == "fire":
         last_fire["fire"] = now
