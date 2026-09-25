@@ -1,6 +1,42 @@
 {
   "events": [
     {
+      "id": "2026-09-25T08-38-48Z-plane-395",
+      "t": "2026-09-25T08:38:48Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-38-48Z-plane-395.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2301.24,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-38-23Z-plane-394",
+      "t": "2026-09-25T08:38:23Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-38-23Z-plane-394.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2301.24,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T08-36-56Z-plane-393",
       "t": "2026-09-25T08:36:56Z",
       "type": "plane",
