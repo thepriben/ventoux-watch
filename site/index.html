@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mont Serein</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <header class="bar">
@@ -38,6 +40,12 @@
 
   <section class="live" data-i18n-aria="live" aria-label="Live webcam">
     <video id="player" controls autoplay muted playsinline></video>
+  </section>
+
+  <section class="place" data-i18n-aria="camera" aria-label="Camera">
+    <h2 data-i18n="camera">Camera</h2>
+    <div id="map"></div>
+    <p class="sub" data-i18n="cameraText">Fixed, facing 140°.</p>
   </section>
 
   <section class="pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">

@@ -1,4 +1,4 @@
-const CAMERA = { lat: 44.179, lon: 5.2663 };
+const CAMERA = { lat: 44.183501, lon: 5.2621281, bearing: 140 };
 const STATIONS = [
   { name: "Avignon", lat: 43.9493, lon: 4.8055 },
   { name: "Carpentras", lat: 44.055, lon: 5.048 },
@@ -14,6 +14,8 @@ const COPY = {
     passes: "Passes",
     namedLine: (named, habits) => `${named} named · ${habits} habits`,
     live: "Live webcam",
+    camera: "Camera",
+    cameraText: "Fixed, facing 140°.",
     pipeline: "Pipeline",
     image: "Frame",
     imageText: "1 frame/s. ffmpeg reads the HLS stream.",
@@ -65,6 +67,8 @@ const COPY = {
     passes: "Passages",
     namedLine: (named, habits) => `${named} nommés · ${habits} habitudes`,
     live: "Webcam en direct",
+    camera: "Caméra",
+    cameraText: "Fixe, vers 140°.",
     pipeline: "Pipeline",
     image: "Image",
     imageText: "1 image/s. ffmpeg lit le flux HLS.",
@@ -154,6 +158,7 @@ function applyLang() {
     button.classList.toggle("on", button.dataset.lang === lang);
   });
   tick();
+  paintCamera();
   paintWeather();
   paintCounts();
   render();
@@ -316,6 +321,58 @@ async function load() {
   } catch (_) {
     /* Le compteur apparaît quand le Pi a commencé à apprendre. */
   }
+}
+
+const VIEW_REACH = 600;
+const VIEW_ANGLE = 90;
+
+function offset(lat, lon, bearing, meters) {
+  const rad = Math.PI / 180;
+  const distance = meters / 6371000;
+  const br = bearing * rad;
+  const lat1 = lat * rad;
+  const lon1 = lon * rad;
+  const lat2 = Math.asin(Math.sin(lat1) * Math.cos(distance) + Math.cos(lat1) * Math.sin(distance) * Math.cos(br));
+  const lon2 = lon1 + Math.atan2(Math.sin(br) * Math.sin(distance) * Math.cos(lat1), Math.cos(distance) - Math.sin(lat1) * Math.sin(lat2));
+  return [lat2 / rad, lon2 / rad];
+}
+
+function viewWedge() {
+  const points = [[CAMERA.lat, CAMERA.lon]];
+  const start = CAMERA.bearing - VIEW_ANGLE / 2;
+  for (let step = 0; step <= 28; step += 1) {
+    points.push(offset(CAMERA.lat, CAMERA.lon, start + (VIEW_ANGLE * step) / 28, VIEW_REACH));
+  }
+  return points;
+}
+
+const map = L.map("map", { scrollWheelZoom: false });
+L.tileLayer("https://data.geopf.fr/wmts?LAYER=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/jpeg&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}", {
+  maxZoom: 19,
+  attribution: "© IGN",
+}).addTo(map);
+const wedge = L.polygon(viewWedge(), {
+  color: "#243f34",
+  weight: 1.5,
+  fillColor: "#243f34",
+  fillOpacity: 0.28,
+}).addTo(map);
+L.polyline([
+  [CAMERA.lat, CAMERA.lon],
+  offset(CAMERA.lat, CAMERA.lon, CAMERA.bearing, VIEW_REACH),
+], { color: "#243f34", weight: 2, dashArray: "4 6" }).addTo(map);
+const cameraMark = L.circleMarker([CAMERA.lat, CAMERA.lon], {
+  radius: 6,
+  color: "#f4f1ea",
+  weight: 2,
+  fillColor: "#243f34",
+  fillOpacity: 1,
+}).addTo(map);
+map.fitBounds(wedge.getBounds(), { padding: [28, 28] });
+
+function paintCamera() {
+  cameraMark.unbindTooltip();
+  cameraMark.bindTooltip(t("camera"), { permanent: true, direction: "top", offset: [0, -8] });
 }
 
 applyLang();

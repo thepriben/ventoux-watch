@@ -109,6 +109,19 @@ h2 {
   border-radius: 6px;
 }
 
+.place { margin-top: 22px; }
+
+#map {
+  width: 100%;
+  height: 380px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  outline: none;
+  background: #d5d0c6;
+}
+
+.place .sub { margin: 8px 0 0; font-size: 13px; }
+
 .pipeline { margin-top: 22px; }
 
 .steps {
