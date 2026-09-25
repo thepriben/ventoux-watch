@@ -1,6 +1,42 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-39-23Z-plane-29",
+      "t": "2026-09-25T05:39:23Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-23Z-plane-29.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-23Z-plane-30",
+      "t": "2026-09-25T05:39:23Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-23Z-plane-30.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-38-18Z-plane-27",
       "t": "2026-09-25T05:38:18Z",
       "type": "plane",
