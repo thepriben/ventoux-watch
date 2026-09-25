@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-25T17-53-09Z-vehicle-3",
+      "t": "2026-09-25T17:53:09Z",
+      "type": "vehicle",
+      "label": "Voiture et piéton",
+      "zone": "other",
+      "confidence": 0.662,
+      "thumb": "data/thumbs/2026-09-25T17-53-09Z-vehicle-3.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "ciel dégagé",
+        "context": "au crépuscule, ciel dégagé",
+        "box": [
+          0.2547,
+          0.7472,
+          0.3312,
+          0.2306
+        ]
+      }
+    },
+    {
       "id": "2026-09-25T17-50-59Z-person-2",
       "t": "2026-09-25T17:50:59Z",
       "type": "person",
