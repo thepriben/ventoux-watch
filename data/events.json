@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T12-29-33Z-plane-1705",
+      "t": "2026-09-25T12:29:33Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T12-29-33Z-plane-1705.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2255.52,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T12-28-07Z-motion-1704",
       "t": "2026-09-25T12:28:07Z",
       "type": "motion",
