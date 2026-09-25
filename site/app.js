@@ -142,6 +142,7 @@ const COPY = {
 
 const LABELS = {
   "Voiture": "Car",
+  "Voiture et piéton": "Car and pedestrian",
   "Camion": "Truck",
   "Véhicule": "Vehicle",
   "Camping-car": "Camper van",

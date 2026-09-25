@@ -44,7 +44,27 @@ class YoloDetector:
         blob, _gain, _pad = _letterbox(crop, 640)
         raw = self.session.run(None, {self.input_name: blob})[0]
         boxes = _parse(raw)
-        return _nms(boxes)
+        return [Detection(name, conf) for _x0, _y0, _x1, _y1, conf, name in _nms(boxes)]
+
+    def locate(self, frame: np.ndarray) -> list[tuple[str, float, int, int, int, int]]:
+        """Class boxes in the frame's own pixels. The box is the find, not a mask."""
+        if self.session is None or frame.size == 0:
+            return []
+        blob, gain, (pad_x, pad_y) = _letterbox(frame, 640)
+        raw = self.session.run(None, {self.input_name: blob})[0]
+        height, width = frame.shape[:2]
+        found = []
+        for x0, y0, x1, y1, conf, name in _nms(_parse(raw)):
+            left = int(round((x0 - pad_x) / gain))
+            top = int(round((y0 - pad_y) / gain))
+            right = int(round((x1 - pad_x) / gain))
+            bottom = int(round((y1 - pad_y) / gain))
+            left, top = max(0, left), max(0, top)
+            right, bottom = min(width - 1, right), min(height - 1, bottom)
+            if right - left < 2 or bottom - top < 2:
+                continue
+            found.append((name, conf, left, top, right - left, bottom - top))
+        return found
 
 
 def count_persons(detections: list[Detection], min_conf: float = 0.35) -> int:
@@ -96,15 +116,16 @@ def _parse(raw: np.ndarray) -> list[tuple[float, float, float, float, float, str
     return boxes
 
 
-def _nms(boxes: list[tuple[float, float, float, float, float, str]], iou_limit: float = 0.5) -> list[Detection]:
+def _nms(boxes: list[tuple[float, float, float, float, float, str]], iou_limit: float = 0.5):
     boxes = sorted(boxes, key=lambda item: item[4], reverse=True)
-    kept: list[Detection] = []
+    kept = []
     used: list[tuple[float, float, float, float]] = []
-    for x0, y0, x1, y1, conf, name in boxes:
+    for item in boxes:
+        x0, y0, x1, y1, _conf, _name = item
         if any(_iou((x0, y0, x1, y1), previous) > iou_limit for previous in used):
             continue
         used.append((x0, y0, x1, y1))
-        kept.append(Detection(name, conf))
+        kept.append(item)
     return kept
 
 

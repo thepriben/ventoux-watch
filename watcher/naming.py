@@ -205,39 +205,35 @@ def decide(obs: Observation) -> Decision:
         person = _best(obs.detections, {"person"})
         if obs.travel < obs.min_travel and not (person is not None and person.conf >= 0.4):
             return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
-        if bus is not None and bus.conf >= conf["bus"]:
-            if len(obs.trips) == 1:
-                trip = obs.trips[0]
-                return _stamp(
-                    Decision(
-                        "publish",
-                        "bus",
-                        f"Bus {trip.route}",
-                        reason="schedule",
-                        detail={
-                            "route": trip.route,
-                            "headsign": trip.headsign,
-                            "stop": trip.stop_name,
-                            "scheduled": trip.scheduled,
-                            "source": trip.source,
-                        },
-                        confidence=bus.conf,
-                    ),
-                    obs,
-                )
-            if bus.conf >= conf["bus_unnamed"]:
-                return _stamp(
-                    Decision(
-                        "publish",
-                        "bus",
-                        "Bus",
-                        reason="model_only",
-                        detail={"trips": [trip.__dict__ for trip in obs.trips]},
-                        confidence=bus.conf,
-                    ),
-                    obs,
-                )
-            return _motion(obs, "bus_uncertain", "Véhicule incertain", "La forme rappelle un bus, sans assez de certitude ni une seule course à l'horaire.")
+        if (
+            vehicle is not None
+            and person is not None
+            and vehicle.conf >= conf["car"]
+            and person.conf >= 0.4
+        ):
+            return _stamp(
+                Decision("publish", "vehicle", "Voiture et piéton", reason="car_and_person", confidence=min(vehicle.conf, person.conf)),
+                obs,
+            )
+        if bus is not None and bus.conf >= conf["bus"] and len(obs.trips) == 1:
+            trip = obs.trips[0]
+            return _stamp(
+                Decision(
+                    "publish",
+                    "bus",
+                    f"Bus {trip.route}",
+                    reason="schedule",
+                    detail={
+                        "route": trip.route,
+                        "headsign": trip.headsign,
+                        "stop": trip.stop_name,
+                        "scheduled": trip.scheduled,
+                        "source": trip.source,
+                    },
+                    confidence=bus.conf,
+                ),
+                obs,
+            )
         if vehicle is not None and vehicle.conf >= conf["car"]:
             return _stamp(Decision("publish", "vehicle", "Véhicule", reason=vehicle.cls, confidence=vehicle.conf), obs)
         if person is not None and person.conf >= 0.4:

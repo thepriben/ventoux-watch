@@ -18,7 +18,8 @@
           0.9194,
           0.1875,
           0.0806
-        ]
+        ],
+        "count": 4
       }
     },
     {
@@ -1735,8 +1736,8 @@
     {
       "id": "2026-09-25T12-33-22Z-motion-1722",
       "t": "2026-09-25T12:33:22Z",
-      "type": "bus",
-      "label": "Bus",
+      "type": "vehicle",
+      "label": "Voiture et piéton",
       "zone": "road",
       "confidence": 0.677,
       "thumb": "data/thumbs/2026-09-25T12-33-32Z-bus-1724.jpg",
@@ -1746,8 +1747,12 @@
         "period": "day",
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
-        "count": 5
-      }
+        "count": 5,
+        "correction": "Voiture et piéton",
+        "reading": "Voiture et piéton, indiqués à la main.",
+        "persons": 1
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T12-32-13Z-motion-1713",

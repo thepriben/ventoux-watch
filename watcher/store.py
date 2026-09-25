@@ -309,13 +309,15 @@ def _outline(image: np.ndarray, box) -> None:
         h = int(round(float(box[3]) * height))
     except (TypeError, ValueError):
         return
-    x0, y0 = max(0, x), max(0, y)
-    x1 = min(width - 1, x + max(w, 1))
-    y1 = min(height - 1, y + max(h, 1))
-    if x1 - x0 < 2 or y1 - y0 < 2:
+    pad_x = max(10, int(round(w * 0.45)))
+    pad_y = max(10, int(round(h * 0.45)))
+    x0 = max(0, x - pad_x)
+    y0 = max(0, y - pad_y)
+    x1 = min(width - 1, x + max(w, 1) + pad_x)
+    y1 = min(height - 1, y + max(h, 1) + pad_y)
+    if x1 - x0 < 4 or y1 - y0 < 4:
         return
-    cv2.rectangle(image, (x0, y0), (x1, y1), (255, 255, 255), 3)
-    cv2.rectangle(image, (x0, y0), (x1, y1), (32, 110, 230), 1)
+    cv2.rectangle(image, (x0, y0), (x1, y1), (0, 0, 220), 2)
 
 
 def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALITY, box=None) -> bytes:

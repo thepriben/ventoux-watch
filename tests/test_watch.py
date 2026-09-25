@@ -123,14 +123,21 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(decision.label, "Bus Navette")
         self.assertEqual(decision.detail["scheduled"], "10:00:00")
 
+    def test_a_car_beside_a_person_is_named_as_both(self):
+        decision = decide(
+            Observation(zone="road", travel=0.08, detections=[Detection("car", 0.7), Detection("person", 0.6)])
+        )
+        self.assertEqual(decision.label, "Voiture et piéton")
+        self.assertEqual(decision.type, "vehicle")
+
     def test_bus_with_two_trips_is_not_given_a_line(self):
         trips = [
             Trip("A", "Un", "Stop", "10:00:00", "zou"),
             Trip("B", "Deux", "Stop", "10:05:00", "zou"),
         ]
         decision = decide(Observation(zone="road", travel=0.05, detections=[Detection("bus", 0.8)], trips=trips))
-        self.assertEqual(decision.label, "Bus")
-        self.assertEqual(decision.reason, "model_only")
+        self.assertNotEqual(decision.type, "bus")
+        self.assertNotEqual(decision.label, "Bus")
 
     def test_crowd_needs_enough_people(self):
         self.assertFalse(decide(Observation(kind="crowd", person_count=2)).publish)
@@ -289,10 +296,11 @@ class ThumbTests(unittest.TestCase):
         image[:] = (30, 70, 30)
         ok, encoded = cv2.imencode(".jpg", image)
         self.assertTrue(ok)
-        marked = cv2.imdecode(np.frombuffer(small_jpeg(encoded.tobytes(), box=[0.25, 0.2, 0.4, 0.3]), dtype=np.uint8), cv2.IMREAD_COLOR)
-        y = int(0.2 * marked.shape[0])
-        band = marked[max(0, y - 2): y + 3, int(0.25 * marked.shape[1]): int(0.65 * marked.shape[1])]
-        self.assertGreater(int(band.max()), 200)
+        marked = cv2.imdecode(np.frombuffer(small_jpeg(encoded.tobytes(), box=[0.4, 0.35, 0.1, 0.12]), dtype=np.uint8), cv2.IMREAD_COLOR)
+        height, width = marked.shape[:2]
+        subject = marked[int(0.41 * height), int(0.45 * width)]
+        self.assertLess(int(subject[2]), 80)
+        self.assertGreater(int(marked[:, :, 2].max()), 180)
 
 
 class ReviewTests(unittest.TestCase):
