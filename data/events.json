@@ -1,6 +1,360 @@
 {
   "events": [
     {
+      "id": "2026-09-25T10-31-47Z-plane-1009",
+      "t": "2026-09-25T10:31:47Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-47Z-plane-1009.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-40Z-plane-1007",
+      "t": "2026-09-25T10:31:40Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-40Z-plane-1007.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-40Z-plane-1008",
+      "t": "2026-09-25T10:31:40Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-40Z-plane-1008.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-33Z-plane-1006",
+      "t": "2026-09-25T10:31:33Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-33Z-plane-1006.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-26Z-plane-1003",
+      "t": "2026-09-25T10:31:26Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-26Z-plane-1003.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-26Z-plane-1004",
+      "t": "2026-09-25T10:31:26Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-26Z-plane-1004.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-26Z-plane-1005",
+      "t": "2026-09-25T10:31:26Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-26Z-plane-1005.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-18Z-plane-999",
+      "t": "2026-09-25T10:31:18Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-18Z-plane-999.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-18Z-plane-1000",
+      "t": "2026-09-25T10:31:18Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-18Z-plane-1000.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-18Z-plane-1001",
+      "t": "2026-09-25T10:31:18Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-18Z-plane-1001.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-18Z-plane-1002",
+      "t": "2026-09-25T10:31:18Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-18Z-plane-1002.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-11Z-plane-998",
+      "t": "2026-09-25T10:31:11Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-11Z-plane-998.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-plane-991",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-plane-991.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-plane-992",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-plane-992.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-plane-993",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-plane-993.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-plane-994",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-plane-994.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-motion-995",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-motion-995.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-motion-996",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-motion-996.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-09Z-motion-997",
+      "t": "2026-09-25T10:31:09Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-31-09Z-motion-997.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-31-00Z-plane-990",
+      "t": "2026-09-25T10:31:00Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-31-00Z-plane-990.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T10-30-53Z-plane-987",
       "t": "2026-09-25T10:30:53Z",
       "type": "plane",
@@ -26,6 +380,24 @@
       "zone": "sky",
       "confidence": 0.9,
       "thumb": "data/thumbs/2026-09-25T10-30-53Z-plane-988.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "399907",
+        "callsign": "FHGIH",
+        "altitude_m": 2590.8,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-30-53Z-plane-989",
+      "t": "2026-09-25T10:30:53Z",
+      "type": "plane",
+      "label": "FHGIH",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T10-30-53Z-plane-989.jpg",
       "clip_url": "",
       "detail": {
         "icao24": "399907",
