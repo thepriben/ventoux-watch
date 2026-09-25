@@ -1,6 +1,24 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-42-39Z-plane-65",
+      "t": "2026-09-25T05:42:39Z",
+      "type": "plane",
+      "label": "EWG49X",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T05-42-39Z-plane-65.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "3c48f1",
+        "callsign": "EWG49X",
+        "altitude_m": 11231.88,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-40-22Z-plane-63",
       "t": "2026-09-25T05:40:22Z",
       "type": "plane",
