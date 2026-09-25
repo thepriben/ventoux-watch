@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "id": "2026-09-25T09-45-06Z-motion-711",
+      "t": "2026-09-25T09:45:06Z",
+      "type": "motion",
+      "label": "Véhicule incertain",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T09-45-06Z-motion-711.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "La forme rappelle un bus, sans assez de certitude ni une seule course à l'horaire.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T09-42-26Z-motion-710",
       "t": "2026-09-25T09:42:26Z",
       "type": "motion",
