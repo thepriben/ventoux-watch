@@ -1,6 +1,28 @@
 {
   "events": [
     {
+      "id": "2026-09-25T17-08-06Z-motion-73",
+      "t": "2026-09-25T17:08:06Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "other",
+      "confidence": 0.451,
+      "thumb": "data/thumbs/2026-09-25T17-08-06Z-motion-73.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "ciel dégagé",
+        "context": "au crépuscule, ciel dégagé",
+        "box": [
+          0.0422,
+          0.575,
+          0.0141,
+          0.0333
+        ],
+        "count": 7
+      }
+    },
+    {
       "id": "2026-09-25T17-06-21Z-motion-71",
       "t": "2026-09-25T17:06:21Z",
       "type": "motion",
