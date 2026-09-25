@@ -55,6 +55,12 @@ REFRAME = {
         "erase": [(33, 160, 69, 191)],  # une voiture garée dans la découpe
         "keep": (32, 197, 121, 270),
     },
+    "2026-09-25T22:51:50Z": {
+        "type": "car",
+        "label": "Voiture blanche",
+        "erase": [(0, 145, 182, 269)],  # le halo des phares sur le rond-point
+        "draw": (281, 239, 390, 269),
+    },
     "2026-09-25T08:23:34Z": {
         "type": "bus",
         "label": "Bus",
@@ -169,6 +175,11 @@ def main() -> int:
     kept, touched = [], 0
     for event in payload.get("events") or []:
         when = event.get("t")
+        if (event.get("detail") or {}).get("simulation"):
+            # A simulation can land on the same second as a real event. It is
+            # never a thing seen, so no hand correction applies to it.
+            kept.append(event)
+            continue
         if when in DROP:
             print(f"retiré  {when}  {DROP[when]}")
             touched += 1

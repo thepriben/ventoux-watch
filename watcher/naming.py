@@ -15,6 +15,9 @@ NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree", "island"}
 BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
 # Nothing that drives or walks stands lower than this. Below it, on the
 # roadway, what moved is the tarmac itself catching the light.
+# Read the other way round it would not hold: a patch of light lying on the
+# tarmac close to the camera measures as tall as a house, because the height
+# is read as if the thing stood upright. Only the low end is trustworthy.
 LOWEST_M = 0.6
 # How long something has to burn before the word "incendie" is used. The width
 # of a plume says nothing: smoke spreads over a hundred metres in a minute

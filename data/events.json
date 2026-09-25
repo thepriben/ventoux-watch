@@ -3,8 +3,8 @@
     {
       "id": "2026-09-25T22-51-50Z-person-9",
       "t": "2026-09-25T22:51:50Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture blanche",
       "zone": "roundabout",
       "confidence": 0.563,
       "thumb": "data/thumbs/2026-09-25T22-51-50Z-person-9.jpg",
@@ -14,43 +14,17 @@
         "weather": "peu nuageux",
         "context": "de nuit, peu nuageux",
         "box": [
-          0.0,
-          0.6806,
-          0.2609,
-          0.3194
+          0.6392,
+          0.9222,
+          0.1195,
+          0.037
         ],
-        "count": 11
+        "count": 11,
+        "correction": "Voiture blanche",
+        "reading": "Voiture blanche, indiqué à la main."
       },
-      "closeup": "data/closeups/2026-09-25T22-51-50Z-person-9.jpg"
-    },
-    {
-      "id": "2026-09-25T22-29-36Z-fire-1",
-      "t": "2026-09-25T22:29:36Z",
-      "type": "fire",
-      "label": "Simulation : départ de feu",
-      "zone": "slope",
-      "confidence": 0.267,
-      "thumb": "data/thumbs/2026-09-25T22-29-36Z-fire-1.jpg",
-      "clip_url": "",
-      "detail": {
-        "warm_ratio": 0.084,
-        "smoke_ratio": 0.334,
-        "rise": 0.1278,
-        "grow": 11.18,
-        "width_m": 79.6,
-        "surface": "forest",
-        "period": "night",
-        "weather": "ciel dégagé",
-        "context": "de nuit, ciel dégagé",
-        "simulation": true,
-        "reading": "Simulation : panache dessiné sur la vue réelle, alerte à la 6e seconde.",
-        "box": [
-          0.6859,
-          0.0389,
-          0.0938,
-          0.2389
-        ]
-      }
+      "closeup": "data/closeups/2026-09-25T22-51-50Z-person-9.jpg",
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T18-58-22Z-person-3",
@@ -910,6 +884,35 @@
       "review": "accepted"
     },
     {
+      "id": "2026-09-25T08-25-10Z-fire-1",
+      "t": "2026-09-25T08:25:10Z",
+      "type": "fire",
+      "label": "Simulation : départ de feu",
+      "zone": "slope",
+      "confidence": 0.67,
+      "thumb": "data/thumbs/2026-09-25T08-25-10Z-fire-1.jpg",
+      "clip_url": "",
+      "detail": {
+        "warm_ratio": 0.0,
+        "smoke_ratio": 0.838,
+        "rise": 0.1259,
+        "grow": 8.26,
+        "width_m": 21.6,
+        "surface": "",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé",
+        "simulation": true,
+        "reading": "Simulation : panache dessiné sur la vue réelle, alerte à la 6e seconde.",
+        "box": [
+          0.6083,
+          0.2926,
+          0.0688,
+          0.1963
+        ]
+      }
+    },
+    {
       "id": "2026-09-25T08-23-34Z-motion-358",
       "t": "2026-09-25T08:23:34Z",
       "type": "bus",
@@ -933,35 +936,6 @@
         ]
       },
       "review": "accepted"
-    },
-    {
-      "id": "2026-09-25T08-23-34Z-fire-1",
-      "t": "2026-09-25T08:23:34Z",
-      "type": "fire",
-      "label": "Simulation : départ de feu",
-      "zone": "slope",
-      "confidence": 0.67,
-      "thumb": "data/thumbs/2026-09-25T08-23-34Z-fire-1.jpg",
-      "clip_url": "",
-      "detail": {
-        "warm_ratio": 0.0,
-        "smoke_ratio": 0.838,
-        "rise": 0.1259,
-        "grow": 8.26,
-        "width_m": 21.6,
-        "surface": "",
-        "period": "day",
-        "weather": "ciel dégagé",
-        "context": "de jour, ciel dégagé",
-        "simulation": true,
-        "reading": "Simulation : panache dessiné sur la vue réelle, alerte à la 6e seconde.",
-        "box": [
-          0.6083,
-          0.2926,
-          0.0688,
-          0.1963
-        ]
-      }
     },
     {
       "id": "2026-09-25T08-20-51Z-motion-349",
