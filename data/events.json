@@ -1,6 +1,102 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-50-08Z-motion-78",
+      "t": "2026-09-25T05:50:08Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-50-08Z-motion-78.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-50-08Z-motion-79",
+      "t": "2026-09-25T05:50:08Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-50-08Z-motion-79.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-49-46Z-motion-75",
+      "t": "2026-09-25T05:49:46Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-49-46Z-motion-75.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-49-46Z-motion-76",
+      "t": "2026-09-25T05:49:46Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-49-46Z-motion-76.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-49-46Z-motion-77",
+      "t": "2026-09-25T05:49:46Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-49-46Z-motion-77.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-49-42Z-motion-74",
+      "t": "2026-09-25T05:49:42Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-49-42Z-motion-74.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-49-39Z-motion-70",
       "t": "2026-09-25T05:49:39Z",
       "type": "motion",
@@ -43,6 +139,22 @@
       "clip_url": "",
       "detail": {
         "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-49-39Z-motion-73",
+      "t": "2026-09-25T05:49:39Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-49-39Z-motion-73.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
         "period": "twilight",
         "weather": "peu nuageux",
         "context": "au crépuscule, peu nuageux"
