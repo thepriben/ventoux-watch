@@ -895,7 +895,13 @@
         "weather": "ciel dégagé",
         "context": "de jour, ciel dégagé",
         "correction": "Bus",
-        "count": 1
+        "count": 1,
+        "box": [
+          0.144,
+          0.663,
+          0.0746,
+          0.0741
+        ]
       },
       "review": "accepted"
     },
