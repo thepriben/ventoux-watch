@@ -1,6 +1,53 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-22-00Z-motion-1504",
+      "t": "2026-09-25T11:22:00Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-22-00Z-motion-1504.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-21-59Z-motion-1502",
+      "t": "2026-09-25T11:21:59Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-21-59Z-motion-1502.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-21-59Z-car-1503",
+      "t": "2026-09-25T11:21:59Z",
+      "type": "car",
+      "label": "Camion",
+      "zone": "road",
+      "confidence": 0.66,
+      "thumb": "data/thumbs/2026-09-25T11-21-59Z-car-1503.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T11-21-33Z-motion-1501",
       "t": "2026-09-25T11:21:33Z",
       "type": "motion",
