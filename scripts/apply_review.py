@@ -14,9 +14,9 @@ def main() -> int:
     if parsed is None:
         print("missing")
         return 0
-    event_id, verdict = parsed
-    if apply_files(ROOT, event_id, verdict):
-        print(f"updated {event_id} {verdict}")
+    event_id, verdict, classe = parsed
+    if apply_files(ROOT, event_id, verdict, classe):
+        print(f"updated {event_id} {verdict} {classe}".rstrip())
         return 0
     print("unchanged")
     return 0

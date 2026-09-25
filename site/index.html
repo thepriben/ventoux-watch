@@ -79,7 +79,7 @@
         <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
         <li><strong data-i18n="track">Track</strong><span data-i18n="trackText">A compact blob, tracked for at least 3 frames.</span></li>
         <li><strong data-i18n="class">Class</strong><span data-i18n="classText">YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.</span></li>
-        <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">The sky does not use the model’s airplane class. OpenSky. A callsign is written only when there is one aircraft, or one much lower than the others.</span></li>
+        <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.</span></li>
         <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
         <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
         <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
@@ -109,13 +109,13 @@
       <p class="count" id="count"></p>
       <div class="filters" role="tablist">
         <button type="button" class="on" data-filter="all" data-i18n="all">All</button>
-        <button type="button" data-filter="plane" data-i18n="planes">Planes</button>
-        <button type="button" data-filter="car" data-i18n="cars">Cars</button>
+        <button type="button" data-filter="motion" data-i18n="motions">Motion</button>
+        <button type="button" data-filter="vehicle" data-i18n="vehicles">Vehicles</button>
         <button type="button" data-filter="person" data-i18n="pedestrians">Pedestrians</button>
         <button type="button" data-filter="bus" data-i18n="buses">Buses</button>
         <button type="button" data-filter="crowd" data-i18n="crowds">Crowds</button>
         <button type="button" data-filter="fire" data-i18n="fires">Fires</button>
-        <button type="button" data-filter="motion" data-i18n="motions">Motion</button>
+        <button type="button" data-filter="plane" data-i18n="planes">Planes</button>
         <button type="button" data-filter="habit" data-i18n="habits">Habits</button>
       </div>
     </div>
@@ -126,6 +126,7 @@
           <th data-i18n="colTime">Time</th>
           <th data-i18n="colPhoto">Photo</th>
           <th data-i18n="colReading">Reading</th>
+          <th data-i18n="colDetail">Detail</th>
         </tr>
       </thead>
       <tbody id="list"></tbody>
@@ -133,6 +134,7 @@
   </section>
 
   <p class="tags">#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur</p>
+  <div id="loupe" hidden><img alt=""></div>
   </main>
   <script src="app.js"></script>
 </body>

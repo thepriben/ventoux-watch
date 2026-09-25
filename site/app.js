@@ -26,7 +26,7 @@ const COPY = {
     class: "Class",
     classText: "YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.",
     plane: "Plane",
-    planeText: "The sky does not use the model’s airplane class. OpenSky. A callsign is written only when there is one aircraft, or one much lower than the others.",
+    planeText: "OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.",
     bus: "Bus",
     busText: "Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.",
     crowd: "Crowd",
@@ -38,7 +38,7 @@ const COPY = {
     history: "History",
     all: "All",
     planes: "Planes",
-    cars: "Cars",
+    vehicles: "Vehicles",
     pedestrians: "Pedestrians",
     buses: "Buses",
     crowds: "Crowds",
@@ -50,6 +50,8 @@ const COPY = {
     colTime: "Time",
     colPhoto: "Photo",
     colReading: "Reading",
+    colDetail: "Detail",
+    notInFrame: "Not in the picture",
     colCam: "Webcam",
     colApi: "Station",
     compareEmpty: "No reading yet.",
@@ -58,6 +60,8 @@ const COPY = {
     clip: "Clip",
     right: "Right",
     wrong: "Wrong",
+    carWord: "Car",
+    busWord: "Bus",
     confirmed: "confirmed",
     rejected: "rejected",
     fireNote: "A warm patch grew. This is not an alert.",
@@ -88,7 +92,7 @@ const COPY = {
     class: "Classe",
     classText: "YOLO11 nano, en ONNX, seulement sur le rectangle. Personne, voiture, bus, camion.",
     plane: "Avion",
-    planeText: "Le ciel ne passe pas par la classe avion du modèle. OpenSky. L’indicatif n’est écrit que s’il n’y a qu’un avion, ou un seul beaucoup plus bas.",
+    planeText: "OpenSky. L’indicatif n’est gardé que si l’avion est dans le champ, assez près pour être vu. Sinon l’historique dit qu’il n’est pas dans l’image.",
     bus: "Bus",
     busText: "Trans'CoVe ou ZOU. Une seule course à ±15 min donne la ligne. Sinon « Bus », à partir d’une confiance de 0,6.",
     crowd: "Attroupement",
@@ -100,7 +104,7 @@ const COPY = {
     history: "Historique",
     all: "Tout",
     planes: "Avions",
-    cars: "Voitures",
+    vehicles: "Véhicules",
     pedestrians: "Piétons",
     buses: "Bus",
     crowds: "Attroupements",
@@ -112,6 +116,8 @@ const COPY = {
     colTime: "Heure",
     colPhoto: "Photo",
     colReading: "Lecture",
+    colDetail: "Détail",
+    notInFrame: "Pas dans l'image",
     colCam: "Webcam",
     colApi: "Station",
     compareEmpty: "Pas encore de relevé.",
@@ -120,6 +126,8 @@ const COPY = {
     clip: "Extrait",
     right: "Juste",
     wrong: "Faux",
+    carWord: "Voiture",
+    busWord: "Bus",
     confirmed: "validé",
     rejected: "rejeté",
     fireNote: "Tache chaude qui a grossi. Ce n’est pas une alerte.",
@@ -137,6 +145,8 @@ const COPY = {
 const LABELS = {
   "Voiture": "Car",
   "Camion": "Truck",
+  "Véhicule": "Vehicle",
+  "Camping-car": "Camper van",
   "Attroupement": "Crowd",
   "Incendie": "Fire",
   "Habitude du cadrage": "Habit of the frame",
@@ -307,6 +317,35 @@ const empty = document.querySelector("#empty");
 let events = [];
 let filter = "all";
 
+const loupe = document.querySelector("#loupe");
+const loupeImg = loupe.querySelector("img");
+
+function moveLoupe(event) {
+  const pad = 12;
+  const box = loupe.getBoundingClientRect();
+  let x = event.clientX + 20;
+  let y = event.clientY - box.height / 2;
+  if (x + box.width > window.innerWidth - pad) x = event.clientX - box.width - 20;
+  if (y < pad) y = pad;
+  if (y + box.height > window.innerHeight - pad) y = Math.max(pad, window.innerHeight - box.height - pad);
+  loupe.style.left = `${x}px`;
+  loupe.style.top = `${y}px`;
+}
+
+list.addEventListener("mouseover", (event) => {
+  const img = event.target.closest(".shot img");
+  if (!img) return;
+  loupeImg.src = img.src;
+  loupe.hidden = false;
+  moveLoupe(event);
+});
+list.addEventListener("mousemove", (event) => {
+  if (!loupe.hidden && event.target.closest(".shot img")) moveLoupe(event);
+});
+list.addEventListener("mouseout", (event) => {
+  if (event.target.closest(".shot img")) loupe.hidden = true;
+});
+
 document.querySelectorAll(".filters button").forEach((button) => {
   button.addEventListener("click", () => {
     filter = button.dataset.filter;
@@ -318,8 +357,9 @@ document.querySelectorAll(".filters button").forEach((button) => {
 function detail(event) {
   const info = event.detail || {};
   if (event.type === "plane") {
-    const altitude = info.altitude_m == null ? "" : ` · ${Math.round(info.altitude_m)} m`;
-    return `${info.icao24 || ""}${altitude}`.trim();
+    const altitude = info.altitude_m == null ? "" : `${Math.round(info.altitude_m).toLocaleString(locale())} m`;
+    const place = info.seen ? "" : t("notInFrame");
+    return ["OpenSky", altitude, place, showText(info.context)].filter(Boolean).join(" · ");
   }
   if (event.type === "bus" && info.route) {
     return `${info.headsign || info.route} · ${info.scheduled || ""} · ${info.source || ""}`.trim();
@@ -332,7 +372,11 @@ function detail(event) {
 }
 
 function render() {
-  const shown = events.filter((event) => filter === "all" || event.type === filter);
+  const shown = events.filter((event) => {
+    if (filter === "all") return true;
+    if (filter === "vehicle") return event.type === "vehicle" || event.type === "car";
+    return event.type === filter;
+  });
   empty.hidden = shown.length > 0;
   const count = document.querySelector("#count");
   if (count) count.textContent = shown.length ? String(shown.length) : "";
@@ -341,7 +385,7 @@ function render() {
     const clock = moment.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
     const day = moment.toLocaleDateString(locale(), { day: "numeric", month: "short", timeZone: "Europe/Paris" });
     const picture = event.thumb
-      ? `<img src="${event.thumb}" alt="" loading="lazy">`
+      ? `<img src="${escapeHtml(event.thumb)}" alt="">`
       : `<span class="placeholder"></span>`;
     const extra = detail(event);
     const review = reviewControls(event);
@@ -351,19 +395,27 @@ function render() {
     const title = people > 1 ? `${showText(event.label)} (${people})` : showText(event.label);
     const piled = Number(info.count || 1);
     const times = !info.correction && piled > 1 ? ` · ${piled}` : "";
-    return `<tr class="${event.review || ""}"><td class="when"><time>${clock}</time><span>${day}</span></td><td class="shot">${picture}</td><td><strong>${escapeHtml(title)}</strong><p class="meta">${escapeHtml(extra)}${times}${state ? " · " + state : ""}</p>${review}</td></tr>`;
+    const note = [extra, times.replace(/^ · /, ""), state].filter(Boolean).join(" · ");
+    return `<tr class="${event.review || ""}"><td class="when"><time>${clock}</time><span>${day}</span></td><td class="shot">${picture}</td><td><strong>${escapeHtml(title)}</strong>${review}</td><td class="note">${escapeHtml(note)}</td></tr>`;
   }).join("");
 }
 
 function reviewControls(event) {
+  if (event.type === "motion") {
+    const correction = (event.detail || {}).correction;
+    const car = correction === "Voiture" ? " on" : "";
+    const bus = correction === "Bus" ? " on" : "";
+    const rejected = event.review === "rejected" ? " on" : "";
+    return `<p class="verdict"><a class="yes${car}" href="${reviewUrl(event, "accepted", "valide", "voiture")}">${escapeHtml(t("carWord"))}</a><a class="yes${bus}" href="${reviewUrl(event, "accepted", "valide", "bus")}">${escapeHtml(t("busWord"))}</a><a class="no${rejected}" href="${reviewUrl(event, "rejected", "rejete")}">${escapeHtml(t("wrong"))}</a></p>`;
+  }
   const accepted = event.review === "accepted" ? " on" : "";
   const rejected = event.review === "rejected" ? " on" : "";
   return `<p class="verdict"><a class="yes${accepted}" href="${reviewUrl(event, "accepted", "valide")}">${escapeHtml(t("right"))}</a><a class="no${rejected}" href="${reviewUrl(event, "rejected", "rejete")}">${escapeHtml(t("wrong"))}</a></p>`;
 }
 
-function reviewUrl(event, verdict, label) {
+function reviewUrl(event, verdict, label, classe) {
   const title = `revue ${event.id}`;
-  const body = `event_id: ${event.id}\nverdict: ${verdict}\nlecture: ${event.label}\n`;
+  const body = `event_id: ${event.id}\nverdict: ${verdict}\nlecture: ${event.label}\n${classe ? `classe: ${classe}\n` : ""}`;
   return `https://github.com/thepriben/ventoux-watch/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${label}`;
 }
 

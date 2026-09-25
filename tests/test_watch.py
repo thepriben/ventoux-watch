@@ -1,4 +1,5 @@
 import json
+import math
 import unittest
 from datetime import datetime
 from pathlib import Path
@@ -11,12 +12,25 @@ from watcher.geometry import assign_zone
 from watcher.gtfs import GtfsIndex, load_feed
 from watcher.motion import MotionDetector
 from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
+from watcher.review import apply_review, parse_review
 from watcher.opensky import SkyArchive
 from watcher.scene import ViewLog, read_sky, solar_period, weather_label
 from watcher.store import Store, fold_events
 
 ROOT = Path(__file__).resolve().parents[1]
 ZONES = json.loads((ROOT / "config" / "zones.json").read_text())
+
+
+def _ahead(lat: float, lon: float, bearing: float, meters: float) -> tuple[float, float]:
+    radius = 6_371_000
+    br = math.radians(bearing)
+    lat1, lon1 = math.radians(lat), math.radians(lon)
+    lat2 = math.asin(math.sin(lat1) * math.cos(meters / radius) + math.cos(lat1) * math.sin(meters / radius) * math.cos(br))
+    lon2 = lon1 + math.atan2(
+        math.sin(br) * math.sin(meters / radius) * math.cos(lat1),
+        math.cos(meters / radius) - math.sin(lat1) * math.sin(lat2),
+    )
+    return math.degrees(lat2), math.degrees(lon2)
 
 
 class NamingTests(unittest.TestCase):
@@ -72,22 +86,36 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(decision.label, "Lueur du soir")
 
     def test_sky_motion_publishes_the_callsign(self):
+        lat, lon = _ahead(44.183501, 5.2621281, 140, 2000)
         decision = decide(
             Observation(
                 zone="sky",
                 travel=0.05,
                 area_ratio=0.001,
-                aircraft=[{"icao24": "394c12", "callsign": "AFR472", "altitude_m": 4200}],
+                aircraft=[{"icao24": "394c12", "callsign": "AFR472", "altitude_m": 1800, "lat": lat, "lon": lon}],
             )
         )
         self.assertTrue(decision.publish)
         self.assertEqual(decision.type, "plane")
         self.assertEqual(decision.label, "AFR472")
+        self.assertTrue(decision.detail["seen"])
+
+    def test_a_high_aircraft_outside_the_picture_is_not_named(self):
+        decision = decide(
+            Observation(
+                zone="sky",
+                travel=0.05,
+                area_ratio=0.001,
+                aircraft=[{"icao24": "47a039", "callsign": "NSZ5525", "altitude_m": 10836, "lat": 44.25, "lon": 5.45}],
+            )
+        )
+        self.assertEqual(decision.type, "motion")
+        self.assertNotEqual(decision.label, "NSZ5525")
 
     def test_car_on_the_road_is_published(self):
         decision = decide(Observation(zone="road", travel=0.08, detections=[Detection("car", 0.8)]))
-        self.assertEqual(decision.type, "car")
-        self.assertEqual(decision.label, "Voiture")
+        self.assertEqual(decision.type, "vehicle")
+        self.assertEqual(decision.label, "Véhicule")
 
     def test_bus_with_one_trip_uses_the_line(self):
         trip = Trip("Navette", "Mont Serein", "Chalet", "10:00:00", "transcove")
@@ -253,6 +281,23 @@ class StoreTests(unittest.TestCase):
         store.prune(datetime(2026, 9, 24, tzinfo=ZoneInfo("UTC")))
         self.assertEqual(store.events, [])
         (root / "events.json").unlink(missing_ok=True)
+
+
+class ReviewTests(unittest.TestCase):
+    def test_motion_can_be_named_car_bus_or_wrong(self):
+        body = "event_id: m1\nverdict: accepted\nlecture: Mouvement\nclasse: voiture\n"
+        self.assertEqual(parse_review(body, "valide"), ("m1", "accepted", "voiture"))
+        events = [{"id": "m1", "type": "motion", "label": "Mouvement", "detail": {}}]
+        learning = {}
+        self.assertTrue(apply_review(events, learning, "m1", "accepted", "voiture"))
+        self.assertEqual(events[0]["type"], "vehicle")
+        self.assertEqual(events[0]["label"], "Voiture")
+        self.assertEqual(events[0]["detail"]["correction"], "Voiture")
+        self.assertTrue(apply_review(events, learning, "m1", "accepted", "bus"))
+        self.assertEqual(events[0]["type"], "bus")
+        self.assertEqual(events[0]["label"], "Bus")
+        self.assertTrue(apply_review(events, learning, "m1", "rejected", ""))
+        self.assertEqual(events[0]["review"], "rejected")
 
 
 if __name__ == "__main__":

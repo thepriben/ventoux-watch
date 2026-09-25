@@ -339,6 +339,17 @@ h2 {
   border-collapse: collapse;
 }
 
+.log th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
 .log td {
   border-bottom: 1px solid var(--line);
   vertical-align: middle;
@@ -369,6 +380,31 @@ h2 {
 }
 
 .log strong { font-size: 15px; }
+
+.log .note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#loupe {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  background: #fffcf7;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 16px 40px rgba(40, 32, 20, 0.2);
+}
+
+#loupe img {
+  display: block;
+  width: min(560px, 72vw);
+  height: auto;
+  max-height: 72vh;
+  object-fit: contain;
+}
 
 .log tr.rejected { opacity: 0.55; }
 
@@ -413,7 +449,7 @@ h2 {
 
 .cards li.rejected { opacity: 0.55; }
 
-.verdict { display: flex; gap: 8px; margin: 8px 0 0; }
+.verdict { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
 
 .verdict a {
   border: 1px solid var(--line);

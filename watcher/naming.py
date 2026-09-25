@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 
@@ -42,6 +43,11 @@ class Observation:
     fire_warm: float = 0.08
     period: str = "day"
     weather: str = ""
+    camera_lat: float = 44.183501
+    camera_lon: float = 5.2621281
+    camera_ele: float = 1390.0
+    camera_bearing: float = 140.0
+    camera_fov: float = 90.0
 
 
 @dataclass
@@ -98,6 +104,41 @@ def _aircraft_label(aircraft: dict) -> str:
     return aircraft["callsign"] or aircraft["icao24"].upper()
 
 
+def in_camera_view(aircraft: dict, obs: Observation) -> bool:
+    """True when this aircraft would show in the camera sky, not merely nearby."""
+    lat = aircraft.get("lat")
+    lon = aircraft.get("lon")
+    altitude = aircraft.get("altitude_m")
+    if not isinstance(lat, (int, float)) or not isinstance(lon, (int, float)):
+        return False
+    if not isinstance(altitude, (int, float)):
+        return False
+    distance = _distance_m(obs.camera_lat, obs.camera_lon, float(lat), float(lon))
+    if distance > 5000:
+        return False
+    if altitude < obs.camera_ele or altitude - obs.camera_ele > 2500:
+        return False
+    azimuth = _azimuth(obs.camera_lat, obs.camera_lon, float(lat), float(lon))
+    relative = (azimuth - obs.camera_bearing + 540) % 360 - 180
+    return abs(relative) <= obs.camera_fov / 2
+
+
+def _distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    radius = 6_371_000
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp, dl = math.radians(lat2 - lat1), math.radians(lon2 - lon1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * radius * math.asin(math.sqrt(a))
+
+
+def _azimuth(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dl = math.radians(lon2 - lon1)
+    y = math.sin(dl) * math.cos(p2)
+    x = math.cos(p1) * math.sin(p2) - math.sin(p1) * math.cos(p2) * math.cos(dl)
+    return (math.degrees(math.atan2(y, x)) + 360) % 360
+
+
 def decide(obs: Observation) -> Decision:
     conf = obs.min_conf or {"bus": 0.45, "bus_unnamed": 0.6, "car": 0.4}
     if obs.kind == "crowd":
@@ -142,16 +183,17 @@ def decide(obs: Observation) -> Decision:
             return _motion(obs, "sky_mass", "Masse dans le ciel", "Trop large pour un avion. Nuage, ou changement de lumière.")
         if obs.travel < obs.min_travel:
             return _motion(obs, "sky_still", "Point dans le ciel", "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.")
-        chosen, why = choose_aircraft(obs.aircraft)
+        visible = [item for item in obs.aircraft if in_camera_view(item, obs)]
+        chosen, why = choose_aircraft(visible)
         if chosen is None:
-            return _motion(obs, why, "Mouvement dans le ciel", "Aucun avion unique dans le créneau. Le passage est gardé sans indicatif.")
+            return _motion(obs, why, "Mouvement dans le ciel", "Aucun avion visible dans l'image. Le secteur OpenSky ne suffit pas.")
         return _stamp(
             Decision(
                 "publish",
                 "plane",
                 _aircraft_label(chosen),
                 reason=why,
-                detail=chosen,
+                detail={**chosen, "seen": True},
                 confidence=0.9 if why == "unique" else 0.7,
             ),
             obs,
@@ -197,8 +239,7 @@ def decide(obs: Observation) -> Decision:
                 )
             return _motion(obs, "bus_uncertain", "Véhicule incertain", "La forme rappelle un bus, sans assez de certitude ni une seule course à l'horaire.")
         if vehicle is not None and vehicle.conf >= conf["car"]:
-            label = "Camion" if vehicle.cls == "truck" else "Voiture"
-            return _stamp(Decision("publish", "car", label, reason=vehicle.cls, confidence=vehicle.conf), obs)
+            return _stamp(Decision("publish", "vehicle", "Véhicule", reason=vehicle.cls, confidence=vehicle.conf), obs)
         if person is not None and person.conf >= 0.4:
             return _stamp(Decision("publish", "person", "Piéton", reason="person", confidence=person.conf), obs)
         if obs.travel < obs.min_travel:

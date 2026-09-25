@@ -12,7 +12,7 @@ import numpy as np
 THUMB_WIDTH = 480
 THUMB_QUALITY = 52
 PASSAGE_ZONES = {"road", "roundabout", "other"}
-RANK = {"fire": 6, "crowd": 5, "bus": 4, "car": 3, "person": 3, "plane": 2, "motion": 1, "habit": 0}
+RANK = {"fire": 6, "crowd": 5, "bus": 4, "vehicle": 3, "car": 3, "person": 3, "plane": 2, "motion": 1, "habit": 0}
 
 
 class Store:

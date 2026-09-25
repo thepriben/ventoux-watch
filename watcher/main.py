@@ -129,6 +129,11 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         fire_warm=cfg["fire"]["warm_ratio"],
         period=current.period,
         weather=current.weather,
+        camera_lat=float(cfg["camera"]["lat"]),
+        camera_lon=float(cfg["camera"]["lon"]),
+        camera_ele=float(cfg["camera"].get("ele") or 1390),
+        camera_bearing=float(cfg["camera"].get("bearing") or 140),
+        camera_fov=float(cfg["camera"].get("fov") or 90),
     )
     decision = decide(obs)
     if decision.type == "motion" and track.zone == "sky":

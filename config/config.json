@@ -13,7 +13,7 @@
   "history_days": 30,
   "publish_interval_s": 60,
   "model_path": "models/yolo11n.onnx",
-  "camera": {"lat": 44.179, "lon": 5.2663},
+  "camera": {"lat": 44.183501, "lon": 5.2621281, "ele": 1390, "bearing": 140, "fov": 90},
   "opensky": {
     "bbox": [44.05, 5.05, 44.35, 5.5],
     "poll_s": 60,
