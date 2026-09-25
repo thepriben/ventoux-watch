@@ -1,6 +1,28 @@
 {
   "events": [
     {
+      "id": "2026-09-25T17-02-48Z-person-48",
+      "t": "2026-09-25T17:02:48Z",
+      "type": "person",
+      "label": "Piéton",
+      "zone": "road",
+      "confidence": 0.469,
+      "thumb": "data/thumbs/2026-09-25T17-02-48Z-person-48.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "ciel dégagé",
+        "context": "au crépuscule, ciel dégagé",
+        "box": [
+          0.0875,
+          0.6444,
+          0.0266,
+          0.0306
+        ],
+        "count": 8
+      }
+    },
+    {
       "id": "2026-09-25T17-01-45Z-motion-36",
       "t": "2026-09-25T17:01:45Z",
       "type": "vehicle",
@@ -19,7 +41,7 @@
           0.0219,
           0.0444
         ],
-        "count": 3
+        "count": 12
       }
     },
     {
