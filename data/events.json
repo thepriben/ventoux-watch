@@ -1,6 +1,38 @@
 {
   "events": [
     {
+      "id": "2026-09-25T07-14-13Z-motion-217",
+      "t": "2026-09-25T07:14:13Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T07-14-13Z-motion-217.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T07-14-13Z-motion-218",
+      "t": "2026-09-25T07:14:13Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T07-14-13Z-motion-218.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T07-14-06Z-motion-215",
       "t": "2026-09-25T07:14:06Z",
       "type": "motion",
@@ -8,6 +40,22 @@
       "zone": "other",
       "confidence": 0.3,
       "thumb": "data/thumbs/2026-09-25T07-14-06Z-motion-215.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T07-14-06Z-motion-216",
+      "t": "2026-09-25T07:14:06Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T07-14-06Z-motion-216.jpg",
       "clip_url": "",
       "detail": {
         "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
