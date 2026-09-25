@@ -1,6 +1,53 @@
 {
   "events": [
     {
+      "id": "2026-09-25T10-03-58Z-car-778",
+      "t": "2026-09-25T10:03:58Z",
+      "type": "car",
+      "label": "Voiture",
+      "zone": "roundabout",
+      "confidence": 0.462,
+      "thumb": "data/thumbs/2026-09-25T10-03-58Z-car-778.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-03-58Z-motion-779",
+      "t": "2026-09-25T10:03:58Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-03-58Z-motion-779.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T10-03-49Z-motion-777",
+      "t": "2026-09-25T10:03:49Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T10-03-49Z-motion-777.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T10-03-47Z-motion-776",
       "t": "2026-09-25T10:03:47Z",
       "type": "motion",
