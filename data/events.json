@@ -1,6 +1,38 @@
 {
   "events": [
     {
+      "id": "2026-09-25T15-50-23Z-motion-15",
+      "t": "2026-09-25T15:50:23Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T15-50-23Z-motion-15.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T15-50-23Z-motion-16",
+      "t": "2026-09-25T15:50:23Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T15-50-23Z-motion-16.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T15-50-22Z-motion-14",
       "t": "2026-09-25T15:50:22Z",
       "type": "motion",
