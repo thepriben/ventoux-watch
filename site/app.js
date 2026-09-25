@@ -39,12 +39,20 @@ const COPY = {
     all: "All",
     planes: "Planes",
     cars: "Cars",
+    pedestrians: "Pedestrians",
     buses: "Buses",
     crowds: "Crowds",
     fires: "Fires",
     motions: "Motion",
     habits: "Habits",
     empty: "Nothing yet.",
+    compare: "Weather",
+    colTime: "Time",
+    colPhoto: "Photo",
+    colReading: "Reading",
+    colCam: "Webcam",
+    colApi: "Station",
+    compareEmpty: "No reading yet.",
     around: "Around",
     people: "people",
     clip: "Clip",
@@ -93,12 +101,20 @@ const COPY = {
     all: "Tout",
     planes: "Avions",
     cars: "Voitures",
+    pedestrians: "Piétons",
     buses: "Bus",
     crowds: "Attroupements",
     fires: "Incendies",
     motions: "Mouvements",
     habits: "Habitudes",
     empty: "Rien pour l’instant.",
+    compare: "Météo",
+    colTime: "Heure",
+    colPhoto: "Photo",
+    colReading: "Lecture",
+    colCam: "Webcam",
+    colApi: "Station",
+    compareEmpty: "Pas encore de relevé.",
     around: "Autour",
     people: "personnes",
     clip: "Extrait",
@@ -131,12 +147,28 @@ const LABELS = {
   "Point dans le ciel": "Point in the sky",
   "Presque immobile": "Almost still",
   "Véhicule incertain": "Uncertain vehicle",
+  "Piéton": "Pedestrian",
+  "Piétons": "Pedestrians",
+  "Voiture blanche": "White car",
+  "Estafette": "Van",
   "Lueur du soir": "Evening glow",
   "Lueur dans la météo": "Glow in the weather",
 };
 
 let lang = localStorage.getItem("ventoux-lang") === "fr" ? "fr" : "en";
 let weatherNow = null;
+let readings = [];
+
+const SKY = {
+  "ciel dégagé": "Clear",
+  "peu nuageux": "Partly cloudy",
+  "couvert": "Overcast",
+  "brouillard": "Fog",
+  "pluie": "Rain",
+  "neige": "Snow",
+  "orage": "Thunderstorm",
+  "nuit": "Night",
+};
 let counts = null;
 
 function t(key) {
@@ -162,6 +194,7 @@ function applyLang() {
   tick();
   paintCamera();
   paintWeather();
+  paintReadings();
   paintCounts();
   render();
   paintSequence();
@@ -206,6 +239,39 @@ function paintWeather() {
   const label = t("weatherCodes")[weatherNow.code] || "";
   document.querySelector("#weather").textContent = Number.isFinite(weatherNow.temp) ? `${weatherNow.temp} °C` : "—";
   place.textContent = [station.name, distance, label].filter(Boolean).join(" · ");
+}
+
+function skyText(value) {
+  if (!value) return "";
+  if (lang === "fr") return value.charAt(0).toUpperCase() + value.slice(1);
+  return SKY[value] || value;
+}
+
+function paintReadings() {
+  const body = document.querySelector("#readings");
+  const emptyRow = document.querySelector("#readings-empty");
+  if (!body || !emptyRow) return;
+  const rows = readings.slice().reverse();
+  emptyRow.hidden = rows.length > 0;
+  body.innerHTML = rows.map((row) => {
+    const when = new Date(row.t).toLocaleString(locale(), {
+      timeZone: "Europe/Paris", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+    });
+    const station = [Number.isFinite(row.temp_c) ? `${row.temp_c} °C` : "", skyText(row.api)].filter(Boolean).join(" · ");
+    return `<tr><td>${escapeHtml(when)}</td><td>${escapeHtml(skyText(row.webcam))}</td><td>${escapeHtml(station || "—")}</td></tr>`;
+  }).join("");
+}
+
+async function loadView() {
+  try {
+    const response = await fetch("data/view.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const payload = await response.json();
+    readings = payload.rows || [];
+    paintReadings();
+  } catch (_) {
+    /* The table fills once the watcher has read the sky. */
+  }
 }
 
 async function loadWeather() {
@@ -268,16 +334,24 @@ function detail(event) {
 function render() {
   const shown = events.filter((event) => filter === "all" || event.type === filter);
   empty.hidden = shown.length > 0;
+  const count = document.querySelector("#count");
+  if (count) count.textContent = shown.length ? String(shown.length) : "";
   list.innerHTML = shown.map((event) => {
-    const when = new Date(event.t).toLocaleString(locale(), { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" });
+    const moment = new Date(event.t);
+    const clock = moment.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
+    const day = moment.toLocaleDateString(locale(), { day: "numeric", month: "short", timeZone: "Europe/Paris" });
     const picture = event.thumb
       ? `<img src="${event.thumb}" alt="" loading="lazy">`
       : `<span class="placeholder"></span>`;
-    const clip = event.clip_url ? `<a href="${event.clip_url}">${escapeHtml(t("clip"))}</a>` : "";
     const extra = detail(event);
     const review = reviewControls(event);
     const state = event.review === "accepted" ? t("confirmed") : event.review === "rejected" ? t("rejected") : "";
-    return `<li class="${event.review || ""}">${picture}<div><h3>${escapeHtml(showText(event.label))}</h3><p class="meta">${when}${extra ? " · " + escapeHtml(extra) : ""}${state ? " · " + state : ""}</p>${clip}${review}</div></li>`;
+    const info = event.detail || {};
+    const people = Number(info.persons || 0);
+    const title = people > 1 ? `${showText(event.label)} (${people})` : showText(event.label);
+    const piled = Number(info.count || 1);
+    const times = !info.correction && piled > 1 ? ` · ${piled}` : "";
+    return `<tr class="${event.review || ""}"><td class="when"><time>${clock}</time><span>${day}</span></td><td class="shot">${picture}</td><td><strong>${escapeHtml(title)}</strong><p class="meta">${escapeHtml(extra)}${times}${state ? " · " + state : ""}</p>${review}</td></tr>`;
   }).join("");
 }
 
@@ -412,6 +486,8 @@ applyLang();
 setInterval(tick, 1000);
 loadWeather();
 setInterval(loadWeather, 600000);
+loadView();
+setInterval(loadView, 60000);
 
 function paintSequence() {
   const frame = sequenceFrames[sequenceIndex];

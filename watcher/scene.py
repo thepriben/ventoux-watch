@@ -12,6 +12,7 @@ import time
 import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -130,6 +131,85 @@ def weather_label(code: int) -> str:
     if code >= 95:
         return "orage"
     return ""
+
+
+def read_sky(frame: np.ndarray | None) -> str:
+    """Weather read from the sky band of this camera, not from a station."""
+    if frame is None or frame.size == 0:
+        return ""
+    height = frame.shape[0]
+    band = frame[: max(1, int(height * 0.16))]
+    hsv = cv2.cvtColor(band, cv2.COLOR_BGR2HSV)
+    hue = hsv[:, :, 0]
+    sat = hsv[:, :, 1]
+    val = hsv[:, :, 2]
+    mean_v = float(val.mean())
+    mean_s = float(sat.mean())
+    spread = float(val.std())
+    blue = float(((hue >= 90) & (hue <= 130) & (sat >= 40)).mean())
+    if mean_v < 45:
+        return "nuit"
+    if mean_s < 28 and spread < 16:
+        return "brouillard"
+    if blue >= 0.45 and mean_s >= 50:
+        return "ciel dégagé"
+    if blue >= 0.18 or spread >= 28:
+        return "peu nuageux"
+    return "couvert"
+
+
+class ViewLog:
+    """Keep a short table of webcam weather beside the station reading."""
+
+    def __init__(self, path: Path, every_s: int = 900, change_s: int = 120):
+        self.path = path
+        self.every_s = every_s
+        self.change_s = change_s
+        self.rows: list[dict] = []
+        self.dirty = False
+        self._votes: list[str] = []
+        self._last_commit = 0.0
+        if path.is_file():
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                self.rows = list(payload.get("rows") or [])
+            except json.JSONDecodeError:
+                self.rows = []
+        if self.rows:
+            self._last_commit = _stamp(self.rows[-1].get("t", ""))
+
+    def note(self, frame: np.ndarray | None, api_label: str, temp_c: float | None, when: datetime) -> None:
+        label = read_sky(frame)
+        if not label:
+            return
+        self._votes.append(label)
+        self._votes = self._votes[-8:]
+        chosen = max(set(self._votes), key=self._votes.count)
+        moment = when if when.tzinfo else when.replace(tzinfo=timezone.utc)
+        stamp = moment.timestamp()
+        changed = not self.rows or self.rows[-1].get("webcam") != chosen
+        wait = self.change_s if changed else self.every_s
+        if self.rows and stamp - self._last_commit < wait:
+            return
+        row = {
+            "t": moment.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "webcam": chosen,
+            "api": api_label or "",
+            "temp_c": None if temp_c is None else round(float(temp_c)),
+        }
+        self.rows.append(row)
+        self.rows = self.rows[-32:]
+        self._last_commit = stamp
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(json.dumps({"rows": self.rows}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        self.dirty = True
+
+
+def _stamp(value: str) -> float:
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc).timestamp()
+    except ValueError:
+        return 0.0
 
 
 def luminance(frame: np.ndarray | None) -> float:

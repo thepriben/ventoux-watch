@@ -12,8 +12,8 @@ from watcher.gtfs import GtfsIndex, load_feed
 from watcher.motion import MotionDetector
 from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
 from watcher.opensky import SkyArchive
-from watcher.scene import solar_period, weather_label
-from watcher.store import Store
+from watcher.scene import ViewLog, read_sky, solar_period, weather_label
+from watcher.store import Store, fold_events
 
 ROOT = Path(__file__).resolve().parents[1]
 ZONES = json.loads((ROOT / "config" / "zones.json").read_text())
@@ -55,6 +55,11 @@ class NamingTests(unittest.TestCase):
         decision = decide(Observation(zone="sky", travel=0.2, area_ratio=0.2, aircraft=[{"icao24": "a", "callsign": "X", "altitude_m": 1000}]))
         self.assertEqual(decision.type, "motion")
         self.assertEqual(decision.label, "Masse dans le ciel")
+
+    def test_a_person_on_the_road_is_a_pedestrian(self):
+        decision = decide(Observation(zone="road", travel=0.0, detections=[Detection("person", 0.62)]))
+        self.assertEqual(decision.type, "person")
+        self.assertEqual(decision.label, "Piéton")
 
     def test_static_blob_is_not_a_car(self):
         decision = decide(Observation(zone="roundabout", travel=0.0, detections=[Detection("car", 0.9)]))
@@ -169,6 +174,34 @@ class SceneTests(unittest.TestCase):
         self.assertEqual(weather_label(0), "ciel dégagé")
         self.assertEqual(weather_label(45), "brouillard")
         self.assertEqual(weather_label(95), "orage")
+
+    def test_blue_sky_is_clear_and_a_dark_frame_is_night(self):
+        blue = np.zeros((80, 160, 3), dtype=np.uint8)
+        blue[:] = (210, 120, 30)
+        dark = np.zeros((80, 160, 3), dtype=np.uint8)
+        dark[:] = (8, 8, 8)
+        gray = np.zeros((80, 160, 3), dtype=np.uint8)
+        gray[:] = (150, 150, 150)
+        self.assertEqual(read_sky(blue), "ciel dégagé")
+        self.assertEqual(read_sky(dark), "nuit")
+        self.assertEqual(read_sky(gray), "brouillard")
+
+    def test_the_table_keeps_one_row_until_the_sky_changes(self):
+        folder = ROOT / "data" / "view-test"
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / "view.json"
+        path.unlink(missing_ok=True)
+        log = ViewLog(path, every_s=900, change_s=120)
+        blue = np.zeros((40, 80, 3), dtype=np.uint8)
+        blue[:] = (210, 120, 30)
+        start = datetime(2026, 9, 25, 16, 0, tzinfo=ZoneInfo("UTC"))
+        log.note(blue, "peu nuageux", 21.2, start)
+        log.note(blue, "peu nuageux", 21, start.replace(minute=5))
+        self.assertEqual(len(log.rows), 1)
+        self.assertEqual(log.rows[0]["webcam"], "ciel dégagé")
+        self.assertEqual(log.rows[0]["api"], "peu nuageux")
+        self.assertEqual(log.rows[0]["temp_c"], 21)
+        path.unlink(missing_ok=True)
     def test_onnx_accepts_a_frame(self):
         path = ROOT / "models" / "yolo11n.onnx"
         if not path.is_file():
@@ -199,6 +232,18 @@ class SkyTests(unittest.TestCase):
 
 
 class StoreTests(unittest.TestCase):
+    def test_a_burst_becomes_one_passage_and_keeps_the_correction(self):
+        events = [
+            {"id": "a", "t": "2026-09-25T08:52:04Z", "type": "motion", "label": "Mouvement", "zone": "other", "confidence": 0.3, "thumb": "data/thumbs/a.jpg", "detail": {}},
+            {"id": "b", "t": "2026-09-25T08:52:21Z", "type": "car", "label": "Voiture", "zone": "roundabout", "confidence": 0.75, "thumb": "data/thumbs/b.jpg", "review": "accepted", "detail": {"correction": "Estafette", "context": "de jour, ciel dégagé"}},
+            {"id": "c", "t": "2026-09-25T08:52:21Z", "type": "motion", "label": "Mouvement sur la route", "zone": "road", "confidence": 0.3, "thumb": "data/thumbs/c.jpg", "detail": {}},
+        ]
+        folded = fold_events(events)
+        self.assertEqual(len(folded), 1)
+        self.assertEqual(folded[0]["label"], "Estafette")
+        self.assertEqual(folded[0]["review"], "accepted")
+        self.assertGreaterEqual(folded[0]["detail"]["count"], 3)
+
     def test_old_events_are_dropped(self):
         root = ROOT / "data" / "store-test"
         root.mkdir(parents=True, exist_ok=True)

@@ -88,13 +88,30 @@
     </section>
   </div>
 
+  <section class="block reading" data-i18n-aria="compare" aria-label="Weather">
+    <h2 data-i18n="compare">Weather</h2>
+    <table>
+      <thead>
+        <tr>
+          <th data-i18n="colTime">Time</th>
+          <th data-i18n="colCam">Webcam</th>
+          <th data-i18n="colApi">Station</th>
+        </tr>
+      </thead>
+      <tbody id="readings"></tbody>
+    </table>
+    <p id="readings-empty" class="empty" data-i18n="compareEmpty">No reading yet.</p>
+  </section>
+
   <section class="block history">
     <div class="history-head">
       <h2 data-i18n="history">History</h2>
+      <p class="count" id="count"></p>
       <div class="filters" role="tablist">
         <button type="button" class="on" data-filter="all" data-i18n="all">All</button>
         <button type="button" data-filter="plane" data-i18n="planes">Planes</button>
         <button type="button" data-filter="car" data-i18n="cars">Cars</button>
+        <button type="button" data-filter="person" data-i18n="pedestrians">Pedestrians</button>
         <button type="button" data-filter="bus" data-i18n="buses">Buses</button>
         <button type="button" data-filter="crowd" data-i18n="crowds">Crowds</button>
         <button type="button" data-filter="fire" data-i18n="fires">Fires</button>
@@ -103,7 +120,16 @@
       </div>
     </div>
     <p id="empty" class="empty" data-i18n="empty" hidden>Nothing yet.</p>
-    <ol id="list" class="cards"></ol>
+    <table class="log">
+      <thead>
+        <tr>
+          <th data-i18n="colTime">Time</th>
+          <th data-i18n="colPhoto">Photo</th>
+          <th data-i18n="colReading">Reading</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
   </section>
 
   <p class="tags">#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur</p>

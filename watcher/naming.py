@@ -157,11 +157,12 @@ def decide(obs: Observation) -> Decision:
             obs,
         )
 
-    if obs.zone in {"road", "roundabout"}:
-        if obs.travel < obs.min_travel:
-            return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
+    if obs.zone in {"road", "roundabout", "other"}:
         bus = _best(obs.detections, {"bus"})
         vehicle = _best(obs.detections, {"car", "truck"})
+        person = _best(obs.detections, {"person"})
+        if obs.travel < obs.min_travel and not (person is not None and person.conf >= 0.4):
+            return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
         if bus is not None and bus.conf >= conf["bus"]:
             if len(obs.trips) == 1:
                 trip = obs.trips[0]
@@ -198,6 +199,10 @@ def decide(obs: Observation) -> Decision:
         if vehicle is not None and vehicle.conf >= conf["car"]:
             label = "Camion" if vehicle.cls == "truck" else "Voiture"
             return _stamp(Decision("publish", "car", label, reason=vehicle.cls, confidence=vehicle.conf), obs)
+        if person is not None and person.conf >= 0.4:
+            return _stamp(Decision("publish", "person", "Piéton", reason="person", confidence=person.conf), obs)
+        if obs.travel < obs.min_travel:
+            return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
         return _motion(obs, "unnamed_vehicle", "Mouvement sur la route", "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.")
 
     if obs.zone == "slope" and obs.travel < max(obs.min_travel, 0.02):

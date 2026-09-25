@@ -23,7 +23,7 @@ from watcher.motion import MotionDetector, warm_ratio
 from watcher.naming import Observation, decide
 from watcher.opensky import SkyArchive
 from watcher.publish import publish
-from watcher.scene import SceneReader
+from watcher.scene import SceneReader, ViewLog
 from watcher.store import Store
 
 log = logging.getLogger("ventoux")
@@ -55,6 +55,7 @@ def main() -> None:
     gtfs = GtfsIndex(root / "data" / "gtfs", cfg["gtfs"], camera["lat"], camera["lon"], cfg["gtfs_radius_m"])
     store = Store(root / "data", cfg["history_days"])
     scene = SceneReader(camera["lat"], camera["lon"])
+    view = ViewLog(root / "data" / "view.json")
     memory = Memory(root / "data" / "learning.json")
     drive = DriveUploader(str(root / cfg["drive"]["credentials"]), cfg["drive"].get("folder_id") or "")
     ring: deque[tuple[float, bytes]] = deque(maxlen=14)
@@ -65,6 +66,7 @@ def main() -> None:
     last_sky = 0.0
     last_gtfs = 0.0
     last_publish = 0.0
+    last_view = 0.0
 
     while True:
         try:
@@ -79,15 +81,21 @@ def main() -> None:
                 if now - last_gtfs >= cfg["gtfs_refresh_s"]:
                     gtfs.refresh()
                     last_gtfs = now
+                if now - last_view >= 30:
+                    moment = datetime.fromtimestamp(now, timezone.utc)
+                    current = scene.read(frame, moment)
+                    view.note(frame, current.weather, current.temperature_c, moment)
+                    last_view = now
                 step = motion.step(frame, now)
                 for track in step.ended:
                     _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory)
                 if step.roundabout_motion:
                     last_crowd = _crowd(frame, now, cfg, yolo, zones, crowd_hits, last_crowd, store, pending)
                 _flush_clips(pending, ring, now, drive, store)
-                if store.dirty and now - last_publish >= cfg["publish_interval_s"]:
+                if (store.dirty or view.dirty) and now - last_publish >= cfg["publish_interval_s"]:
                     publish(root)
                     store.dirty = False
+                    view.dirty = False
                     last_publish = now
         except Exception:
             log.exception("Flux interrompu, nouvel essai dans 10 s")

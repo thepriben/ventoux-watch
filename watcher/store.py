@@ -11,6 +11,8 @@ import numpy as np
 
 THUMB_WIDTH = 480
 THUMB_QUALITY = 52
+PASSAGE_ZONES = {"road", "roundabout", "other"}
+RANK = {"fire": 6, "crowd": 5, "bus": 4, "car": 3, "person": 3, "plane": 2, "motion": 1, "habit": 0}
 
 
 class Store:
@@ -28,28 +30,30 @@ class Store:
     def add_event(self, when: datetime, type_: str, label: str, zone: str, confidence: float, jpeg: bytes, detail: dict) -> dict:
         stamp = when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
         self._seq += 1
-        event_id = f"{stamp}-{type_}-{self._seq}"
-        thumb_name = f"{event_id}.jpg"
-        if jpeg:
-            (self.thumbs / thumb_name).write_bytes(small_jpeg(jpeg))
         event = {
-            "id": event_id,
+            "id": f"{stamp}-{type_}-{self._seq}",
             "t": when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "type": type_,
             "label": label,
             "zone": zone,
             "confidence": round(confidence, 3),
-            "thumb": f"data/thumbs/{thumb_name}" if jpeg else "",
+            "thumb": "",
             "clip_url": "",
             "detail": detail,
         }
-        previous = next((item for item in self.events if item.get("id") == event_id), None)
-        if previous:
-            if previous.get("review"):
-                event["review"] = previous["review"]
-            if previous.get("clip_url"):
-                event["clip_url"] = previous["clip_url"]
-        self.events = [item for item in self.events if item["id"] != event_id]
+        host = open_passage(self.events, event)
+        if host is not None:
+            if (host.get("detail") or {}).get("correction") or not better_reading(event, host):
+                _bump(host)
+            else:
+                _copy_reading(host, event)
+                if jpeg:
+                    _write_thumb(self.thumbs, host, small_jpeg(jpeg))
+            self._write()
+            self.dirty = True
+            return host
+        if jpeg:
+            _write_thumb(self.thumbs, event, small_jpeg(jpeg))
         self.events.append(event)
         self.events.sort(key=lambda item: item["t"], reverse=True)
         self.prune(when)
@@ -97,6 +101,201 @@ class Store:
     def _write(self) -> None:
         payload = {"events": self.events}
         self.events_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def passage_group(zone: str) -> str:
+    if zone in PASSAGE_ZONES:
+        return "passage"
+    return zone or "other"
+
+
+def gap_seconds(group: str, same_label: bool) -> int:
+    if group == "sky":
+        return 600 if same_label else 60
+    return 60
+
+
+def event_time(event: dict) -> datetime:
+    return datetime.strptime(event["t"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+
+def open_passage(events: list[dict], event: dict) -> dict | None:
+    group = passage_group(event.get("zone", ""))
+    when = event_time(event)
+    newest = None
+    for item in events:
+        if passage_group(item.get("zone", "")) != group:
+            continue
+        if newest is None or event_time(item) > event_time(newest):
+            newest = item
+    if newest is None:
+        return None
+    same = newest.get("label") == event.get("label")
+    if abs((when - event_time(newest)).total_seconds()) <= gap_seconds(group, same):
+        return newest
+    return None
+
+
+def better_reading(new: dict, old: dict) -> bool:
+    if (old.get("detail") or {}).get("correction"):
+        return False
+    if (new.get("detail") or {}).get("correction"):
+        return True
+    new_rank = RANK.get(new.get("type"), 1)
+    old_rank = RANK.get(old.get("type"), 1)
+    if new_rank != old_rank:
+        return new_rank > old_rank
+    return float(new.get("confidence") or 0) > float(old.get("confidence") or 0) + 0.05
+
+
+def _bump(host: dict) -> None:
+    detail = dict(host.get("detail") or {})
+    detail["count"] = int(detail.get("count") or 1) + 1
+    host["detail"] = detail
+
+
+def _copy_reading(host: dict, event: dict) -> None:
+    count = int((host.get("detail") or {}).get("count") or 1) + 1
+    review = host.get("review")
+    clip = host.get("clip_url")
+    host["type"] = event.get("type")
+    host["label"] = event.get("label")
+    host["zone"] = event.get("zone")
+    host["confidence"] = event.get("confidence")
+    detail = dict(event.get("detail") or {})
+    detail["count"] = count
+    host["detail"] = detail
+    if event.get("thumb"):
+        host["thumb"] = event["thumb"]
+    if review:
+        host["review"] = review
+    if clip:
+        host["clip_url"] = clip
+
+
+def _write_thumb(folder: Path, event: dict, jpeg: bytes) -> None:
+    name = f"{event['id']}.jpg"
+    (folder / name).write_bytes(jpeg)
+    event["thumb"] = f"data/thumbs/{name}"
+
+
+def fold_events(events: list[dict]) -> list[dict]:
+    """One card per passage. Photos of the folded lines are left on disk."""
+    kept: list[dict] = []
+    for source in sorted(events, key=event_time):
+        event = dict(source)
+        event["detail"] = dict(source.get("detail") or {})
+        host = open_passage(kept, event)
+        if host is None:
+            event["detail"]["count"] = int(event["detail"].get("count") or 1)
+            kept.append(event)
+            continue
+        if (host.get("detail") or {}).get("correction") or not better_reading(event, host):
+            _bump(host)
+            continue
+        _copy_reading(host, event)
+    kept.sort(key=event_time, reverse=True)
+    return kept
+
+
+def passage_group(zone: str) -> str:
+    if zone in PASSAGE_ZONES:
+        return "passage"
+    return zone or "other"
+
+
+def gap_seconds(group: str, same_label: bool) -> int:
+    if group == "sky":
+        return 600 if same_label else 60
+    return 60
+
+
+def event_time(event: dict) -> datetime:
+    return datetime.strptime(event["t"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+
+def open_passage(events: list[dict], event: dict) -> dict | None:
+    group = passage_group(event.get("zone", ""))
+    when = event_time(event)
+    newest = None
+    for item in events:
+        if passage_group(item.get("zone", "")) != group:
+            continue
+        if newest is None or event_time(item) > event_time(newest):
+            newest = item
+    if newest is None:
+        return None
+    same = newest.get("label") == event.get("label")
+    if abs((when - event_time(newest)).total_seconds()) <= gap_seconds(group, same):
+        return newest
+    return None
+
+
+def better_reading(new: dict, old: dict) -> bool:
+    if (old.get("detail") or {}).get("correction"):
+        return False
+    if (new.get("detail") or {}).get("correction"):
+        return True
+    new_rank = RANK.get(new.get("type"), 1)
+    old_rank = RANK.get(old.get("type"), 1)
+    if new_rank != old_rank:
+        return new_rank > old_rank
+    return float(new.get("confidence") or 0) > float(old.get("confidence") or 0) + 0.05
+
+
+def _bump(host: dict) -> None:
+    detail = dict(host.get("detail") or {})
+    detail["count"] = int(detail.get("count") or 1) + 1
+    host["detail"] = detail
+
+
+def _copy_reading(host: dict, event: dict) -> None:
+    count = int((host.get("detail") or {}).get("count") or 1) + 1
+    correction = (event.get("detail") or {}).get("correction") or (host.get("detail") or {}).get("correction")
+    review = event.get("review") or host.get("review")
+    clip = host.get("clip_url") or event.get("clip_url") or ""
+    host["type"] = event.get("type") or host.get("type")
+    host["label"] = event.get("label") or host.get("label")
+    host["zone"] = event.get("zone") or host.get("zone")
+    host["confidence"] = event.get("confidence", host.get("confidence"))
+    detail = dict(event.get("detail") or {})
+    if correction:
+        detail["correction"] = correction
+        if (event.get("detail") or {}).get("correction"):
+            host["label"] = correction
+    detail["count"] = count
+    host["detail"] = detail
+    if event.get("thumb"):
+        host["thumb"] = event["thumb"]
+    if review:
+        host["review"] = review
+    if clip:
+        host["clip_url"] = clip
+
+
+def _write_thumb(folder: Path, event: dict, jpeg: bytes) -> None:
+    name = f"{event['id']}.jpg"
+    (folder / name).write_bytes(jpeg)
+    event["thumb"] = f"data/thumbs/{name}"
+
+
+def fold_events(events: list[dict]) -> list[dict]:
+    """One card per passage. Photos of the folded lines are left on disk."""
+    kept: list[dict] = []
+    for event in sorted(events, key=event_time):
+        item = dict(event)
+        item["detail"] = dict(event.get("detail") or {})
+        host = open_passage(kept, item)
+        if host is None:
+            item["detail"].setdefault("count", 1)
+            kept.append(item)
+            continue
+        if (host.get("detail") or {}).get("correction") or not better_reading(item, host):
+            _bump(host)
+            continue
+        _copy_reading(host, item)
+    kept.sort(key=event_time, reverse=True)
+    return kept
 
 
 def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALITY) -> bytes:
