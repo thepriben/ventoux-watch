@@ -1,6 +1,150 @@
 {
   "events": [
     {
+      "id": "2026-09-25T12-04-04Z-motion-1649",
+      "t": "2026-09-25T12:04:04Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-04-04Z-motion-1649.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-56Z-motion-1648",
+      "t": "2026-09-25T12:03:56Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-56Z-motion-1648.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-55Z-motion-1644",
+      "t": "2026-09-25T12:03:55Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-55Z-motion-1644.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-55Z-motion-1645",
+      "t": "2026-09-25T12:03:55Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-55Z-motion-1645.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-55Z-motion-1646",
+      "t": "2026-09-25T12:03:55Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-55Z-motion-1646.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-55Z-motion-1647",
+      "t": "2026-09-25T12:03:55Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-55Z-motion-1647.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-46Z-motion-1643",
+      "t": "2026-09-25T12:03:46Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-46Z-motion-1643.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-38Z-motion-1642",
+      "t": "2026-09-25T12:03:38Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-38Z-motion-1642.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T12-03-28Z-motion-1641",
+      "t": "2026-09-25T12:03:28Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T12-03-28Z-motion-1641.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T12-02-48Z-habit-1640",
       "t": "2026-09-25T12:02:48Z",
       "type": "habit",
