@@ -1,6 +1,58 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-53-46Z-plane-1611",
+      "t": "2026-09-25T11:53:46Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-53-46Z-plane-1611.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-53-45Z-motion-1609",
+      "t": "2026-09-25T11:53:45Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T11-53-45Z-motion-1609.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T11-53-45Z-plane-1610",
+      "t": "2026-09-25T11:53:45Z",
+      "type": "plane",
+      "label": "FGULA",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T11-53-45Z-plane-1610.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "395160",
+        "callsign": "FGULA",
+        "altitude_m": 2286,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T11-53-36Z-motion-1608",
       "t": "2026-09-25T11:53:36Z",
       "type": "motion",
