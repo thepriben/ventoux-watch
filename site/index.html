@@ -58,7 +58,7 @@
         <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.</span></li>
         <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
         <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
-        <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
+        <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 5 s, area ×1.5, at least 8% warm pixels or a rising plume. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
       </ol>
     </section>
     </div>
@@ -130,6 +130,14 @@
 
   <div id="loupe" hidden><img alt=""></div>
   </main>
+
+  <footer class="foot">
+    <p>
+      <a href="https://github.com/thepriben/ventoux-watch" target="_blank" rel="noopener noreferrer">thepriben/ventoux-watch</a>
+      <span class="tag" id="version">v0.2.0</span>
+      <span class="sub" data-i18n="repoPrivate">Private repository for now.</span>
+    </p>
+  </footer>
   <script src="app.js"></script>
 </body>
 </html>
