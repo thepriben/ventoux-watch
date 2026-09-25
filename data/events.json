@@ -1,3 +1,36 @@
 {
-  "events": []
+  "events": [
+    {
+      "id": "2026-09-25T05-25-58Z-motion-1",
+      "t": "2026-09-25T05:25:58Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-25-58Z-motion-1.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-25-58Z-motion-2",
+      "t": "2026-09-25T05:25:58Z",
+      "type": "motion",
+      "label": "Point dans le ciel",
+      "zone": "sky",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-25-58Z-motion-2.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    }
+  ]
 }
