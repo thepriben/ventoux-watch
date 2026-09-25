@@ -1,6 +1,591 @@
 {
   "events": [
     {
+      "id": "2026-09-25T05-40-22Z-plane-63",
+      "t": "2026-09-25T05:40:22Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-22Z-plane-63.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-22Z-plane-64",
+      "t": "2026-09-25T05:40:22Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-22Z-plane-64.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-21Z-plane-60",
+      "t": "2026-09-25T05:40:21Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-21Z-plane-60.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-21Z-plane-61",
+      "t": "2026-09-25T05:40:21Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-21Z-plane-61.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-21Z-plane-62",
+      "t": "2026-09-25T05:40:21Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-21Z-plane-62.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-50",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-50.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-51",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-51.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-52",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-52.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-53",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-53.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-54",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-54.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-55",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-55.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-56",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-56.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-57",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-57.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-58",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-58.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-14Z-motion-59",
+      "t": "2026-09-25T05:40:14Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-14Z-motion-59.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-07Z-car-45",
+      "t": "2026-09-25T05:40:07Z",
+      "type": "car",
+      "label": "Camion",
+      "zone": "road",
+      "confidence": 0.764,
+      "thumb": "data/thumbs/2026-09-25T05-40-07Z-car-45.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-07Z-plane-46",
+      "t": "2026-09-25T05:40:07Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-07Z-plane-46.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-07Z-plane-47",
+      "t": "2026-09-25T05:40:07Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-07Z-plane-47.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-07Z-plane-48",
+      "t": "2026-09-25T05:40:07Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-07Z-plane-48.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-07Z-motion-49",
+      "t": "2026-09-25T05:40:07Z",
+      "type": "motion",
+      "label": "Presque immobile",
+      "zone": "roundabout",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-40-07Z-motion-49.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Le mouvement est trop court pour une voiture ou un bus.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-06Z-plane-43",
+      "t": "2026-09-25T05:40:06Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-06Z-plane-43.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-40-06Z-plane-44",
+      "t": "2026-09-25T05:40:06Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-40-06Z-plane-44.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-59Z-plane-39",
+      "t": "2026-09-25T05:39:59Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-59Z-plane-39.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-59Z-plane-40",
+      "t": "2026-09-25T05:39:59Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-59Z-plane-40.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-59Z-plane-41",
+      "t": "2026-09-25T05:39:59Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-59Z-plane-41.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-59Z-motion-42",
+      "t": "2026-09-25T05:39:59Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T05-39-59Z-motion-42.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-52Z-plane-35",
+      "t": "2026-09-25T05:39:52Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-52Z-plane-35.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-52Z-plane-36",
+      "t": "2026-09-25T05:39:52Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-52Z-plane-36.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-52Z-plane-37",
+      "t": "2026-09-25T05:39:52Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-52Z-plane-37.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-52Z-plane-38",
+      "t": "2026-09-25T05:39:52Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-52Z-plane-38.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-45Z-plane-34",
+      "t": "2026-09-25T05:39:45Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-45Z-plane-34.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-38Z-plane-33",
+      "t": "2026-09-25T05:39:38Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-38Z-plane-33.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-37Z-plane-32",
+      "t": "2026-09-25T05:39:37Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-37Z-plane-32.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
+      "id": "2026-09-25T05-39-33Z-plane-31",
+      "t": "2026-09-25T05:39:33Z",
+      "type": "plane",
+      "label": "JFA09F",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T05-39-33Z-plane-31.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d02dd",
+        "callsign": "JFA09F",
+        "altitude_m": 4922.52,
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux"
+      }
+    },
+    {
       "id": "2026-09-25T05-39-23Z-plane-29",
       "t": "2026-09-25T05:39:23Z",
       "type": "plane",
