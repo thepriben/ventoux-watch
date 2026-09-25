@@ -14,14 +14,20 @@
         "weather": "peu nuageux",
         "context": "de nuit, peu nuageux",
         "box": [
-          0.6392,
-          0.9222,
-          0.1195,
-          0.037
+          0.632,
+          0.9444,
+          0.0943,
+          0.0148
         ],
         "count": 11,
         "correction": "Voiture blanche",
-        "reading": "Voiture blanche, indiqué à la main."
+        "reading": "Voiture blanche, indiqué à la main.",
+        "drawn": [
+          283,
+          245,
+          369,
+          269
+        ]
       },
       "closeup": "data/closeups/2026-09-25T22-51-50Z-person-9.jpg",
       "review": "accepted"
@@ -46,7 +52,13 @@
           0.0037
         ],
         "correction": "Voiture",
-        "reading": "Voiture, indiqué à la main."
+        "reading": "Voiture, indiqué à la main.",
+        "drawn": [
+          298,
+          250,
+          378,
+          269
+        ]
       },
       "review": "accepted"
     },
@@ -585,7 +597,13 @@
           0.0778
         ],
         "correction": "Camionnette jaune",
-        "reading": "Camionnette jaune, indiqué à la main."
+        "reading": "Camionnette jaune, indiqué à la main.",
+        "drawn": [
+          28,
+          221,
+          103,
+          262
+        ]
       },
       "review": "accepted"
     },
@@ -933,6 +951,12 @@
           0.663,
           0.0746,
           0.0741
+        ],
+        "drawn": [
+          53,
+          169,
+          121,
+          209
         ]
       },
       "review": "accepted"
