@@ -8,18 +8,16 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js"></script>
 </head>
 <body>
-  <header class="bar">
-    <div>
-      <p class="eyebrow">Mont Ventoux</p>
-      <h1>Mont Serein</h1>
-      <p class="langs">
-        <button type="button" data-lang="en" class="on">EN</button>
-        <button type="button" data-lang="fr">FR</button>
-      </p>
-    </div>
-    <dl class="facts">
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <p class="eyebrow">Mont Ventoux</p>
+        <h1>Mont Serein</h1>
+      </div>
+      <dl class="facts">
       <div>
         <dt data-i18n="paris">Paris time</dt>
         <dd id="clock">—</dd>
@@ -35,26 +33,34 @@
         <dd id="seen">—</dd>
         <dd class="sub" id="named"></dd>
       </div>
-    </dl>
+      </dl>
+      <p class="langs">
+        <button type="button" data-lang="en" class="on">EN</button>
+        <button type="button" data-lang="fr">FR</button>
+      </p>
+    </div>
   </header>
 
-  <section class="live" data-i18n-aria="live" aria-label="Live webcam">
-    <video id="player" controls autoplay muted playsinline></video>
-  </section>
+  <main>
+  <div class="stage">
+    <section class="live" data-i18n-aria="live" aria-label="Live webcam">
+      <video id="player" controls autoplay muted playsinline></video>
+    </section>
 
-  <section class="place" data-i18n-aria="camera" aria-label="Camera">
-    <h2 data-i18n="camera">Camera</h2>
-    <div class="frame">
-      <div id="map"></div>
-      <div class="zooms" role="group" aria-label="Zoom">
-        <button type="button" data-zoom="0">1</button>
-        <button type="button" data-zoom="1" class="on">2</button>
-        <button type="button" data-zoom="2">3</button>
+    <section class="place" data-i18n-aria="camera" aria-label="Camera">
+      <div class="frame">
+        <div id="map"></div>
+        <div class="zooms" role="group" aria-label="Zoom">
+          <button type="button" data-zoom="0">1</button>
+          <button type="button" data-zoom="1" class="on">2</button>
+          <button type="button" data-zoom="2">3</button>
+        </div>
+        <p class="cap"><span data-i18n="cameraText">Fixed, facing 140°.</span><span class="key"><i class="pnx"></i>Panoramax <i class="mly"></i>Mapillary</span></p>
       </div>
-    </div>
-    <p class="sub" data-i18n="cameraText">Fixed, facing 140°.</p>
-  </section>
+    </section>
+  </div>
 
+  <div class="lower">
   <section class="pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
       <h2 data-i18n="pipeline">Pipeline</h2>
       <ol class="steps">
@@ -88,7 +94,9 @@
     <ol id="list" class="cards"></ol>
   </section>
 
+  </div>
   <p class="tags">#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur</p>
+  </main>
   <script src="app.js"></script>
 </body>
 </html>

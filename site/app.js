@@ -365,6 +365,29 @@ L.tileLayer("https://data.geopf.fr/wmts?LAYER=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=im
   maxZoom: 19,
   attribution: "© IGN",
 }).addTo(map);
+if (window.L && L.vectorGrid) {
+  const coverage = { rendererFactory: L.canvas.tile, interactive: false, maxZoom: 19 };
+  L.vectorGrid.protobuf("https://api.panoramax.xyz/api/map/{z}/{x}/{y}.mvt", {
+    ...coverage,
+    attribution: "© Panoramax",
+    maxNativeZoom: 15,
+    vectorTileLayerStyles: {
+      sequences: { weight: 2.5, color: "#7C3AED", opacity: 0.9 },
+      pictures: () => ({ radius: 2, fill: true, fillColor: "#7C3AED", fillOpacity: 0.7, stroke: false }),
+      grid: () => ({ radius: 3, fill: true, fillColor: "#7C3AED", fillOpacity: 0.45, stroke: false }),
+    },
+  }).addTo(map);
+  L.vectorGrid.protobuf("https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=MLY%7C26158465847163536%7C0186af2cabb143cd46cccc023e7f0d81", {
+    ...coverage,
+    attribution: "© Mapillary",
+    maxNativeZoom: 14,
+    vectorTileLayerStyles: {
+      sequence: { weight: 2.5, color: "#05CB63", opacity: 0.9 },
+      overview: () => ({ radius: 2, fill: true, fillColor: "#05CB63", fillOpacity: 0.6, stroke: false }),
+      image: () => ({ radius: 2, fill: true, fillColor: "#05CB63", fillOpacity: 0.55, stroke: false }),
+    },
+  }).addTo(map);
+}
 L.polygon(viewWedge(), {
   color: "#c4b094",
   weight: 1.5,
@@ -395,6 +418,7 @@ document.querySelectorAll(".zooms button").forEach((button) => {
   button.addEventListener("click", () => showZoom(Number(button.dataset.zoom)));
 });
 showZoom(1);
+requestAnimationFrame(() => map.invalidateSize());
 
 function paintCamera() {
   cameraMark.unbindTooltip();
