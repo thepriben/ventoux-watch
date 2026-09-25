@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-25T18-58-22Z-person-3",
+      "t": "2026-09-25T18:58:22Z",
+      "type": "person",
+      "label": "Piéton",
+      "zone": "roundabout",
+      "confidence": 0.568,
+      "thumb": "data/thumbs/2026-09-25T18-58-22Z-person-3.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "night",
+        "weather": "ciel dégagé",
+        "context": "de nuit, ciel dégagé",
+        "box": [
+          0.0,
+          0.7444,
+          0.25,
+          0.2556
+        ]
+      }
+    },
+    {
       "id": "2026-09-25T18-44-58Z-person-2",
       "t": "2026-09-25T18:44:58Z",
       "type": "person",
@@ -24,8 +45,8 @@
     {
       "id": "2026-09-25T18-28-24Z-person-1",
       "t": "2026-09-25T18:28:24Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "vehicle",
+      "label": "Voiture",
       "zone": "other",
       "confidence": 0.563,
       "thumb": "data/thumbs/2026-09-25T18-28-24Z-person-1.jpg",
@@ -35,18 +56,21 @@
         "weather": "ciel dégagé",
         "context": "de nuit, ciel dégagé",
         "box": [
-          0.5859,
-          0.7667,
-          0.0391,
-          0.0583
-        ]
-      }
+          0.3754,
+          0.8296,
+          0.0658,
+          0.037
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T17-54-36Z-person-4",
       "t": "2026-09-25T17:54:36Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "vehicle",
+      "label": "Camionnette blanche",
       "zone": "roundabout",
       "confidence": 0.424,
       "thumb": "data/thumbs/2026-09-25T17-54-36Z-person-4.jpg",
@@ -56,18 +80,21 @@
         "weather": "ciel dégagé",
         "context": "au crépuscule, ciel dégagé",
         "box": [
-          0.2547,
-          0.7389,
-          0.2516,
-          0.2222
-        ]
-      }
+          0.3915,
+          0.8259,
+          0.0691,
+          0.0556
+        ],
+        "correction": "Camionnette blanche",
+        "reading": "Camionnette blanche, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T17-53-09Z-vehicle-3",
       "t": "2026-09-25T17:53:09Z",
       "type": "vehicle",
-      "label": "Voiture et piéton",
+      "label": "Voiture avec carriole",
       "zone": "other",
       "confidence": 0.662,
       "thumb": "data/thumbs/2026-09-25T17-53-09Z-vehicle-3.jpg",
@@ -77,18 +104,21 @@
         "weather": "ciel dégagé",
         "context": "au crépuscule, ciel dégagé",
         "box": [
-          0.2547,
-          0.7472,
-          0.3312,
-          0.2306
-        ]
-      }
+          0.4108,
+          0.8259,
+          0.0888,
+          0.0593
+        ],
+        "correction": "Voiture avec carriole",
+        "reading": "Voiture avec carriole, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T17-50-59Z-person-2",
       "t": "2026-09-25T17:50:59Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "vehicle",
+      "label": "Voiture",
       "zone": "roundabout",
       "confidence": 0.407,
       "thumb": "data/thumbs/2026-09-25T17-50-59Z-person-2.jpg",
@@ -102,8 +132,11 @@
           0.7611,
           0.0609,
           0.0667
-        ]
-      }
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T17-46-41Z-vehicle-1",
@@ -170,72 +203,6 @@
       }
     },
     {
-      "id": "2026-09-25T17-08-06Z-motion-73",
-      "t": "2026-09-25T17:08:06Z",
-      "type": "vehicle",
-      "label": "Véhicule",
-      "zone": "other",
-      "confidence": 0.451,
-      "thumb": "data/thumbs/2026-09-25T17-08-06Z-motion-73.jpg",
-      "clip_url": "",
-      "detail": {
-        "period": "twilight",
-        "weather": "ciel dégagé",
-        "context": "au crépuscule, ciel dégagé",
-        "box": [
-          0.0422,
-          0.575,
-          0.0141,
-          0.0333
-        ],
-        "count": 7
-      }
-    },
-    {
-      "id": "2026-09-25T17-02-48Z-person-48",
-      "t": "2026-09-25T17:02:48Z",
-      "type": "person",
-      "label": "Piéton",
-      "zone": "road",
-      "confidence": 0.469,
-      "thumb": "data/thumbs/2026-09-25T17-02-48Z-person-48.jpg",
-      "clip_url": "",
-      "detail": {
-        "period": "twilight",
-        "weather": "ciel dégagé",
-        "context": "au crépuscule, ciel dégagé",
-        "box": [
-          0.0875,
-          0.6444,
-          0.0266,
-          0.0306
-        ],
-        "count": 11
-      }
-    },
-    {
-      "id": "2026-09-25T17-01-45Z-motion-36",
-      "t": "2026-09-25T17:01:45Z",
-      "type": "vehicle",
-      "label": "Véhicule",
-      "zone": "other",
-      "confidence": 0.62,
-      "thumb": "data/thumbs/2026-09-25T17-01-45Z-motion-36.jpg",
-      "clip_url": "",
-      "detail": {
-        "period": "twilight",
-        "weather": "ciel dégagé",
-        "context": "au crépuscule, ciel dégagé",
-        "box": [
-          0.5547,
-          0.8194,
-          0.0219,
-          0.0444
-        ],
-        "count": 12
-      }
-    },
-    {
       "id": "2026-09-25T15-55-51Z-motion-21",
       "t": "2026-09-25T15:56:28Z",
       "type": "person",
@@ -278,7 +245,7 @@
       "id": "2026-09-25T15-14-37Z-motion-2046",
       "t": "2026-09-25T15:14:37Z",
       "type": "car",
-      "label": "Camion",
+      "label": "Voiture blanche",
       "zone": "road",
       "confidence": 0.689,
       "thumb": "data/thumbs/2026-09-25T15-15-26Z-car-2052.jpg",
@@ -287,8 +254,17 @@
         "period": "day",
         "weather": "ciel dégagé",
         "context": "de jour, ciel dégagé",
-        "count": 7
-      }
+        "count": 7,
+        "correction": "Voiture blanche",
+        "reading": "Voiture blanche, indiqué à la main.",
+        "box": [
+          0.0312,
+          0.7333,
+          0.0354,
+          0.0111
+        ]
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-25T14-34-34Z-car-1976",
@@ -386,8 +362,14 @@
         "context": "de jour, peu nuageux",
         "count": 5,
         "correction": "Voiture et piéton",
-        "reading": "Voiture et piéton, indiqués à la main.",
-        "persons": 1
+        "reading": "Voiture et piéton, indiqué à la main.",
+        "persons": 1,
+        "box": [
+          0.0875,
+          0.7259,
+          0.0021,
+          0.0037
+        ]
       },
       "review": "accepted"
     },
