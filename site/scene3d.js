@@ -1,37 +1,49 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-// The colours the map is read in. Not a palette chosen for itself: a road has
-// to look like tarmac from above so the shape of the roundabout is legible.
-const PAINT = {
-  r: 0x6a6a70, o: 0x75757b, i: 0x8b7f6a, p: 0x7e7e84, t: 0xa9946f,
-  m: 0x85a95f, f: 0x47713b, b: 0x9d7d64, e: 0xaaa195, ".": 0x938b77,
+// What grows on the ground, in the order the map codes it. The first is what
+// the map has not said: up here that is the ski area in summer, pasture worn
+// thin by the pistes, so it is given the colour of grass rather than of sand.
+const COVER = [0x8c9a6c, 0x47713b, 0x85a95f, 0xaaa195];
+
+// Tarmac, gravel and beaten earth. A road is drawn at the width the map gives
+// it, so the difference between a lane and a footpath is a real difference.
+const SURFACE = {
+  secondary: 0x5c5c62, tertiary: 0x5c5c62, unclassified: 0x606067,
+  residential: 0x606067, living_street: 0x606067, service: 0x66666d,
+  track: 0x8a7b5e, path: 0xa18a68, footway: 0xa18a68, steps: 0xa18a68,
+  cycleway: 0x8a7b5e, pedestrian: 0x8b8b8f, parking: 0x6a6a71,
 };
-// The sky, and the light on the ground, at three moments of the day. What is
-// shown is what the sun is really doing over the Ventoux at this instant, so
-// the relief is dark when the webcam above it is dark.
+const WALL = 0x9a8975;
+const ROOF = 0x7a5f52;
+const STEEL = 0xb9bec7;
+const FOLIAGE = [0x345c2c, 0x3e6b33, 0x4a7a3a, 0x2e5228];
+const TRUNK = 0x4a3b2c;
+// A tree every twelve metres is what a Ventoux pine wood looks like from a
+// kilometre off, and it is also as many as a page can carry without labouring.
+const SPACING_M = 12;
+const CROWN_M = 10;
+
+// The sky and the light at three moments of the day. What is shown is what the
+// sun is really doing over the Ventoux at this instant, so the relief is dark
+// when the webcam above it is dark.
 const HOURS = {
   day: { top: 0x3f6ea8, low: 0xa9c5de, warm: 0xfff4e2, beam: 1.05, fill: 1.35, cool: 0xe4edf8 },
-  dusk: { top: 0x2b3352, low: 0xd98b5a, warm: 0xffc089, beam: 0.80, fill: 0.95, cool: 0xa8b2cc },
-  night: { top: 0x0d1524, low: 0x27374e, warm: 0xc2d0ea, beam: 0.30, fill: 1.05, cool: 0x9fb2d4 },
+  dusk: { top: 0x2b3352, low: 0xd98b5a, warm: 0xffc089, beam: 0.8, fill: 0.95, cool: 0xa8b2cc },
+  night: { top: 0x0d1524, low: 0x27374e, warm: 0xc2d0ea, beam: 0.3, fill: 1.05, cool: 0x9fb2d4 },
 };
 // Between these two heights of the sun the light turns over. Above, it is day;
 // below, the ground keeps only what the sky still gives it.
 const DUSK_LOW = -7;
 const DUSK_HIGH = 7;
-// Beyond this much depth change across one cell, the two corners are not the
-// same slope: one is a ridge and the other the valley a kilometre behind it.
-// Joining them would stretch a curtain of rock across the gap.
-const CLIFF = 1.35;
 
 const host = document.getElementById("relief");
 if (host) start(host).catch(() => host.closest(".block")?.setAttribute("hidden", ""));
 
 async function start(host) {
-  const scene = await fetch("data/scene.json", { cache: "no-store" }).then((r) => r.json());
-  const pose = scene.pose;
+  const relief = await fetch("data/relief.json", { cache: "no-store" }).then((answer) => answer.json());
+  const pose = relief.pose;
   const aspect = pose.aspect || 16 / 9;
-  pose.aspect = aspect;
   const axes = frame(pose);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -39,27 +51,30 @@ async function start(host) {
   host.appendChild(renderer.domElement);
 
   const world = new THREE.Scene();
-  world.add(ground(scene, pose, axes));
-  world.add(marker());
+  world.add(ground(relief));
+  for (const road of relief.roads) world.add(ribbon(road.p, road.w, SURFACE[road.k] ?? SURFACE.track));
+  for (const area of relief.ribbons) world.add(slab(area.p, SURFACE[area.k] ?? SURFACE.parking));
+  for (const house of relief.buildings) world.add(block(house));
+  world.add(...wood(relief));
+  const named = relief.masts.map(column);
+  for (const mast of named) world.add(mast);
+  world.add(here());
 
   const fill = new THREE.AmbientLight(0xffffff, 1);
   const beam = new THREE.DirectionalLight(0xffffff, 1);
-  const star = new THREE.Mesh(
-    new THREE.SphereGeometry(70, 16, 12),
-    new THREE.MeshBasicMaterial({ color: 0xfff6dd }),
-  );
+  const star = new THREE.Mesh(new THREE.SphereGeometry(70, 16, 12), new THREE.MeshBasicMaterial());
   world.add(fill, beam, star);
   const daylight = () => paintHour(world, pose, { fill, beam, star });
   daylight();
   setInterval(daylight, 60000);
 
-  const camera = new THREE.PerspectiveCamera(vertical(pose.hfov, aspect), aspect, 1, 12000);
-  const look = axes.forward.clone().multiplyScalar(centre(scene) || 500);
+  const camera = new THREE.PerspectiveCamera(vertical(pose.hfov, aspect), aspect, 1, 20000);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.maxDistance = 6000;
-  const marks = pins(scene, pose, axes);
-  world.add(marks.points);
+  controls.maxDistance = 7000;
+  // The far slope, straight ahead: near enough that turning feels like walking
+  // round the bowl rather than round a marble held at arm's length.
+  const look = axes.forward.clone().multiplyScalar(700);
 
   function home() {
     camera.position.set(0, 0, 0);
@@ -72,15 +87,15 @@ async function start(host) {
 
   const caption = document.getElementById("relief-name");
   const finder = new THREE.Raycaster();
-  finder.params.Points.threshold = 14;
   const cursor = new THREE.Vector2();
   renderer.domElement.addEventListener("pointermove", (event) => {
     const box = renderer.domElement.getBoundingClientRect();
     cursor.x = ((event.clientX - box.left) / box.width) * 2 - 1;
     cursor.y = -((event.clientY - box.top) / box.height) * 2 + 1;
     finder.setFromCamera(cursor, camera);
-    const hit = finder.intersectObject(marks.points)[0];
-    caption.textContent = hit ? marks.names[hit.index] : "";
+    const hit = finder.intersectObjects(named)[0];
+    caption.textContent = hit ? hit.object.name : "";
+    caption.hidden = !hit;
   });
 
   function fit() {
@@ -96,17 +111,21 @@ async function start(host) {
   });
 }
 
+function spot(east, north, up) {
+  // East, up, south: the way three.js holds the world here.
+  return new THREE.Vector3(east, up, -north);
+}
+
 function frame(pose) {
-  /* The camera's own three directions, in east-north-up, then turned into the
-     way three.js holds the world: x east, y up, z south. */
+  /* The camera's own three directions. The same formula the watcher uses to
+     read the ground, so the picture and the model agree. */
   const yaw = THREE.MathUtils.degToRad(pose.yaw);
   const pitch = THREE.MathUtils.degToRad(pose.pitch);
   const flat = [Math.sin(yaw), Math.cos(yaw)];
-  const enu = (east, north, up) => new THREE.Vector3(east, up, -north);
   return {
-    right: enu(Math.cos(yaw), -Math.sin(yaw), 0),
-    forward: enu(flat[0] * Math.cos(pitch), flat[1] * Math.cos(pitch), -Math.sin(pitch)),
-    up: enu(flat[0] * Math.sin(pitch), flat[1] * Math.sin(pitch), Math.cos(pitch)),
+    right: spot(Math.cos(yaw), -Math.sin(yaw), 0),
+    forward: spot(flat[0] * Math.cos(pitch), flat[1] * Math.cos(pitch), -Math.sin(pitch)),
+    up: spot(flat[0] * Math.sin(pitch), flat[1] * Math.sin(pitch), Math.cos(pitch)),
   };
 }
 
@@ -115,129 +134,211 @@ function vertical(hfov, aspect) {
   return THREE.MathUtils.radToDeg(2 * Math.atan(half / aspect));
 }
 
-function ray(pose, axes, sx, sy) {
-  /* The direction the camera looks at this point of the picture. The same
-     formula the watcher uses to read the ground, so the two agree. */
-  const half = Math.tan(THREE.MathUtils.degToRad(pose.hfov) / 2);
-  const nx = (sx - 0.5) * 2 * half;
-  const ny = ((0.5 - sy) * 2 * half) / (pose.aspect || 16 / 9);
-  return axes.forward
-    .clone()
-    .addScaledVector(axes.right, nx)
-    .addScaledVector(axes.up, ny)
-    .normalize();
+function ground(relief) {
+  /* The mountain itself, one square per elevation post, coloured by what the
+     map says grows on it. */
+  const { grid, step_m: step, reach_m: reach } = relief.terrain;
+  const cover = relief.cover.grid;
+  const side = grid.length;
+  const shape = new THREE.PlaneGeometry(2 * reach, 2 * reach, side - 1, side - 1);
+  shape.rotateX(-Math.PI / 2);
+  const place = shape.attributes.position;
+  const tint = [];
+  const paint = new THREE.Color();
+  for (let index = 0; index < place.count; index += 1) {
+    const col = index % side;
+    const row = Math.floor(index / side);
+    place.setY(index, grid[row][col]);
+    paint.setHex(COVER[cover[row][col]] ?? COVER[0]);
+    tint.push(paint.r, paint.g, paint.b);
+  }
+  shape.setAttribute("color", new THREE.Float32BufferAttribute(tint, 3));
+  shape.computeVertexNormals();
+  return new THREE.Mesh(shape, new THREE.MeshLambertMaterial({ vertexColors: true }));
 }
 
-function reader(reach) {
-  /* How far the ground is at any point of the picture, read between the cells
-     so the slope comes out smooth instead of stepped. Zero means sky, and a
-     cell that touches sky stays sky: guessing there would drape the skyline. */
-  const rows = reach.length;
-  const columns = reach[0].length;
-  return (sx, sy) => {
-    const fx = Math.min(columns - 1, Math.max(0, sx * columns - 0.5));
-    const fy = Math.min(rows - 1, Math.max(0, sy * rows - 0.5));
-    const x0 = Math.floor(fx);
-    const y0 = Math.floor(fy);
-    const x1 = Math.min(columns - 1, x0 + 1);
-    const y1 = Math.min(rows - 1, y0 + 1);
-    const a = reach[y0][x0];
-    const b = reach[y0][x1];
-    const c = reach[y1][x0];
-    const d = reach[y1][x1];
-    if (!a || !b || !c || !d) return 0;
-    const tx = fx - x0;
-    const ty = fy - y0;
-    return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty;
-  };
+function ribbon(line, width, colour) {
+  /* A road from its centre line: the map keeps the line and the width apart,
+     and so does this. */
+  const half = Math.max(0.8, width / 2);
+  const left = [];
+  const right = [];
+  for (let index = 0; index < line.length; index += 1) {
+    const before = line[Math.max(0, index - 1)];
+    const after = line[Math.min(line.length - 1, index + 1)];
+    let run = new THREE.Vector2(after[0] - before[0], after[1] - before[1]);
+    if (run.lengthSq() < 1e-9) run = new THREE.Vector2(1, 0);
+    run.normalize();
+    const side = new THREE.Vector2(-run.y, run.x).multiplyScalar(half);
+    const [east, north, up] = line[index];
+    left.push(spot(east + side.x, north + side.y, up));
+    right.push(spot(east - side.x, north - side.y, up));
+  }
+  const place = [];
+  for (let index = 0; index + 1 < line.length; index += 1) {
+    const quad = [left[index], right[index], right[index + 1], left[index + 1]];
+    for (const corner of [0, 1, 2, 0, 2, 3]) place.push(quad[corner].x, quad[corner].y, quad[corner].z);
+  }
+  const shape = new THREE.BufferGeometry();
+  shape.setAttribute("position", new THREE.Float32BufferAttribute(place, 3));
+  shape.computeVertexNormals();
+  return new THREE.Mesh(shape, tarmac(colour));
 }
 
-function ground(scene, pose, axes) {
-  const grid = scene.grid;
-  const rows = grid.length;
-  const columns = grid[0].length;
-  const depth = reader(scene.reach);
-  const position = [];
-  const colour = [];
-  const normal = [];
-  const tint = new THREE.Color();
+function slab(ring, colour) {
+  /* A car park, drawn corner by corner. Its corners carry their own heights,
+     so it lies along the slope instead of hovering over it. */
+  const flat = ring.map(([east, north]) => new THREE.Vector2(east, north));
+  const place = [];
+  for (const triangle of THREE.ShapeUtils.triangulateShape(flat, [])) {
+    for (const corner of triangle) {
+      const [east, north, up] = ring[corner];
+      place.push(east, up, -north);
+    }
+  }
+  const shape = new THREE.BufferGeometry();
+  shape.setAttribute("position", new THREE.Float32BufferAttribute(place, 3));
+  shape.computeVertexNormals();
+  return new THREE.Mesh(shape, tarmac(colour));
+}
 
-  const corner = (col, row) => {
-    const sx = col / columns;
-    const sy = row / rows;
-    const span = depth(sx, sy);
-    return span ? ray(pose, axes, sx, sy).multiplyScalar(span) : null;
-  };
+function tarmac(colour) {
+  // Pushed a hair towards the camera in the depth test: tarmac and the slope it
+  // lies on are a few centimetres apart and would otherwise flicker.
+  return new THREE.MeshLambertMaterial({
+    color: colour,
+    side: THREE.DoubleSide,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+  });
+}
 
-  for (let row = 0; row < rows; row += 1) {
-    for (let col = 0; col < columns; col += 1) {
-      const letter = grid[row][col];
-      if (letter === "s") continue;
-      const quad = [corner(col, row), corner(col + 1, row), corner(col + 1, row + 1), corner(col, row + 1)];
-      if (quad.some((point) => point === null)) continue;
-      const lengths = quad.map((point) => point.length());
-      if (Math.max(...lengths) / Math.min(...lengths) > CLIFF) continue;
-      tint.setHex(PAINT[letter] ?? PAINT["."]);
-      const facing = upward(quad);
-      for (const index of [0, 1, 2, 0, 2, 3]) {
-        position.push(quad[index].x, quad[index].y, quad[index].z);
-        colour.push(tint.r, tint.g, tint.b);
-        normal.push(facing.x, facing.y, facing.z);
+function block(house) {
+  /* A building, raised off its own footprint to its own height. */
+  const outline = new THREE.Shape(house.p.map(([east, north]) => new THREE.Vector2(east, north)));
+  const shape = new THREE.ExtrudeGeometry(outline, { depth: house.h, bevelEnabled: false });
+  shape.rotateX(-Math.PI / 2);
+  shape.translate(0, house.z, 0);
+  return new THREE.Mesh(shape, [
+    new THREE.MeshLambertMaterial({ color: WALL }),
+    new THREE.MeshLambertMaterial({ color: ROOF }),
+  ]);
+}
+
+function wood(relief) {
+  /* The woods, planted. The map gives the outline of a parcel and nothing of
+     what stands in it, so the trees are sown on a fixed pattern, nudged about
+     by a seeded roll of the dice: the same wood every time the page is opened,
+     and never a plantation in rows. */
+  const high = sampler(relief.terrain);
+  const roll = dice(20260926);
+  const standing = [];
+  for (const parcel of relief.woods) {
+    const ring = parcel.p;
+    let west = Infinity, east = -Infinity, south = Infinity, north = -Infinity;
+    for (const [x, y] of ring) {
+      west = Math.min(west, x); east = Math.max(east, x);
+      south = Math.min(south, y); north = Math.max(north, y);
+    }
+    for (let x = west; x <= east; x += SPACING_M) {
+      for (let y = south; y <= north; y += SPACING_M) {
+        const at = [x + (roll() - 0.5) * SPACING_M, y + (roll() - 0.5) * SPACING_M];
+        if (!inside(at, ring)) continue;
+        standing.push([at[0], at[1], high(at[0], at[1]), CROWN_M * (0.65 + roll() * 0.7)]);
       }
     }
   }
+  for (const [x, y, z, tall] of relief.trees) standing.push([x, y, z, tall]);
+  if (!standing.length) return [];
 
-  const shape = new THREE.BufferGeometry();
-  shape.setAttribute("position", new THREE.Float32BufferAttribute(position, 3));
-  shape.setAttribute("color", new THREE.Float32BufferAttribute(colour, 3));
-  shape.setAttribute("normal", new THREE.Float32BufferAttribute(normal, 3));
-  return new THREE.Mesh(shape, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+  const crowns = new THREE.InstancedMesh(
+    new THREE.ConeGeometry(0.34, 1, 7),
+    new THREE.MeshLambertMaterial({ vertexColors: true }),
+    standing.length,
+  );
+  const trunks = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.06, 0.09, 1, 5),
+    new THREE.MeshLambertMaterial({ color: TRUNK }),
+    standing.length,
+  );
+  const sit = new THREE.Object3D();
+  const tint = new THREE.Color();
+  standing.forEach(([x, y, z, tall], index) => {
+    const crown = tall * 0.78;
+    sit.position.set(x, z + tall - crown / 2, -y);
+    sit.scale.set(crown, crown, crown);
+    sit.rotation.y = roll() * Math.PI;
+    sit.updateMatrix();
+    crowns.setMatrixAt(index, sit.matrix);
+    crowns.setColorAt(index, tint.setHex(FOLIAGE[index % FOLIAGE.length]));
+    sit.position.set(x, z + (tall - crown) / 2, -y);
+    sit.scale.set(tall, tall - crown, tall);
+    sit.updateMatrix();
+    trunks.setMatrixAt(index, sit.matrix);
+  });
+  return [trunks, crowns];
 }
 
-function upward(quad) {
-  /* The way the ground faces here. Turned to the sky whatever order the corners
-     came in, so a slope is never lit from underneath. */
-  const facing = new THREE.Vector3()
-    .subVectors(quad[1], quad[0])
-    .cross(new THREE.Vector3().subVectors(quad[3], quad[0]))
-    .normalize();
-  return facing.y < 0 ? facing.negate() : facing;
+function sampler(terrain) {
+  /* How high the ground is anywhere, read between the elevation posts. */
+  const { grid, step_m: step, reach_m: reach } = terrain;
+  const side = grid.length;
+  return (east, north) => {
+    const fx = Math.min(side - 1, Math.max(0, (east + reach) / step));
+    const fy = Math.min(side - 1, Math.max(0, (reach - north) / step));
+    const x0 = Math.floor(fx), y0 = Math.floor(fy);
+    const x1 = Math.min(side - 1, x0 + 1), y1 = Math.min(side - 1, y0 + 1);
+    const tx = fx - x0, ty = fy - y0;
+    const top = grid[y0][x0] * (1 - tx) + grid[y0][x1] * tx;
+    const low = grid[y1][x0] * (1 - tx) + grid[y1][x1] * tx;
+    return top * (1 - ty) + low * ty;
+  };
 }
 
-function centre(scene) {
-  return reader(scene.reach)(0.5, 0.5);
-}
-
-function pins(scene, pose, axes) {
-  /* The named things, put back where they stand. The map already knows where
-     each one sits in the picture and how far it is, which is all it takes. */
-  const position = [];
-  const names = [];
-  for (const mark of scene.landmarks || []) {
-    const spot = ray(pose, axes, mark.x, mark.y).multiplyScalar(mark.distance_m);
-    position.push(spot.x, spot.y, spot.z);
-    names.push(mark.name);
+function inside(point, ring) {
+  let within = false;
+  for (let a = 0, b = ring.length - 1; a < ring.length; b = a, a += 1) {
+    const [ax, ay] = ring[a];
+    const [bx, by] = ring[b];
+    if (ay > point[1] !== by > point[1] && point[0] < ((bx - ax) * (point[1] - ay)) / (by - ay) + ax) {
+      within = !within;
+    }
   }
-  const shape = new THREE.BufferGeometry();
-  shape.setAttribute("position", new THREE.Float32BufferAttribute(position, 3));
-  const dot = new THREE.PointsMaterial({ color: 0xffd479, size: 9, sizeAttenuation: false });
-  return { points: new THREE.Points(shape, dot), names };
+  return within;
 }
 
-function marker() {
+function dice(seed) {
+  // The same wood every time the page opens, which matters: a forest that
+  // reshuffles itself on reload is a forest nobody can point at.
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function column(mast) {
+  /* A tower or an aerial. Thin, and by far the tallest thing on the skyline. */
+  const [east, north, up] = mast.at;
+  const shape = new THREE.CylinderGeometry(mast.h / 22, mast.h / 14, mast.h, 8);
+  const piece = new THREE.Mesh(shape, new THREE.MeshLambertMaterial({ color: STEEL }));
+  piece.position.set(east, up + mast.h / 2, -north);
+  piece.name = mast.name;
+  return piece;
+}
+
+function here() {
   /* Where the webcam stands. Invisible from the webcam's own angle, and the
      first thing you look for once you have turned away from it. */
-  const post = new THREE.Mesh(
-    new THREE.SphereGeometry(1.6, 12, 8),
+  return new THREE.Mesh(
+    new THREE.SphereGeometry(2.5, 12, 8),
     new THREE.MeshBasicMaterial({ color: 0xff5a5a }),
   );
-  post.position.set(0, 0, 0);
-  return post;
 }
 
 function sun(when, lat, lon) {
-  /* Where the sun stands over this spot, right now. Returned as a direction in
-     the same east-north-up frame the camera is described in. */
+  /* Where the sun stands over this spot, right now. */
   const rad = Math.PI / 180;
   const days = when.valueOf() / 86400000 - 10957.5;
   const anomaly = rad * (357.5291 + 0.98560028 * days);
@@ -252,12 +353,7 @@ function sun(when, lat, lon) {
   const bearing = Math.atan2(Math.sin(hour), Math.cos(hour) * Math.sin(phi) - Math.tan(fall) * Math.cos(phi)) + Math.PI;
   return {
     height: height / rad,
-    // East, up, south: the way three.js holds the world here.
-    at: new THREE.Vector3(
-      Math.sin(bearing) * Math.cos(height),
-      Math.sin(height),
-      -Math.cos(bearing) * Math.cos(height),
-    ),
+    at: spot(Math.sin(bearing) * Math.cos(height), Math.cos(bearing) * Math.cos(height), Math.sin(height)),
   };
 }
 
@@ -274,9 +370,9 @@ function paintHour(world, pose, parts) {
   // Below the horizon the sun is turned round and dimmed: what reaches the
   // ground then comes from the sky it has left behind, not from underfoot.
   const from = now.height > 0 ? now.at : now.at.clone().setY(Math.abs(now.at.y) * 0.4).normalize();
-  parts.beam.position.copy(from).multiplyScalar(4000);
+  parts.beam.position.copy(from).multiplyScalar(9000);
   parts.star.visible = now.height > -1.5;
-  parts.star.position.copy(now.at).multiplyScalar(5500);
+  parts.star.position.copy(now.at).multiplyScalar(12000);
   parts.star.material.color.setHex(hour.warm);
 }
 
