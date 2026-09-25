@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-25T18-44-58Z-person-2",
+      "t": "2026-09-25T18:44:58Z",
+      "type": "person",
+      "label": "Piéton",
+      "zone": "other",
+      "confidence": 0.442,
+      "thumb": "data/thumbs/2026-09-25T18-44-58Z-person-2.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "night",
+        "weather": "ciel dégagé",
+        "context": "de nuit, ciel dégagé",
+        "box": [
+          0.6078,
+          0.7194,
+          0.0422,
+          0.0667
+        ]
+      }
+    },
+    {
       "id": "2026-09-25T18-28-24Z-person-1",
       "t": "2026-09-25T18:28:24Z",
       "type": "person",
