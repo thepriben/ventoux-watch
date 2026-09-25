@@ -1,6 +1,74 @@
 {
   "events": [
     {
+      "id": "2026-09-25T08-42-55Z-plane-427",
+      "t": "2026-09-25T08:42:55Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-42-55Z-plane-427.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2247.9,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-42-54Z-motion-426",
+      "t": "2026-09-25T08:42:54Z",
+      "type": "motion",
+      "label": "Mouvement sur la route",
+      "zone": "road",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T08-42-54Z-motion-426.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-42-40Z-motion-425",
+      "t": "2026-09-25T08:42:40Z",
+      "type": "motion",
+      "label": "Mouvement",
+      "zone": "other",
+      "confidence": 0.3,
+      "thumb": "data/thumbs/2026-09-25T08-42-40Z-motion-425.jpg",
+      "clip_url": "",
+      "detail": {
+        "reading": "Un passage a été vu. La classe viendra quand cet endroit aura été revu.",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T08-42-26Z-plane-424",
+      "t": "2026-09-25T08:42:26Z",
+      "type": "plane",
+      "label": "FJGBU",
+      "zone": "sky",
+      "confidence": 0.7,
+      "thumb": "data/thumbs/2026-09-25T08-42-26Z-plane-424.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "38143d",
+        "callsign": "FJGBU",
+        "altitude_m": 2247.9,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T08-41-56Z-plane-423",
       "t": "2026-09-25T08:41:56Z",
       "type": "plane",
