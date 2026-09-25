@@ -15,7 +15,7 @@ from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
 from watcher.review import apply_review, parse_review
 from watcher.opensky import SkyArchive
 from watcher.scene import ViewLog, read_sky, solar_period, weather_label
-from watcher.store import Store, fold_events
+from watcher.store import Store, fold_events, small_jpeg
 
 ROOT = Path(__file__).resolve().parents[1]
 ZONES = json.loads((ROOT / "config" / "zones.json").read_text())
@@ -281,6 +281,18 @@ class StoreTests(unittest.TestCase):
         store.prune(datetime(2026, 9, 24, tzinfo=ZoneInfo("UTC")))
         self.assertEqual(store.events, [])
         (root / "events.json").unlink(missing_ok=True)
+
+
+class ThumbTests(unittest.TestCase):
+    def test_motion_box_is_drawn_on_the_photo(self):
+        image = np.zeros((80, 160, 3), dtype=np.uint8)
+        image[:] = (30, 70, 30)
+        ok, encoded = cv2.imencode(".jpg", image)
+        self.assertTrue(ok)
+        marked = cv2.imdecode(np.frombuffer(small_jpeg(encoded.tobytes(), box=[0.25, 0.2, 0.4, 0.3]), dtype=np.uint8), cv2.IMREAD_COLOR)
+        y = int(0.2 * marked.shape[0])
+        band = marked[max(0, y - 2): y + 3, int(0.25 * marked.shape[1]): int(0.65 * marked.shape[1])]
+        self.assertGreater(int(band.max()), 200)
 
 
 class ReviewTests(unittest.TestCase):

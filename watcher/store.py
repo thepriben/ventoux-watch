@@ -48,12 +48,12 @@ class Store:
             else:
                 _copy_reading(host, event)
                 if jpeg:
-                    _write_thumb(self.thumbs, host, small_jpeg(jpeg))
+                    _write_thumb(self.thumbs, host, small_jpeg(jpeg, box=(detail or {}).get("box")))
             self._write()
             self.dirty = True
             return host
         if jpeg:
-            _write_thumb(self.thumbs, event, small_jpeg(jpeg))
+            _write_thumb(self.thumbs, event, small_jpeg(jpeg, box=(detail or {}).get("box")))
         self.events.append(event)
         self.events.sort(key=lambda item: item["t"], reverse=True)
         self.prune(when)
@@ -298,7 +298,27 @@ def fold_events(events: list[dict]) -> list[dict]:
     return kept
 
 
-def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALITY) -> bytes:
+def _outline(image: np.ndarray, box) -> None:
+    if not isinstance(box, (list, tuple)) or len(box) != 4:
+        return
+    height, width = image.shape[:2]
+    try:
+        x = int(round(float(box[0]) * width))
+        y = int(round(float(box[1]) * height))
+        w = int(round(float(box[2]) * width))
+        h = int(round(float(box[3]) * height))
+    except (TypeError, ValueError):
+        return
+    x0, y0 = max(0, x), max(0, y)
+    x1 = min(width - 1, x + max(w, 1))
+    y1 = min(height - 1, y + max(h, 1))
+    if x1 - x0 < 2 or y1 - y0 < 2:
+        return
+    cv2.rectangle(image, (x0, y0), (x1, y1), (255, 255, 255), 3)
+    cv2.rectangle(image, (x0, y0), (x1, y1), (32, 110, 230), 1)
+
+
+def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALITY, box=None) -> bytes:
     image = cv2.imdecode(np.frombuffer(jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
     if image is None or image.size == 0:
         return jpeg
@@ -306,6 +326,7 @@ def small_jpeg(jpeg: bytes, width: int = THUMB_WIDTH, quality: int = THUMB_QUALI
     if frame_width > width:
         scale = width / float(frame_width)
         image = cv2.resize(image, (width, max(1, int(round(height * scale)))), interpolation=cv2.INTER_AREA)
+    _outline(image, box)
     ok, encoded = cv2.imencode(".jpg", image, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
     if not ok:
         return jpeg

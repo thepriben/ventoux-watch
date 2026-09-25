@@ -22,6 +22,7 @@ class Track:
     area_ratio: float = 0.0
     first_area: float = 0.0
     best_area: float = 0.0
+    best_bbox: tuple[int, int, int, int] = (0, 0, 0, 0)
     best_jpeg: bytes = b""
     started: float = 0.0
     updated: float = 0.0
@@ -102,6 +103,7 @@ class MotionDetector:
                     area_ratio=blob["area_ratio"],
                     first_area=blob["area_ratio"],
                     best_area=blob["area_ratio"],
+                    best_bbox=blob["bbox"],
                     started=now,
                     updated=now,
                     frames=1,
@@ -121,6 +123,7 @@ class MotionDetector:
             track.zone = zone
             if blob["area_ratio"] >= track.best_area:
                 track.best_area = blob["area_ratio"]
+                track.best_bbox = blob["bbox"]
                 track.best_jpeg = _jpeg(frame)
 
         ended: list[Track] = []

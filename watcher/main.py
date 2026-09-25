@@ -148,10 +148,28 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         return
     if decision.type == "fire":
         last_fire["fire"] = now
+    _attach_box(decision.detail, track)
     event = store.add_event(when, decision.type, decision.label, track.zone, decision.confidence, track.best_jpeg, decision.detail)
     log.info("Publié %s %s", decision.type, decision.label)
     if decision.type in CLIP_TYPES:
         pending.append({"id": event["id"], "after": now + 4, "started": track.started - 8})
+
+
+def _attach_box(detail: dict, track) -> None:
+    bbox = track.best_bbox if any(track.best_bbox) else track.bbox
+    if not track.best_jpeg or not any(bbox):
+        return
+    image = cv2.imdecode(np.frombuffer(track.best_jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
+    if image is None or image.size == 0:
+        return
+    height, width = image.shape[:2]
+    x, y, w, h = bbox
+    detail["box"] = [
+        round(x / width, 4),
+        round(y / height, 4),
+        round(max(w, 1) / width, 4),
+        round(max(h, 1) / height, 4),
+    ]
 
 
 def _crowd(frame, now, cfg, yolo, zones, hits, last_crowd, store, pending) -> float:
