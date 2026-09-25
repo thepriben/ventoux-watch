@@ -34,7 +34,7 @@ const COPY = {
     fire: "Fire",
     fireText: "On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.",
     rest: "Unknown",
-    restText: "We don't know what it is. The photo is kept. If it comes back in the same place, one new photo every 6 hours, no more.",
+    restText: "We don't know what it is. Every movement is shown, with its photo.",
     history: "History",
     all: "All",
     planes: "Planes",
@@ -88,7 +88,7 @@ const COPY = {
     fire: "Feu",
     fireText: "Sur la pente, 20 s, surface ×1,5, au moins 8 % de pixels chauds. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.",
     rest: "Inconnu",
-    restText: "On ne sait pas ce que c’est. La photo est gardée. Si ça revient au même endroit, une nouvelle photo toutes les 6 heures, pas plus.",
+    restText: "On ne sait pas ce que c’est. Chaque mouvement est affiché, avec sa photo.",
     history: "Historique",
     all: "Tout",
     planes: "Avions",
@@ -164,7 +164,7 @@ function applyLang() {
   paintWeather();
   paintCounts();
   render();
-  paintSequenceMeta();
+  paintSequence();
 }
 
 document.querySelectorAll(".langs button").forEach((button) => {
@@ -409,12 +409,23 @@ applyLang();
 setInterval(tick, 1000);
 loadWeather();
 setInterval(loadWeather, 600000);
-let sequenceWhen = null;
+let sequenceFrames = [];
+let sequenceIndex = 0;
 
-function paintSequenceMeta() {
-  if (!sequenceWhen) return;
-  const date = new Date(sequenceWhen).toLocaleDateString(locale(), { month: "long", year: "numeric" });
+function paintSequence() {
+  const frame = sequenceFrames[sequenceIndex];
+  if (!frame) return;
+  document.querySelector("#seq-img").src = frame.thumb;
+  document.querySelector("#seq-frame").href = `https://www.mapillary.com/app/?pKey=${encodeURIComponent(frame.id)}&focus=photo`;
+  document.querySelector("#seq-count").textContent = `${sequenceIndex + 1} / ${sequenceFrames.length}`;
+  const date = new Date(frame.captured_at).toLocaleDateString(locale(), { month: "long", year: "numeric" });
   document.querySelector("#sequence-meta").textContent = `Mapillary · ${date}`;
+}
+
+function stepSequence(delta) {
+  if (!sequenceFrames.length) return;
+  sequenceIndex = (sequenceIndex + delta + sequenceFrames.length) % sequenceFrames.length;
+  paintSequence();
 }
 
 async function mly(pathname, params) {
@@ -427,42 +438,38 @@ async function mly(pathname, params) {
 }
 
 async function loadSequence() {
-  const pad = 0.015;
+  const pad = 0.02;
   const bbox = [CAMERA.lon - pad, CAMERA.lat - pad, CAMERA.lon + pad, CAMERA.lat + pad].join(",");
-  const nearby = await mly("images", { fields: "id,sequence,computed_geometry", bbox, limit: "100" });
-  const closest = new Map();
-  (nearby.data || []).forEach((img) => {
+  const nearby = await mly("images", { fields: "id,computed_geometry,captured_at", bbox, limit: "200" });
+  const near = (nearby.data || []).map((img) => {
     const coords = (img.computed_geometry || {}).coordinates;
-    if (!coords || !img.sequence) return;
-    const dist = km(CAMERA, { lat: coords[1], lon: coords[0] });
-    const known = closest.get(img.sequence);
-    if (known == null || dist < known) closest.set(img.sequence, dist);
-  });
-  const sequence = [...closest.entries()].sort((a, b) => a[1] - b[1])[0];
-  if (!sequence) return;
-  const listed = await mly("image_ids", { sequence_id: sequence[0] });
-  const ids = (listed.data || []).map((item) => item.id);
-  if (!ids.length) return;
-  const details = await mly("", { fields: "id,thumb_256_url,computed_geometry,captured_at", ids: ids.join(",") });
-  const ordered = ids.map((id) => details[id]).filter((img) => img && img.thumb_256_url && img.computed_geometry);
-  const within = (limit) => ordered.filter((img) => {
-    const [lon, lat] = img.computed_geometry.coordinates;
-    return km(CAMERA, { lat, lon }) < limit;
-  });
-  const shown = within(0.6).length >= 4 ? within(0.6) : within(1.2);
-  if (!shown.length) return;
-  sequenceWhen = shown[0].captured_at;
-  L.polyline(shown.map((img) => {
-    const [lon, lat] = img.computed_geometry.coordinates;
-    return [lat, lon];
-  }), { color: "#243f34", weight: 3, opacity: 0.8 }).addTo(map);
-  document.querySelector("#film").innerHTML = shown.map((img) => {
-    const href = `https://www.mapillary.com/app/?pKey=${encodeURIComponent(img.id)}&focus=photo`;
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(img.thumb_256_url)}" alt=""></a>`;
-  }).join("");
+    if (!coords || !img.captured_at) return null;
+    return { id: img.id, captured_at: img.captured_at, lat: coords[1], lon: coords[0], dist: km(CAMERA, { lat: coords[1], lon: coords[0] }) };
+  }).filter((img) => img && img.dist < 0.8);
+  if (!near.length) return;
+  const newest = Math.max(...near.map((img) => img.captured_at));
+  let recent = near.filter((img) => newest - img.captured_at < 3 * 60 * 60 * 1000);
+  recent.sort((a, b) => a.captured_at - b.captured_at);
+  if (recent.length > 6) {
+    const step = (recent.length - 1) / 5;
+    recent = [0, 1, 2, 3, 4, 5].map((index) => recent[Math.round(index * step)]);
+  }
+  const details = await mly("", { fields: "id,thumb_1024_url,captured_at", ids: recent.map((img) => img.id).join(",") });
+  sequenceFrames = recent.map((img) => {
+    const shot = details[img.id];
+    if (!shot || !shot.thumb_1024_url) return null;
+    return { ...img, thumb: shot.thumb_1024_url, captured_at: shot.captured_at || img.captured_at };
+  }).filter(Boolean);
+  if (!sequenceFrames.length) return;
+  const here = sequenceFrames.slice().sort((a, b) => a.dist - b.dist)[0];
+  document.querySelector("#sequence-osm").href = `https://www.openstreetmap.org/?mlat=${here.lat}&mlon=${here.lon}#map=18/${here.lat}/${here.lon}`;
+  sequenceIndex = 0;
   document.querySelector("#sequence").hidden = false;
-  paintSequenceMeta();
+  paintSequence();
 }
+
+document.querySelector("#seq-prev").addEventListener("click", () => stepSequence(-1));
+document.querySelector("#seq-next").addEventListener("click", () => stepSequence(1));
 
 load();
 setInterval(load, 60000);

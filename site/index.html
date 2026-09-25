@@ -62,9 +62,13 @@
   <section class="sequence" id="sequence" hidden>
     <div class="history-head">
       <h2 data-i18n="around">Around</h2>
-      <p class="sub" id="sequence-meta"></p>
+      <p class="sub"><span id="sequence-meta"></span> · <a id="sequence-osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <span id="seq-count"></span></p>
     </div>
-    <div class="film" id="film"></div>
+    <div class="carousel">
+      <button type="button" id="seq-prev" aria-label="Previous">‹</button>
+      <a id="seq-frame" target="_blank" rel="noopener noreferrer"><img id="seq-img" alt=""></a>
+      <button type="button" id="seq-next" aria-label="Next">›</button>
+    </div>
   </section>
 
   <div class="lower">
@@ -79,7 +83,7 @@
         <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
         <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
         <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
-        <li><strong data-i18n="rest">Unknown</strong><span data-i18n="restText">We don't know what it is. The photo is kept. If it comes back in the same place, one new photo every 6 hours, no more.</span></li>
+        <li><strong data-i18n="rest">Unknown</strong><span data-i18n="restText">We don't know what it is. Every movement is shown, with its photo.</span></li>
       </ol>
     </section>
 

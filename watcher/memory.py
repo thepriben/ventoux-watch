@@ -14,7 +14,6 @@ from pathlib import Path
 from watcher.naming import Decision
 
 HABIT_AFTER = 8
-HABIT_GAP_S = 6 * 3600
 
 
 class Memory:
@@ -51,11 +50,7 @@ class Memory:
             "Cet endroit a bougé plusieurs fois sans événement nouveau. "
             "Le cadrage le reconnaît maintenant."
         )
-        now = time.time()
-        if cell["n"] > HABIT_AFTER and now - float(cell.get("last") or 0) < HABIT_GAP_S:
-            self._write()
-            return "count"
-        cell["last"] = now
+        cell["last"] = time.time()
         self._write()
         return "record"
 
