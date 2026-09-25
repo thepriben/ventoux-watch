@@ -50,11 +50,21 @@ const COPY = {
     colTime: "Time",
     colPhoto: "Photo",
     colEvent: "Event",
+    colPlace: "Place",
     colReading: "Reading",
+    places: {
+      road: "Road", roundabout: "Roundabout", parking: "Car park", path: "Path",
+      meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
+      sky: "Sky", other: "Off the road",
+    },
     notInFrame: "Not in the picture",
     colCam: "Webcam",
     colApi: "Station",
     compareEmpty: "No reading yet.",
+    periods: { day: "Day", twilight: "Dusk", night: "Night" },
+    moon: "Moon",
+    wind: "Wind",
+    humidity: "Humidity",
     around: "Around",
     people: "people",
     clip: "Clip",
@@ -116,11 +126,21 @@ const COPY = {
     colTime: "Heure",
     colPhoto: "Photo",
     colEvent: "Événement",
+    colPlace: "Lieu",
     colReading: "Lecture",
+    places: {
+      road: "Chaussée", roundabout: "Rond-point", parking: "Parking", path: "Sentier",
+      meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
+      sky: "Ciel", other: "Hors chaussée",
+    },
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",
     colApi: "Station",
     compareEmpty: "Pas encore de relevé.",
+    periods: { day: "Jour", twilight: "Crépuscule", night: "Nuit" },
+    moon: "Lune",
+    wind: "Vent",
+    humidity: "Humidité",
     around: "Autour",
     people: "personnes",
     clip: "Extrait",
@@ -162,13 +182,17 @@ const LABELS = {
   "Piétons": "Pedestrians",
   "Voiture blanche": "White car",
   "Estafette": "Van",
+  "Camionnette blanche": "White van",
+  "Voiture avec carriole": "Car with a trailer",
+  "Repère éclairé": "Lit landmark",
+  "Mouvement hors chaussée": "Motion off the road",
   "Lueur du soir": "Evening glow",
   "Lueur dans la météo": "Glow in the weather",
 };
 
 let lang = localStorage.getItem("ventoux-lang") === "fr" ? "fr" : "en";
 let weatherNow = null;
-let readings = [];
+let bulletin = null;
 
 const SKY = {
   "ciel dégagé": "Clear",
@@ -205,7 +229,7 @@ function applyLang() {
   tick();
   paintCamera();
   paintWeather();
-  paintReadings();
+  paintBulletin();
   paintCounts();
   render();
   paintSequence();
@@ -240,16 +264,27 @@ function tick() {
   });
 }
 
+function stationLabel() {
+  return weatherNow ? t("weatherCodes")[weatherNow.code] || "" : "";
+}
+
 function paintWeather() {
   const place = document.querySelector("#station");
+  const more = document.querySelector("#station-more");
   const distance = `${Math.round(km(CAMERA, station))} km`;
   if (!weatherNow) {
     place.textContent = `${station.name} · ${distance}`;
     return;
   }
-  const label = t("weatherCodes")[weatherNow.code] || "";
   document.querySelector("#weather").textContent = Number.isFinite(weatherNow.temp) ? `${weatherNow.temp} °C` : "—";
-  place.textContent = [station.name, distance, label].filter(Boolean).join(" · ");
+  place.textContent = [station.name, distance, stationLabel()].filter(Boolean).join(" · ");
+  if (more) {
+    more.textContent = [
+      Number.isFinite(weatherNow.wind) ? `${t("wind")} ${weatherNow.wind} km/h` : "",
+      Number.isFinite(weatherNow.humidity) ? `${t("humidity")} ${weatherNow.humidity} %` : "",
+    ].filter(Boolean).join(" · ");
+  }
+  paintBulletin();
 }
 
 function skyText(value) {
@@ -258,19 +293,35 @@ function skyText(value) {
   return SKY[value] || value;
 }
 
-function paintReadings() {
-  const body = document.querySelector("#readings");
-  const emptyRow = document.querySelector("#readings-empty");
-  if (!body || !emptyRow) return;
-  const rows = readings.slice().reverse();
-  emptyRow.hidden = rows.length > 0;
-  body.innerHTML = rows.map((row) => {
-    const when = new Date(row.t).toLocaleString(locale(), {
-      timeZone: "Europe/Paris", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
-    });
-    const station = [Number.isFinite(row.temp_c) ? `${row.temp_c} °C` : "", skyText(row.api)].filter(Boolean).join(" · ");
-    return `<tr><td>${escapeHtml(when)}</td><td>${escapeHtml(skyText(row.webcam))}</td><td>${escapeHtml(station || "—")}</td></tr>`;
-  }).join("");
+function paintBulletin() {
+  const words = document.querySelector("#view-words");
+  const when = document.querySelector("#view-when");
+  const photo = document.querySelector("#view-photo");
+  const place = document.querySelector("#view-station");
+  if (!words || !when || !photo || !place) return;
+  if (!bulletin || !bulletin.t) {
+    words.textContent = t("compareEmpty");
+    when.textContent = "";
+    photo.hidden = true;
+    place.textContent = "";
+    return;
+  }
+  when.textContent = new Date(bulletin.t).toLocaleString(locale(), {
+    timeZone: "Europe/Paris", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  });
+  words.textContent = [
+    t("periods")[bulletin.period] || "",
+    bulletin.moon ? t("moon") : "",
+    skyText(bulletin.webcam),
+  ].filter(Boolean).join(" · ");
+  if (bulletin.photo) {
+    photo.src = `${bulletin.photo}?t=${encodeURIComponent(bulletin.t)}`;
+    photo.hidden = false;
+  }
+  place.textContent = [
+    `${station.name} ${Number.isFinite(bulletin.temp_c) ? `${bulletin.temp_c} °C` : ""}`.trim(),
+    skyText(bulletin.api) || stationLabel(),
+  ].filter(Boolean).join(" · ");
 }
 
 async function loadView() {
@@ -278,20 +329,26 @@ async function loadView() {
     const response = await fetch("data/view.json", { cache: "no-store" });
     if (!response.ok) return;
     const payload = await response.json();
-    readings = payload.rows || [];
-    paintReadings();
+    bulletin = payload.last || null;
+    paintBulletin();
   } catch (_) {
-    /* The table fills once the watcher has read the sky. */
+    /* The card fills once the watcher has read the sky. */
   }
 }
 
 async function loadWeather() {
   paintWeather();
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${station.lat}&longitude=${station.lon}&current=temperature_2m,weather_code&timezone=Europe/Paris`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${station.lat}&longitude=${station.lon}`
+      + "&current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&timezone=Europe/Paris";
     const data = await fetch(url, { cache: "no-store" }).then((response) => response.json());
     const current = data.current || {};
-    weatherNow = { temp: Math.round(current.temperature_2m), code: current.weather_code };
+    weatherNow = {
+      temp: Math.round(current.temperature_2m),
+      code: current.weather_code,
+      humidity: Math.round(current.relative_humidity_2m),
+      wind: Math.round(current.wind_speed_10m),
+    };
     paintWeather();
   } catch (_) {
     document.querySelector("#weather").textContent = "—";
@@ -391,7 +448,11 @@ function render() {
     const info = event.detail || {};
     const people = Number(info.persons || 0);
     const title = people > 1 ? `${showText(event.label)} (${people})` : showText(event.label);
-    return `<tr><td class="when"><time>${clock}</time><span>${day}</span></td><td class="event">${escapeHtml(title)}</td><td class="shot">${picture}</td></tr>`;
+    const place = t("places")[info.surface || event.zone] || "";
+    return `<tr><td class="when"><time>${clock}</time><span>${day}</span></td>`
+      + `<td class="event">${escapeHtml(title)}</td>`
+      + `<td class="place">${escapeHtml(place)}</td>`
+      + `<td class="shot">${picture}</td></tr>`;
   }).join("");
 }
 

@@ -18,3 +18,6 @@ _site/
 *.mp4
 .DS_Store
 :memory:.ses
+
+# Réponses OpenStreetMap et altitudes, refaites par scripts/build_scene.py
+data/osm/

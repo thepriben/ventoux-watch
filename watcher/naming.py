@@ -5,11 +5,17 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
+from watcher.scenemap import DRIVABLE
+
+NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree"}
+
 
 @dataclass
 class Detection:
     cls: str
     conf: float
+    cx: float | None = None
+    cy: float | None = None
 
 
 @dataclass
@@ -43,11 +49,15 @@ class Observation:
     fire_warm: float = 0.08
     period: str = "day"
     weather: str = ""
+    surface: str = ""
+    landmark: str = ""
+    lit_ratio: float = 0.0
     camera_lat: float = 44.183501
     camera_lon: float = 5.2621281
     camera_ele: float = 1390.0
     camera_bearing: float = 140.0
     camera_fov: float = 90.0
+    fixtures: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -203,6 +213,32 @@ def decide(obs: Observation) -> Decision:
         bus = _best(obs.detections, {"bus"})
         vehicle = _best(obs.detections, {"car", "truck"})
         person = _best(obs.detections, {"person"})
+        if obs.landmark and obs.travel < obs.min_travel:
+            return _motion(
+                obs,
+                "landmark",
+                "Repère éclairé",
+                f"{obs.landmark} n'a pas bougé. Une lumière est passée dessus.",
+            )
+        if obs.surface in NOT_DRIVABLE and vehicle is not None and person is None:
+            return _motion(obs, "off_road", "Mouvement hors chaussée", "Aucune voiture ne roule là.")
+        if obs.period in {"night", "twilight"} and obs.surface in DRIVABLE and bus is None and vehicle is None:
+            # After dark the model reads a car body as a walker. On the roadway
+            # at that hour, what moves is a vehicle unless the shape is plain.
+            if person is not None and person.conf < 0.6:
+                person = None
+            lit = obs.lit_ratio >= 0.03
+            if person is None and (lit or obs.travel >= obs.min_travel):
+                return _stamp(
+                    Decision(
+                        "publish",
+                        "vehicle",
+                        "Véhicule",
+                        reason="car_lights" if lit else "night_road",
+                        confidence=min(0.85, 0.5 + obs.lit_ratio),
+                    ),
+                    obs,
+                )
         if obs.travel < obs.min_travel and not (person is not None and person.conf >= 0.4):
             return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
         if (

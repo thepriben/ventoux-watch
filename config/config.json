@@ -13,7 +13,23 @@
   "history_days": 30,
   "publish_interval_s": 60,
   "model_path": "models/yolo11n.onnx",
-  "camera": {"lat": 44.183501, "lon": 5.2621281, "ele": 1390, "bearing": 140, "fov": 90},
+  "camera": {
+    "osm": "node/6410397171",
+    "lat": 44.183501,
+    "lon": 5.2621281,
+    "ele": 1390,
+    "bearing": 140,
+    "pitch": 0,
+    "fov": 90,
+    "height_m": 4,
+    "scene_radius_m": 130,
+    "flat_apron": true,
+    "marks": [
+      {"name": "rond-point", "osm": "way/174649403", "lat": 44.183294, "lon": 5.262344, "ele": 1387, "x": 0.225, "y": 0.832},
+      {"name": "statue", "osm": "node/14215729333", "lat": 44.1832035, "lon": 5.2622505, "ele": 1387, "x": 0.567, "y": 0.861},
+      {"name": "sommet du Ventoux", "lat": 44.17405, "lon": 5.27856, "ele": 1945, "x": 0.513, "y": 0.269}
+    ]
+  },
   "opensky": {
     "bbox": [44.05, 5.05, 44.35, 5.5],
     "poll_s": 60,

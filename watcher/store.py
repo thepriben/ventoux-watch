@@ -28,6 +28,7 @@ class Store:
         self.events = self._load()
 
     def add_event(self, when: datetime, type_: str, label: str, zone: str, confidence: float, jpeg: bytes, detail: dict) -> dict:
+        self.events = self._load()
         stamp = when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
         self._seq += 1
         event = {

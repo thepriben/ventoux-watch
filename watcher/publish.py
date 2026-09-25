@@ -13,7 +13,7 @@ def publish(repo: Path) -> bool:
     if not (repo / ".git").is_dir():
         log.info("Pas de dépôt git, publication ignorée")
         return False
-    paths = ["data/events.json", "data/thumbs", "data/learning.json", "data/view.json"]
+    paths = ["data/events.json", "data/thumbs", "data/learning.json", "data/view.json", "data/view.jpg"]
     try:
         _git(repo, "pull", "--rebase", "origin", "main")
     except subprocess.CalledProcessError:

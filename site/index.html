@@ -26,6 +26,7 @@
         <dt data-i18n="weather">Weather</dt>
         <dd id="weather">—</dd>
         <dd class="sub" id="station"></dd>
+        <dd class="sub" id="station-more"></dd>
       </div>
       <div>
         <dt data-i18n="passes">Passes</dt>
@@ -42,11 +43,27 @@
 
   <main>
   <div class="board">
+    <div class="main-col">
     <section class="block live" data-i18n-aria="live" aria-label="Live webcam">
       <video id="player" controls autoplay muted playsinline></video>
     </section>
 
-    <div class="place-col">
+    <section class="block pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
+      <div class="head"><h2 data-i18n="pipeline">Pipeline</h2></div>
+      <ol class="steps">
+        <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
+        <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
+        <li><strong data-i18n="track">Track</strong><span data-i18n="trackText">A compact blob, tracked for at least 3 frames.</span></li>
+        <li><strong data-i18n="class">Class</strong><span data-i18n="classText">YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.</span></li>
+        <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.</span></li>
+        <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
+        <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
+        <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
+      </ol>
+    </section>
+    </div>
+
+    <div class="side">
     <section class="block place" data-i18n-aria="camera" aria-label="Camera">
       <div class="frame">
         <div id="map"></div>
@@ -59,8 +76,18 @@
       </div>
     </section>
 
+    <section class="block bulletin" data-i18n-aria="compare" aria-label="Weather">
+      <div class="head">
+        <h2 data-i18n="compare">Weather</h2>
+        <p class="sub" id="view-when"></p>
+      </div>
+      <p class="words" id="view-words" data-i18n="compareEmpty">No reading yet.</p>
+      <img id="view-photo" alt="" hidden>
+      <p class="sub" id="view-station"></p>
+    </section>
+
     <section class="block sequence" id="sequence" hidden>
-      <div class="history-head">
+      <div class="head">
         <h2 data-i18n="around">Around</h2>
         <p class="sub"><span id="sequence-meta"></span> · <a id="sequence-osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <span id="seq-count"></span></p>
       </div>
@@ -71,37 +98,7 @@
       </div>
     </section>
     </div>
-
-    <section class="block pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
-      <h2 data-i18n="pipeline">Pipeline</h2>
-      <ol class="steps">
-        <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
-        <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
-        <li><strong data-i18n="track">Track</strong><span data-i18n="trackText">A compact blob, tracked for at least 3 frames.</span></li>
-        <li><strong data-i18n="class">Class</strong><span data-i18n="classText">YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.</span></li>
-        <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.</span></li>
-        <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
-        <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
-        <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 20 s, area ×1.5, at least 8% warm pixels. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
-        <li><strong data-i18n="rest">Unknown</strong><span data-i18n="restText">We don't know what it is. Every movement is shown, with its photo.</span></li>
-      </ol>
-    </section>
   </div>
-
-  <section class="block reading" data-i18n-aria="compare" aria-label="Weather">
-    <h2 data-i18n="compare">Weather</h2>
-    <table>
-      <thead>
-        <tr>
-          <th data-i18n="colTime">Time</th>
-          <th data-i18n="colCam">Webcam</th>
-          <th data-i18n="colApi">Station</th>
-        </tr>
-      </thead>
-      <tbody id="readings"></tbody>
-    </table>
-    <p id="readings-empty" class="empty" data-i18n="compareEmpty">No reading yet.</p>
-  </section>
 
   <section class="block history">
     <div class="history-head">
@@ -123,6 +120,7 @@
         <tr>
           <th data-i18n="colTime">Time</th>
           <th data-i18n="colEvent">Event</th>
+          <th data-i18n="colPlace">Place</th>
           <th data-i18n="colPhoto">Photo</th>
         </tr>
       </thead>

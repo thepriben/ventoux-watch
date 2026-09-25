@@ -29,6 +29,7 @@ jobs:
           cp data/events.json _site/data/events.json
           if [ -f data/learning.json ]; then cp data/learning.json _site/data/learning.json; fi
           if [ -f data/view.json ]; then cp data/view.json _site/data/view.json; fi
+          if [ -f data/view.jpg ]; then cp data/view.jpg _site/data/view.jpg; fi
           if [ -d data/thumbs ]; then cp -R data/thumbs/. _site/data/thumbs/; fi
       - uses: actions/upload-pages-artifact@v3
         with:

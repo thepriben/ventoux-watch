@@ -71,6 +71,23 @@ def count_persons(detections: list[Detection], min_conf: float = 0.35) -> int:
     return sum(1 for item in detections if item.cls == "person" and item.conf >= min_conf)
 
 
+def car_lights(frame: np.ndarray, bbox: tuple[int, int, int, int] | None = None) -> float:
+    """How much of a blob is car lighting, between 0 and 1.
+
+    After dark the model sees almost nothing, but a car carries its own marks:
+    red tail lights, white headlights, and the pool of light they throw on the
+    road. A walker carries none of that.
+    """
+    crop = frame if bbox is None else _crop(frame, bbox, margin=0.25)
+    if crop is None or crop.size == 0:
+        return 0.0
+    blue, green, red = (channel.astype(np.int16) for channel in cv2.split(crop))
+    tail = (red > 110) & (red - green > 45) & (red - blue > 35)
+    head = (blue > 210) & (green > 210) & (red > 210)
+    lit = float(np.count_nonzero(tail | head)) / float(crop.shape[0] * crop.shape[1])
+    return min(1.0, lit)
+
+
 def _crop(frame: np.ndarray, bbox: tuple[int, int, int, int], margin: float) -> np.ndarray:
     height, width = frame.shape[:2]
     x, y, w, h = bbox

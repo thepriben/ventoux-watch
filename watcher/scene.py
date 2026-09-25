@@ -133,6 +133,46 @@ def weather_label(code: int) -> str:
     return ""
 
 
+def moon_in_sky(frame: np.ndarray | None, exclude: list[dict] | None = None) -> bool:
+    """A small bright disc, round and far brighter than the sky around it.
+
+    The summit beacon and the valley lamps are excluded by the same circles
+    the motion mask uses.
+    """
+    if frame is None or frame.size == 0:
+        return False
+    height, width = frame.shape[:2]
+    band = cv2.cvtColor(frame[: max(1, int(height * 0.45))], cv2.COLOR_BGR2GRAY)
+    level = max(190, int(band.mean()) + 60)
+    count, _labels, stats, centers = cv2.connectedComponentsWithStats((band >= level).astype(np.uint8))
+    for index in range(1, count):
+        x, y, w, h, area = stats[index]
+        small = max(3, int(round(width * 0.006)))
+        large = max(small + 2, int(round(width * 0.06)))
+        if not small <= w <= large or not small <= h <= large:
+            continue
+        if not 0.55 <= w / h <= 1.8 or area / float(w * h) < 0.55:
+            continue
+        cx, cy = centers[index][0] / width, centers[index][1] / height
+        if _inside_circle(cx, cy, exclude or []):
+            continue
+        spot = band[y : y + h, x : x + w]
+        ring = band[max(0, y - 2 * h) : y + 3 * h, max(0, x - 2 * w) : x + 3 * w]
+        if ring.size and float(spot.mean()) - float(ring.mean()) >= 45:
+            return True
+    return False
+
+
+def _inside_circle(x: float, y: float, circles: list[dict]) -> bool:
+    for circle in circles:
+        dx = x - float(circle.get("cx", 0))
+        dy = y - float(circle.get("cy", 0))
+        reach = float(circle.get("r", 0)) * 1.6
+        if dx * dx + dy * dy <= reach * reach:
+            return True
+    return False
+
+
 def read_sky(frame: np.ndarray | None) -> str:
     """Weather read from the sky band of this camera, not from a station."""
     if frame is None or frame.size == 0:
@@ -159,26 +199,28 @@ def read_sky(frame: np.ndarray | None) -> str:
 
 
 class ViewLog:
-    """Keep a short table of webcam weather beside the station reading."""
+    """The last webcam bulletin, with the frame it was read from."""
 
-    def __init__(self, path: Path, every_s: int = 900, change_s: int = 120):
+    def __init__(self, path: Path, every_s: int = 900, change_s: int = 120, exclude: list[dict] | None = None):
         self.path = path
+        self.photo_path = path.parent / "view.jpg"
         self.every_s = every_s
         self.change_s = change_s
-        self.rows: list[dict] = []
+        self.exclude = exclude or []
+        self.last: dict = {}
         self.dirty = False
         self._votes: list[str] = []
         self._last_commit = 0.0
         if path.is_file():
             try:
                 payload = json.loads(path.read_text(encoding="utf-8"))
-                self.rows = list(payload.get("rows") or [])
+                self.last = dict(payload.get("last") or {})
             except json.JSONDecodeError:
-                self.rows = []
-        if self.rows:
-            self._last_commit = _stamp(self.rows[-1].get("t", ""))
+                self.last = {}
+        if self.last:
+            self._last_commit = _stamp(self.last.get("t", ""))
 
-    def note(self, frame: np.ndarray | None, api_label: str, temp_c: float | None, when: datetime) -> None:
+    def note(self, frame: np.ndarray | None, api_label: str, temp_c: float | None, when: datetime, period: str = "") -> None:
         label = read_sky(frame)
         if not label:
             return
@@ -187,22 +229,36 @@ class ViewLog:
         chosen = max(set(self._votes), key=self._votes.count)
         moment = when if when.tzinfo else when.replace(tzinfo=timezone.utc)
         stamp = moment.timestamp()
-        changed = not self.rows or self.rows[-1].get("webcam") != chosen
+        changed = self.last.get("webcam") != chosen
         wait = self.change_s if changed else self.every_s
-        if self.rows and stamp - self._last_commit < wait:
+        if self.last and stamp - self._last_commit < wait:
             return
-        row = {
+        moon = period in {"twilight", "night"} and moon_in_sky(frame, self.exclude)
+        self.last = {
             "t": moment.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "webcam": chosen,
+            "period": period,
+            "moon": bool(moon),
             "api": api_label or "",
             "temp_c": None if temp_c is None else round(float(temp_c)),
+            "photo": "data/view.jpg",
         }
-        self.rows.append(row)
-        self.rows = self.rows[-32:]
         self._last_commit = stamp
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps({"rows": self.rows}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if frame is not None and frame.size:
+            ok, encoded = cv2.imencode(".jpg", _narrow(frame, 480), [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+            if ok:
+                self.photo_path.write_bytes(encoded.tobytes())
+        self.path.write_text(json.dumps({"last": self.last}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         self.dirty = True
+
+
+def _narrow(frame: np.ndarray, width: int) -> np.ndarray:
+    height, frame_width = frame.shape[:2]
+    if frame_width <= width:
+        return frame
+    scale = width / float(frame_width)
+    return cv2.resize(frame, (width, max(1, int(round(height * scale)))), interpolation=cv2.INTER_AREA)
 
 
 def _stamp(value: str) -> float:

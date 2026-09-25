@@ -14,7 +14,7 @@ import cv2
 import numpy as np
 
 from watcher.config import load_config
-from watcher.detect import YoloDetector, count_persons
+from watcher.detect import YoloDetector, car_lights, count_persons
 from watcher.drive import DriveUploader
 from watcher.geometry import load_zones
 from watcher.gtfs import GtfsIndex, PARIS
@@ -24,6 +24,7 @@ from watcher.naming import Observation, decide
 from watcher.opensky import SkyArchive
 from watcher.publish import publish
 from watcher.scene import SceneReader, ViewLog
+from watcher.scenemap import SceneMap
 from watcher.store import Store
 
 log = logging.getLogger("ventoux")
@@ -55,8 +56,13 @@ def main() -> None:
     gtfs = GtfsIndex(root / "data" / "gtfs", cfg["gtfs"], camera["lat"], camera["lon"], cfg["gtfs_radius_m"])
     store = Store(root / "data", cfg["history_days"])
     scene = SceneReader(camera["lat"], camera["lon"])
-    view = ViewLog(root / "data" / "view.json")
+    view = ViewLog(root / "data" / "view.json", exclude=zones.get("exclude") or [])
     memory = Memory(root / "data" / "learning.json")
+    scene_map = SceneMap.load(root / "config" / "scene.json")
+    if scene_map.ready:
+        log.info("Carte de la scène : %d repères, calage %s", len(scene_map.landmarks), scene_map.pose.get("rms"))
+    else:
+        log.warning("Pas de config/scene.json : lance scripts/build_scene.py pour lire les surfaces")
     drive = DriveUploader(str(root / cfg["drive"]["credentials"]), cfg["drive"].get("folder_id") or "")
     ring: deque[tuple[float, bytes]] = deque(maxlen=14)
     pending: list[dict] = []
@@ -84,11 +90,11 @@ def main() -> None:
                 if now - last_view >= 30:
                     moment = datetime.fromtimestamp(now, timezone.utc)
                     current = scene.read(frame, moment)
-                    view.note(frame, current.weather, current.temperature_c, moment)
+                    view.note(frame, current.weather, current.temperature_c, moment, current.period)
                     last_view = now
                 step = motion.step(frame, now)
                 for track in step.ended:
-                    _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory)
+                    _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory, scene_map)
                 if step.roundabout_motion:
                     last_crowd = _crowd(frame, now, cfg, yolo, zones, crowd_hits, last_crowd, store, pending)
                 _flush_clips(pending, ring, now, drive, store)
@@ -102,11 +108,16 @@ def main() -> None:
             time.sleep(10)
 
 
-def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory) -> None:
+def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene, memory, scene_map=None) -> None:
     frame = cv2.imdecode(np.frombuffer(track.best_jpeg, dtype=np.uint8), cv2.IMREAD_COLOR) if track.best_jpeg else None
     detections = yolo.detect(frame, track.bbox) if frame is not None else []
     when = datetime.fromtimestamp(track.updated, timezone.utc)
     current = scene.read(frame, when)
+    scene_map = scene_map or SceneMap()
+    box = _norm_box(frame, track)
+    surface = scene_map.surface_under(box) if box else ""
+    landmark = scene_map.landmark_at(box) if box else None
+    lit = car_lights(frame, track.bbox) if frame is not None and current.period != "day" else 0.0
     aircraft = sky.around(track.updated, cfg["opensky"]["match_window_s"]) if track.zone == "sky" else []
     trips = gtfs.trips_at(when.astimezone(PARIS), cfg["gtfs_window_min"]) if track.zone in {"road", "roundabout"} else []
     duration = max(0.0, track.updated - track.started)
@@ -129,6 +140,9 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         fire_warm=cfg["fire"]["warm_ratio"],
         period=current.period,
         weather=current.weather,
+        surface=surface,
+        landmark=(landmark or {}).get("name", ""),
+        lit_ratio=lit,
         camera_lat=float(cfg["camera"]["lat"]),
         camera_lon=float(cfg["camera"]["lon"]),
         camera_ele=float(cfg["camera"].get("ele") or 1390),
@@ -151,28 +165,23 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         return
     if decision.type == "fire":
         last_fire["fire"] = now
-    _attach_box(decision.detail, track)
+    if surface:
+        decision.detail["surface"] = surface
+    if box:
+        decision.detail["box"] = [round(value, 4) for value in box]
     event = store.add_event(when, decision.type, decision.label, track.zone, decision.confidence, track.best_jpeg, decision.detail)
     log.info("Publié %s %s", decision.type, decision.label)
     if decision.type in CLIP_TYPES:
         pending.append({"id": event["id"], "after": now + 4, "started": track.started - 8})
 
 
-def _attach_box(detail: dict, track) -> None:
+def _norm_box(frame, track) -> tuple[float, float, float, float] | None:
     bbox = track.best_bbox if any(track.best_bbox) else track.bbox
-    if not track.best_jpeg or not any(bbox):
-        return
-    image = cv2.imdecode(np.frombuffer(track.best_jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
-    if image is None or image.size == 0:
-        return
-    height, width = image.shape[:2]
+    if frame is None or not any(bbox):
+        return None
+    height, width = frame.shape[:2]
     x, y, w, h = bbox
-    detail["box"] = [
-        round(x / width, 4),
-        round(y / height, 4),
-        round(max(w, 1) / width, 4),
-        round(max(h, 1) / height, 4),
-    ]
+    return x / width, y / height, max(w, 1) / width, max(h, 1) / height
 
 
 def _crowd(frame, now, cfg, yolo, zones, hits, last_crowd, store, pending) -> float:

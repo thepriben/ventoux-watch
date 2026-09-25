@@ -14,7 +14,7 @@ from watcher.motion import MotionDetector
 from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
 from watcher.review import apply_review, parse_review
 from watcher.opensky import SkyArchive
-from watcher.scene import ViewLog, read_sky, solar_period, weather_label
+from watcher.scene import ViewLog, moon_in_sky, read_sky, solar_period, weather_label
 from watcher.store import Store, fold_events, small_jpeg
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -139,6 +139,70 @@ class NamingTests(unittest.TestCase):
         self.assertNotEqual(decision.type, "bus")
         self.assertNotEqual(decision.label, "Bus")
 
+    def test_a_lit_landmark_is_not_a_walker(self):
+        decision = decide(
+            Observation(zone="other", travel=0.0, landmark="statue", detections=[Detection("person", 0.6)])
+        )
+        self.assertEqual(decision.type, "motion")
+        self.assertNotEqual(decision.label, "Piéton")
+
+    def test_a_car_cannot_drive_through_the_forest(self):
+        decision = decide(
+            Observation(zone="other", travel=0.08, surface="forest", detections=[Detection("car", 0.8)])
+        )
+        self.assertEqual(decision.type, "motion")
+
+    def test_car_lights_name_a_vehicle_at_night(self):
+        decision = decide(
+            Observation(zone="road", travel=0.05, period="night", lit_ratio=0.06, surface="road")
+        )
+        self.assertEqual(decision.type, "vehicle")
+        self.assertEqual(decision.reason, "car_lights")
+
+    def test_lights_off_the_road_stay_unnamed(self):
+        decision = decide(
+            Observation(zone="other", travel=0.05, period="night", lit_ratio=0.06, surface="meadow")
+        )
+        self.assertEqual(decision.type, "motion")
+
+    def test_a_faint_walker_on_the_night_road_is_a_car(self):
+        decision = decide(
+            Observation(
+                zone="roundabout",
+                travel=0.05,
+                period="twilight",
+                surface="roundabout",
+                detections=[Detection("person", 0.42)],
+            )
+        )
+        self.assertEqual(decision.type, "vehicle")
+
+    def test_a_clear_walker_at_night_is_still_a_walker(self):
+        decision = decide(
+            Observation(
+                zone="roundabout",
+                travel=0.05,
+                period="night",
+                surface="roundabout",
+                detections=[Detection("person", 0.72)],
+            )
+        )
+        self.assertEqual(decision.type, "person")
+
+    def test_a_named_bus_survives_the_night_rule(self):
+        decision = decide(
+            Observation(
+                zone="road",
+                travel=0.05,
+                period="night",
+                surface="road",
+                lit_ratio=0.1,
+                detections=[Detection("bus", 0.7)],
+                trips=[Trip("5", "Sault", "Mont Serein", "20:10", "gtfs")],
+            )
+        )
+        self.assertEqual(decision.type, "bus")
+
     def test_crowd_needs_enough_people(self):
         self.assertFalse(decide(Observation(kind="crowd", person_count=2)).publish)
         decision = decide(Observation(kind="crowd", person_count=5))
@@ -221,7 +285,7 @@ class SceneTests(unittest.TestCase):
         self.assertEqual(read_sky(dark), "nuit")
         self.assertEqual(read_sky(gray), "brouillard")
 
-    def test_the_table_keeps_one_row_until_the_sky_changes(self):
+    def test_only_the_last_bulletin_is_kept(self):
         folder = ROOT / "data" / "view-test"
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / "view.json"
@@ -230,13 +294,30 @@ class SceneTests(unittest.TestCase):
         blue = np.zeros((40, 80, 3), dtype=np.uint8)
         blue[:] = (210, 120, 30)
         start = datetime(2026, 9, 25, 16, 0, tzinfo=ZoneInfo("UTC"))
-        log.note(blue, "peu nuageux", 21.2, start)
-        log.note(blue, "peu nuageux", 21, start.replace(minute=5))
-        self.assertEqual(len(log.rows), 1)
-        self.assertEqual(log.rows[0]["webcam"], "ciel dégagé")
-        self.assertEqual(log.rows[0]["api"], "peu nuageux")
-        self.assertEqual(log.rows[0]["temp_c"], 21)
+        log.note(blue, "peu nuageux", 21.2, start, "day")
+        log.note(blue, "peu nuageux", 21, start.replace(minute=5), "day")
+        self.assertEqual(log.last["webcam"], "ciel dégagé")
+        self.assertEqual(log.last["api"], "peu nuageux")
+        self.assertEqual(log.last["temp_c"], 21)
+        self.assertEqual(log.last["period"], "day")
+        self.assertFalse(log.last["moon"])
+        self.assertEqual(json.loads(path.read_text())["last"]["webcam"], "ciel dégagé")
         path.unlink(missing_ok=True)
+        (folder / "view.jpg").unlink(missing_ok=True)
+
+    def test_the_moon_is_found_over_a_dark_sky(self):
+        night = np.zeros((200, 400, 3), dtype=np.uint8)
+        night[:] = (30, 28, 25)
+        cv2.circle(night, (120, 40), 8, (245, 245, 240), -1)
+        self.assertTrue(moon_in_sky(night))
+        self.assertFalse(moon_in_sky(np.full((200, 400, 3), 40, dtype=np.uint8)))
+
+    def test_the_summit_beacon_is_not_the_moon(self):
+        night = np.zeros((200, 400, 3), dtype=np.uint8)
+        night[:] = (30, 28, 25)
+        cv2.circle(night, (202, 55), 8, (245, 245, 240), -1)
+        beacon = [{"cx": 0.505, "cy": 0.275, "r": 0.035}]
+        self.assertFalse(moon_in_sky(night, beacon))
     def test_onnx_accepts_a_frame(self):
         path = ROOT / "models" / "yolo11n.onnx"
         if not path.is_file():
