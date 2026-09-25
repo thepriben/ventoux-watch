@@ -1,10 +1,14 @@
 # Mont Serein — veille
 
-Le Raspberry Pi 5 regarde la webcam du Mont Serein. Chaque mouvement est gardé et interprété avec le jour, la nuit et la météo. Un avion, une voiture, un bus, un attroupement ou un incendie ne sont nommés que lorsque la lecture est assez sûre. Le dépôt est privé. Le site dans `site/` se consulte en local : sur un compte gratuit, GitHub Pages ne reste pas publié depuis un dépôt privé.
+Le Raspberry Pi 5 regarde la webcam du Mont Serein. Chaque mouvement est gardé et interprété avec le jour, la nuit et la météo. Un avion, une voiture, un bus, un attroupement ou un incendie ne sont nommés que lorsque la lecture est assez sûre. Le site est [thepriben.github.io/ventoux-watch](https://thepriben.github.io/ventoux-watch/).
 
 Le flux est celui déjà utilisé par [dataroads-fr84.info](https://dataroads-fr84.info/), source Vision-Environnement. Le site affiche ce direct. Il ne réhéberge pas la vidéo continue.
 
 ![Mont Serein, de nuit : rond-point, route, pente et balise du sommet](docs/mont-serein-nuit.png)
+
+*24 septembre 2026, 23:41, heure de Paris. La photo a été prise à 14:41 à Los Angeles.*
+
+#MontSerein #MontVentoux #Vaucluse #Webcam #VisionParOrdinateur
 
 ## Pipeline
 
@@ -61,7 +65,7 @@ Secrets, uniquement sur le Pi, dans `config/local.json` :
 
 OpenSky et Drive sont facultatifs. Sans compte OpenSky, l’archive des avions reste anonyme et plus limitée. Sans clé Drive, les photos sont publiées, pas les extraits. La clé Google et le jeton git ne vont pas dans le dépôt.
 
-Le service pousse `data/events.json`, `data/learning.json` et `data/thumbs/` au plus toutes les quinze minutes. Le dépôt étant privé, cette poussée met le code à jour sans rouvrir le site au public.
+Le service pousse `data/events.json`, `data/learning.json` et `data/thumbs/` au plus toutes les quinze minutes. GitHub Pages reconstruit le site : [https://thepriben.github.io/ventoux-watch/](https://thepriben.github.io/ventoux-watch/).
 
 Pour les extraits : `pip install -r requirements-drive.txt`, un compte de service, et le dossier Drive partagé avec ce compte.
 
