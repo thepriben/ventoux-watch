@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mont Serein — veille</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+</head>
+<body>
+  <header class="top">
+    <p class="eyebrow">Mont Ventoux · station du Mont Serein</p>
+    <h1>Veille de la webcam</h1>
+    <p class="lede">Le direct, puis seulement les passages qu’on a pu nommer : un avion précis, une voiture, un bus, un attroupement, une fumée.</p>
+  </header>
+
+  <section class="live" aria-label="Webcam en direct">
+    <video id="player" controls autoplay muted playsinline></video>
+    <p class="credit">Flux Vision-Environnement, le même que sur dataroads. La vidéo continue n’est pas réenregistrée.</p>
+  </section>
+
+  <section class="history">
+    <div class="history-head">
+      <h2>Historique</h2>
+      <div class="filters" role="tablist">
+        <button type="button" class="on" data-filter="all">Tout</button>
+        <button type="button" data-filter="plane">Avions</button>
+        <button type="button" data-filter="car">Voitures</button>
+        <button type="button" data-filter="bus">Bus</button>
+        <button type="button" data-filter="crowd">Attroupements</button>
+        <button type="button" data-filter="fire">Incendies</button>
+      </div>
+    </div>
+    <p id="empty" class="empty" hidden>Aucun événement nommé pour l’instant.</p>
+    <ol id="list" class="cards"></ol>
+  </section>
+
+  <footer>
+    <p>Les animaux ne sont pas encore classés. Une fumée publiée ici n’est pas une alerte de secours.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

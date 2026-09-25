@@ -1,0 +1,85 @@
+"""Public history and private candidates. Only named events are published."""
+
+from __future__ import annotations
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+class Store:
+    def __init__(self, root: Path, history_days: int = 30):
+        self.root = root
+        self.history_days = history_days
+        self.events_path = root / "events.json"
+        self.thumbs = root / "thumbs"
+        self.candidates_path = root / "candidates.jsonl"
+        self.thumbs.mkdir(parents=True, exist_ok=True)
+        self.dirty = False
+        self.events = self._load()
+
+    def add_event(self, when: datetime, type_: str, label: str, zone: str, confidence: float, jpeg: bytes, detail: dict) -> dict:
+        stamp = when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+        event_id = f"{stamp}-{type_}"
+        thumb_name = f"{event_id}.jpg"
+        if jpeg:
+            (self.thumbs / thumb_name).write_bytes(jpeg)
+        event = {
+            "id": event_id,
+            "t": when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "type": type_,
+            "label": label,
+            "zone": zone,
+            "confidence": round(confidence, 3),
+            "thumb": f"data/thumbs/{thumb_name}" if jpeg else "",
+            "clip_url": "",
+            "detail": detail,
+        }
+        self.events = [item for item in self.events if item["id"] != event_id]
+        self.events.append(event)
+        self.events.sort(key=lambda item: item["t"], reverse=True)
+        self.prune(when)
+        self._write()
+        self.dirty = True
+        return event
+
+    def add_candidate(self, when: datetime, zone: str, reason: str, detail: dict) -> None:
+        row = {
+            "t": when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "zone": zone,
+            "reason": reason,
+            "detail": detail,
+        }
+        with self.candidates_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    def set_clip(self, event_id: str, url: str) -> None:
+        for event in self.events:
+            if event["id"] == event_id:
+                event["clip_url"] = url
+                self._write()
+                self.dirty = True
+                return
+
+    def prune(self, now: datetime) -> None:
+        cutoff = now.timestamp() - self.history_days * 86400
+        kept = []
+        for event in self.events:
+            moment = datetime.strptime(event["t"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+            if moment.timestamp() >= cutoff:
+                kept.append(event)
+                continue
+            thumb = self.root / "thumbs" / Path(event.get("thumb") or "").name
+            if thumb.is_file():
+                thumb.unlink()
+        self.events = kept
+
+    def _load(self) -> list[dict]:
+        if not self.events_path.is_file():
+            return []
+        payload = json.loads(self.events_path.read_text(encoding="utf-8"))
+        return list(payload.get("events") or [])
+
+    def _write(self) -> None:
+        payload = {"events": self.events}
+        self.events_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

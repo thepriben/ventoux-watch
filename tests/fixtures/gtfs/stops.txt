@@ -1,0 +1,3 @@
+stop_id,stop_name,stop_lat,stop_lon
+MS,Mont Serein,44.180,5.267
+FAR,Avignon,43.95,4.81

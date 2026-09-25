@@ -1,0 +1,14 @@
+[Unit]
+Description=Veille webcam Mont Serein
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/ventoux-watch
+ExecStart=/opt/ventoux-watch/.venv/bin/python -m watcher
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

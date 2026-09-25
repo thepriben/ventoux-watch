@@ -1,0 +1,40 @@
+{
+  "stream_url": "https://visionenvironnement.quanteec.com/contents/encodings/live/78e0f372-db6f-420e-746c-7561-6665-64-b4d7-fc979b816efed/master.m3u8",
+  "fallback_url": "https://s1.vision-environnement.com/live/modules/timelapse/timelapse/montserein.mp4",
+  "fps": 1,
+  "motion_width": 640,
+  "min_track_frames": 3,
+  "max_foreground_ratio": 0.35,
+  "min_travel": 0.03,
+  "max_sky_area": 0.02,
+  "min_conf": {"bus": 0.45, "bus_unnamed": 0.6, "car": 0.4},
+  "crowd": {"min_persons": 4, "sustain_s": 8, "cooldown_s": 600},
+  "fire": {"sustain_s": 20, "grow_ratio": 1.5, "warm_ratio": 0.08, "cooldown_s": 1800},
+  "history_days": 30,
+  "publish_interval_s": 900,
+  "model_path": "models/yolo11n.onnx",
+  "camera": {"lat": 44.179, "lon": 5.2663},
+  "opensky": {
+    "bbox": [44.05, 5.05, 44.35, 5.5],
+    "poll_s": 60,
+    "retain_days": 14,
+    "match_window_s": 120,
+    "username": "",
+    "password": ""
+  },
+  "gtfs": [
+    {
+      "name": "transcove",
+      "url": "https://www.datasud.fr/fr/dataset/datasets/2268/resource/6459/download/"
+    },
+    {
+      "name": "zou-proximite",
+      "url": "https://www.datasud.fr/fr/dataset/datasets/3745/resource/5016/download/"
+    }
+  ],
+  "gtfs_radius_m": 3000,
+  "gtfs_window_min": 15,
+  "gtfs_refresh_s": 86400,
+  "drive": {"credentials": "secrets/drive.json", "folder_id": ""},
+  "zones": "config/zones.json"
+}

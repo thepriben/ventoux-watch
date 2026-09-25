@@ -1,0 +1,120 @@
+:root {
+  --paper: #f3efe6;
+  --ink: #1c1915;
+  --muted: #5e584e;
+  --line: #ddd4c4;
+  --pine: #243f34;
+  --card: #fffdf8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 32px 20px 64px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.5 "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+}
+
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font: 12px/1.4 ui-sans-serif, system-ui, sans-serif;
+  color: var(--pine);
+}
+
+h1 {
+  margin: 6px 0 8px;
+  font-size: 42px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.lede, .credit, footer, .empty {
+  color: var(--muted);
+}
+
+.lede { max-width: 62ch; margin-top: 0; }
+
+.live video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #111;
+  border-radius: 8px;
+}
+
+.credit { font-size: 14px; }
+
+.history-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+h2 { margin: 0; font-weight: 500; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.filters button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.filters button.on {
+  background: var(--pine);
+  color: #f6f3ec;
+  border-color: var(--pine);
+}
+
+.cards {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.cards li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cards img, .placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #e7e1d6;
+  display: block;
+}
+
+.cards div { padding: 12px 14px 14px; }
+
+.cards h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.meta {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+}
+
+.cards a { color: var(--pine); }
+
+footer { margin-top: 36px; font-size: 14px; }
