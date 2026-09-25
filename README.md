@@ -75,6 +75,7 @@ Pour les extraits : `pip install -r requirements-drive.txt`, un compte de servic
 mkdir -p _site/data/thumbs
 cp -R site/. _site/
 cp data/events.json _site/data/events.json
+cp config/scene.json _site/data/scene.json
 cp -R data/thumbs/. _site/data/thumbs/
 .venv/bin/python -m http.server 8765 --directory _site
 ```

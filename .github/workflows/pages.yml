@@ -27,6 +27,7 @@ jobs:
           mkdir -p _site/data/thumbs
           cp -R site/. _site/
           cp data/events.json _site/data/events.json
+          cp config/scene.json _site/data/scene.json
           if [ -f data/learning.json ]; then cp data/learning.json _site/data/learning.json; fi
           if [ -f data/view.json ]; then cp data/view.json _site/data/view.json; fi
           if [ -f data/view.jpg ]; then cp data/view.jpg _site/data/view.jpg; fi

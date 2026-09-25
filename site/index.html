@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
   <header class="top">
@@ -46,6 +54,17 @@
     <div class="main-col">
     <section class="block live" data-i18n-aria="live" aria-label="Live webcam">
       <video id="player" controls autoplay muted playsinline></video>
+    </section>
+
+    <section class="block relief" data-i18n-aria="relief" aria-label="Relief">
+      <div class="head">
+        <h2 data-i18n="relief">Relief</h2>
+        <button type="button" id="relief-back" data-i18n="reliefBack">Webcam angle</button>
+      </div>
+      <div class="stage">
+        <div id="relief"></div>
+        <p class="cap"><span data-i18n="reliefText">Drag to turn, scroll to zoom.</span> <em id="relief-name"></em></p>
+      </div>
     </section>
 
     <section class="block pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
@@ -139,5 +158,6 @@
     </p>
   </footer>
   <script src="app.js"></script>
+  <script type="module" src="scene3d.js"></script>
 </body>
 </html>
