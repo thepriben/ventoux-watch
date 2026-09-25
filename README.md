@@ -4,6 +4,8 @@ Le Raspberry Pi 5 regarde la webcam du Mont Serein. Chaque mouvement est gardé 
 
 Le flux est celui déjà utilisé par [dataroads-fr84.info](https://dataroads-fr84.info/), source Vision-Environnement. Le site affiche ce direct. Il ne réhéberge pas la vidéo continue.
 
+![Mont Serein, de nuit : rond-point, route, pente et balise du sommet](docs/mont-serein-nuit.png)
+
 ## Pipeline
 
 1. Une image par seconde, différence avec le fond (OpenCV MOG2). Une tache compacte qui se déplace devient un passage. Un changement de lumière sur toute l’image est ignoré. La balise rouge du sommet est masquée dans `config/zones.json`.
