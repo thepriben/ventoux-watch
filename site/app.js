@@ -148,19 +148,6 @@ async function load() {
   }
 }
 
-const map = L.map("map", { scrollWheelZoom: false }).setView([44.18328, 5.26234], 18);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution: "&copy; OpenStreetMap",
-}).addTo(map);
-L.circleMarker([44.18328, 5.26234], {
-  radius: 7,
-  color: "#243f34",
-  weight: 2,
-  fillColor: "#243f34",
-  fillOpacity: 0.85,
-}).addTo(map).bindTooltip("Rond-point", { permanent: true, direction: "top", offset: [0, -8] });
-
 tick();
 setInterval(tick, 1000);
 loadWeather();

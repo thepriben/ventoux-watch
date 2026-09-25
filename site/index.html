@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mont Serein</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <header class="bar">
@@ -38,14 +36,7 @@
     <video id="player" controls autoplay muted playsinline></video>
   </section>
 
-  <div class="board">
-    <section class="place" aria-label="Rond-point">
-      <h2>Rond-point</h2>
-      <div id="map" role="img" aria-label="Rond-point du Mont Serein"></div>
-      <p class="sub"><a href="https://www.openstreetmap.org/?mlat=44.18328&amp;mlon=5.26234#map=18/44.18328/5.26234">OpenStreetMap</a></p>
-    </section>
-
-    <section class="pipeline" aria-label="Pipeline">
+  <section class="pipeline" aria-label="Pipeline">
       <h2>Pipeline</h2>
       <ol class="steps">
         <li><strong>Image</strong><span>1 image/s. ffmpeg lit le flux HLS.</span></li>
@@ -54,12 +45,11 @@
         <li><strong>Classe</strong><span>YOLO11 nano, en ONNX, seulement sur le rectangle. Personne, voiture, bus, camion.</span></li>
         <li><strong>Avion</strong><span>Le ciel ne passe pas par la classe avion du modèle. OpenSky. L’indicatif n’est écrit que s’il n’y a qu’un avion, ou un seul beaucoup plus bas.</span></li>
         <li><strong>Bus</strong><span>Trans'CoVe ou ZOU. Une seule course à ±15 min donne la ligne. Sinon « Bus », à partir d’une confiance de 0,6.</span></li>
-        <li><strong>Rond-point</strong><span>4 personnes ou plus, tenues 8 secondes : attroupement.</span></li>
+        <li><strong>Attroupement</strong><span>4 personnes ou plus, tenues 8 secondes.</span></li>
         <li><strong>Feu</strong><span>Sur la pente, 20 s, surface ×1,5, au moins 8 % de pixels chauds. Au crépuscule, non. Sous la pluie, le brouillard ou la neige, il faut 20 %.</span></li>
         <li><strong>Reste</strong><span>La photo est gardée, sans nom inventé. Huit fois le même coin : habitude. Ensuite, une carte au plus toutes les 6 h.</span></li>
       </ol>
     </section>
-  </div>
 
   <section class="history">
     <div class="history-head">
