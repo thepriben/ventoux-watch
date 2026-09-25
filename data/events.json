@@ -1,6 +1,96 @@
 {
   "events": [
     {
+      "id": "2026-09-25T11-01-37Z-plane-1304",
+      "t": "2026-09-25T11:01:37Z",
+      "type": "plane",
+      "label": "FJO53F",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T11-01-37Z-plane-1304.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d23a7",
+        "callsign": "FJO53F",
+        "altitude_m": 8359.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T11-01-37Z-plane-1305",
+      "t": "2026-09-25T11:01:37Z",
+      "type": "plane",
+      "label": "FJO53F",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T11-01-37Z-plane-1305.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d23a7",
+        "callsign": "FJO53F",
+        "altitude_m": 8359.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T11-01-01Z-plane-1303",
+      "t": "2026-09-25T11:01:01Z",
+      "type": "plane",
+      "label": "FJO53F",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T11-01-01Z-plane-1303.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d23a7",
+        "callsign": "FJO53F",
+        "altitude_m": 8359.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T11-00-53Z-plane-1302",
+      "t": "2026-09-25T11:00:53Z",
+      "type": "plane",
+      "label": "FJO53F",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T11-00-53Z-plane-1302.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d23a7",
+        "callsign": "FJO53F",
+        "altitude_m": 8359.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
+      "id": "2026-09-25T11-00-50Z-plane-1301",
+      "t": "2026-09-25T11:00:50Z",
+      "type": "plane",
+      "label": "FJO53F",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-25T11-00-50Z-plane-1301.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "4d23a7",
+        "callsign": "FJO53F",
+        "altitude_m": 8359.14,
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé"
+      }
+    },
+    {
       "id": "2026-09-25T11-00-10Z-motion-1299",
       "t": "2026-09-25T11:00:10Z",
       "type": "motion",
