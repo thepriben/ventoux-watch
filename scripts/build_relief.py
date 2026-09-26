@@ -196,8 +196,8 @@ def _ribbons(ways, terrain: Terrain, eye: float) -> list[dict]:
             continue
         if tags.get("junction") == "roundabout":
             out.append({"k": "island", "p": _plan(_simplify(points))})
-        elif not tags.get("highway") and surface_of(tags) == "parking":
-            out.append({"k": "parking", "p": _plan(_simplify(points))})
+        elif not tags.get("highway") and surface_of(tags) in {"parking", "playground"}:
+            out.append({"k": surface_of(tags), "p": _plan(_simplify(points))})
     return out
 
 

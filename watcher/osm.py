@@ -32,6 +32,8 @@ SURFACE_TAGS = {
     ("natural", "grassland"): "meadow",
     ("natural", "heath"): "meadow",
     ("natural", "scree"): "scree",
+    ("leisure", "playground"): "playground",
+    ("leisure", "pitch"): "playground",
     ("amenity", "parking"): "parking",
     ("amenity", "parking_space"): "parking",
     ("building", "*"): "building",
@@ -74,6 +76,9 @@ def around(lat: float, lon: float, radius_m: float, cache: Path, max_age_s: int 
         f'way["landuse"]({box});'
         f'way["natural"]({box});'
         f'way["amenity"~"^(parking|parking_space)$"]({box});'
+        # Somewhere children play is not somewhere a car drives, and the yellow
+        # frame of one is the brightest thing in this picture after the sky.
+        f'way["leisure"]({box});'
         f'node["tourism"="artwork"]({box});'
         f'node["historic"]({box});'
         f'node["natural"="tree"]({box});'

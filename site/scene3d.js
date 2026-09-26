@@ -16,6 +16,7 @@ const SURFACE = {
   // The island is trodden grass over gravel, drier and paler than the pasture
   // around it. Close enough in colour to be honest, far enough to be seen.
   island: 0xa19e6e,
+  playground: 0xb8a24a,
 };
 // Drawn just clear of the ground, so the tarmac does not fight the slope it
 // lies on for the same pixels.
@@ -102,6 +103,11 @@ async function start(host) {
   }
   home();
   document.getElementById("relief-back")?.addEventListener("click", home);
+  document.getElementById("relief-wide")?.addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else host.requestFullscreen?.();
+  });
+  document.addEventListener("fullscreenchange", fit);
 
   const caption = document.getElementById("relief-name");
   const finder = new THREE.Raycaster();
@@ -117,7 +123,11 @@ async function start(host) {
   });
 
   function fit() {
-    const width = host.clientWidth;
+    // Sixteen by nine, always. Filling a screen of another shape would widen
+    // or crop the field of view, and the whole point is that this is the
+    // webcam's field of view and no other.
+    const room = document.fullscreenElement === host ? host.clientHeight * aspect : Infinity;
+    const width = Math.min(host.clientWidth, room);
     renderer.setSize(width, Math.round(width / aspect));
   }
   window.addEventListener("resize", fit);

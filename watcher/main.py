@@ -55,6 +55,8 @@ def main() -> None:
         cfg["opensky"].get("username") or "",
         cfg["opensky"].get("password") or "",
         cfg["opensky"].get("quiet_s", 240),
+        cfg["opensky"].get("client_id") or "",
+        cfg["opensky"].get("client_secret") or "",
     )
     camera = cfg["camera"]
     gtfs = GtfsIndex(root / "data" / "gtfs", cfg["gtfs"], camera["lat"], camera["lon"], cfg["gtfs_radius_m"])
@@ -163,6 +165,16 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         camera_fov=float(cfg["camera"].get("fov") or 90),
     )
     decision = decide(obs)
+    measured = {
+        # What the rule actually weighed. Written down because a refusal with no
+        # number behind it cannot be argued with later: the sky has turned down
+        # thousands of things and left no way to tell a jet from a cloud edge.
+        "travel": round(obs.travel, 4),
+        "area_ratio": round(obs.area_ratio, 5),
+        "duration_s": round(max(0.0, track.updated - track.started), 1),
+        "frames": track.frames,
+    }
+    decision.detail.setdefault("measured", measured)
     if decision.type == "motion" and track.zone == "sky":
         store.add_candidate(when, track.zone, decision.reason, decision.detail)
         return

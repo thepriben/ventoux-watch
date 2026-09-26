@@ -10,19 +10,57 @@ import urllib.request
 from base64 import b64encode
 from pathlib import Path
 
+AGENT = "ventoux-watch/0.3 (github.com/thepriben/ventoux-watch)"
+TOKEN_URL = "https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token"
+
 log = logging.getLogger("ventoux.opensky")
 
 
 class SkyArchive:
-    def __init__(self, path: Path, bbox: list[float], retain_days: int = 14, username: str = "", password: str = "", quiet_s: float = 60.0):
+    def __init__(self, path: Path, bbox: list[float], retain_days: int = 14, username: str = "", password: str = "",
+                 quiet_s: float = 60.0, client_id: str = "", client_secret: str = ""):
         self.path = path
         self.bbox = bbox
         self.retain_days = retain_days
         self.username = username
         self.password = password
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.quiet_s = quiet_s
         self.asked = 0.0
+        self.token = ""
+        self.token_until = 0.0
         self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def _bearer(self) -> str:
+        """A fresh access token, kept until shortly before it expires.
+
+        OpenSky closed the door on name and password in 2025: an account now
+        issues a client identifier and a secret, and those buy a token that
+        lasts half an hour. Without one the archive still works, on the handful
+        of anonymous calls a day the service allows before it says no.
+        """
+        if not (self.client_id and self.client_secret):
+            return ""
+        if self.token and time.time() < self.token_until:
+            return self.token
+        body = urllib.parse.urlencode(
+            {
+                "grant_type": "client_credentials",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+            }
+        ).encode()
+        request = urllib.request.Request(TOKEN_URL, data=body, headers={"User-Agent": AGENT})
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                payload = json.loads(response.read().decode())
+        except Exception as exc:
+            log.warning("OpenSky refuse le jeton: %s", exc)
+            return ""
+        self.token = payload.get("access_token") or ""
+        self.token_until = time.time() + float(payload.get("expires_in") or 1800) - 60
+        return self.token
 
     def ask(self, when: float, window_s: float = 120) -> list[dict]:
         """Who was flying over, at the moment something crossed the sky.
@@ -49,9 +87,12 @@ class SkyArchive:
         )
         request = urllib.request.Request(
             f"https://opensky-network.org/api/states/all?{query}",
-            headers={"User-Agent": "ventoux-watch/0.1"},
+            headers={"User-Agent": AGENT},
         )
-        if self.username and self.password:
+        bearer = self._bearer()
+        if bearer:
+            request.add_header("Authorization", f"Bearer {bearer}")
+        elif self.username and self.password:
             token = b64encode(f"{self.username}:{self.password}".encode()).decode()
             request.add_header("Authorization", f"Basic {token}")
         try:

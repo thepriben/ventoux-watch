@@ -55,7 +55,7 @@ const COPY = {
     places: {
       road: "Road", roundabout: "Roundabout", parking: "Car park", path: "Path",
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
-      sky: "Sky", island: "Roundabout island", scree: "Scree", other: "Off the road",
+      sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", other: "Off the road",
     },
     notInFrame: "Not in the picture",
     colCam: "Webcam",
@@ -64,6 +64,7 @@ const COPY = {
     repoPrivate: "Source and history of every change.",
     relief: "3D view",
     reliefBack: "Webcam angle",
+    reliefWide: "Full screen",
     periods: { day: "Day", twilight: "Dusk", night: "Night" },
     moon: "Moon",
     wind: "Wind",
@@ -134,7 +135,7 @@ const COPY = {
     places: {
       road: "Chaussée", roundabout: "Rond-point", parking: "Parking", path: "Sentier",
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
-      sky: "Ciel", island: "Îlot central", scree: "Éboulis", other: "Hors chaussée",
+      sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", other: "Hors chaussée",
     },
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",
@@ -143,6 +144,7 @@ const COPY = {
     repoPrivate: "Le code et l’histoire de chaque changement.",
     relief: "Vue 3D",
     reliefBack: "Angle webcam",
+    reliefWide: "Plein écran",
     periods: { day: "Jour", twilight: "Crépuscule", night: "Nuit" },
     moon: "Lune",
     wind: "Vent",
@@ -234,6 +236,10 @@ function applyLang() {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const value = t(node.dataset.i18n);
     if (typeof value === "string") node.textContent = value;
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((node) => {
+    node.title = t(node.dataset.i18nTitle);
+    node.setAttribute("aria-label", t(node.dataset.i18nTitle));
   });
   document.querySelectorAll("[data-i18n-aria]").forEach((node) => {
     node.setAttribute("aria-label", t(node.dataset.i18nAria));

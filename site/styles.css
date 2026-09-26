@@ -409,7 +409,17 @@ h2 {
 #relief:active { cursor: grabbing; }
 #relief canvas { display: block; }
 
-#relief-back {
+#relief:fullscreen {
+  aspect-ratio: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.relief .tools { display: flex; gap: 6px; }
+
+#relief-back, #relief-wide {
   padding: 3px 9px;
   border: 1px solid var(--ink);
   border-radius: 999px;
