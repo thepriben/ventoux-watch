@@ -1,6 +1,36 @@
 {
   "events": [
     {
+      "id": "2026-09-26T13-16-49Z-vehicle-78",
+      "t": "2026-09-26T13:16:49Z",
+      "type": "vehicle",
+      "label": "Camion",
+      "zone": "roundabout",
+      "confidence": 0.533,
+      "thumb": "data/thumbs/2026-09-26T13-16-49Z-vehicle-78.jpg",
+      "clip_url": "",
+      "detail": {
+        "width_m": 6.2,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.1865,
+          "area_ratio": 0.02483,
+          "duration_s": 9.5,
+          "frames": 8
+        },
+        "surface": "roundabout",
+        "box": [
+          0.1766,
+          0.8889,
+          0.2234,
+          0.1111
+        ]
+      },
+      "closeup": "data/closeups/2026-09-26T13-16-49Z-vehicle-78.jpg"
+    },
+    {
       "id": "2026-09-26T13-15-19Z-vehicle-77",
       "t": "2026-09-26T13:15:19Z",
       "type": "vehicle",
