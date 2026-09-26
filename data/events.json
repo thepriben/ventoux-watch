@@ -3,23 +3,32 @@
     {
       "id": "2026-09-26T11-00-22Z-person-88",
       "t": "2026-09-26T11:00:22Z",
-      "type": "person",
-      "label": "Piéton",
-      "zone": "other",
-      "confidence": 0.524,
+      "type": "vehicle",
+      "label": "Camion",
+      "zone": "road",
+      "confidence": 0.62,
       "thumb": "data/thumbs/2026-09-26T11-00-22Z-person-88.jpg",
       "clip_url": "",
       "detail": {
+        "width_m": 8.7,
         "period": "day",
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.0236,
+          "area_ratio": 0.0015,
+          "duration_s": 0.1,
+          "frames": 2
+        },
         "box": [
-          0.5078,
-          0.8806,
-          0.0797,
-          0.1194
-        ]
-      }
+          0.0906,
+          0.6556,
+          0.0359,
+          0.0417
+        ],
+        "count": 2
+      },
+      "closeup": "data/closeups/2026-09-26T11-00-22Z-person-88.jpg"
     },
     {
       "id": "2026-09-26T10-52-32Z-person-87",
