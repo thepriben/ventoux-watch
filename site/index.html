@@ -18,6 +18,7 @@
   </script>
 </head>
 <body>
+  <a class="skip" href="#content" data-i18n="skip">Skip to content</a>
   <header class="top">
     <div class="top-inner">
       <div class="brand">
@@ -45,20 +46,30 @@
       <p class="langs">
         <button type="button" data-lang="en" class="on">EN</button>
         <button type="button" data-lang="fr">FR</button>
+        <button type="button" id="theme" title="Dark mode" aria-label="Dark mode" aria-pressed="false">◐</button>
       </p>
     </div>
   </header>
 
-  <main>
+  <main id="content">
+  <nav class="onpage" data-i18n-aria="sections" aria-label="Sections">
+    <a href="#live" data-i18n="live">Live</a>
+    <a href="#view3d" data-i18n="relief">3D view</a>
+    <a href="#flow" data-i18n="pipeline">Pipeline</a>
+    <a href="#camera" data-i18n="camera">Camera</a>
+    <a href="#weather-block" data-i18n="compare">Weather</a>
+    <a href="#log" data-i18n="history">History</a>
+  </nav>
   <div class="board">
     <div class="main-col">
-    <section class="block live" data-i18n-aria="live" aria-label="Live webcam">
+    <section class="block live" id="live" aria-labelledby="live-title">
+      <h2 class="sr" id="live-title" data-i18n="live">Live</h2>
       <video id="player" controls autoplay muted playsinline></video>
     </section>
 
-    <section class="block relief" data-i18n-aria="relief" aria-label="3D view">
+    <section class="block relief" id="view3d" aria-labelledby="view3d-title">
       <div class="head">
-        <h2 data-i18n="relief">3D view</h2>
+        <h2 id="view3d-title" data-i18n="relief">3D view</h2><a class="anchor" href="#view3d" aria-hidden="true" tabindex="-1">#</a>
       </div>
       <div class="stage" id="relief-stage">
         <div id="relief"></div>
@@ -71,8 +82,9 @@
       </div>
     </section>
 
-    <section class="block pipeline" data-i18n-aria="pipeline" aria-label="Pipeline">
-      <div class="head"><h2 data-i18n="pipeline">Pipeline</h2></div>
+    <section class="block pipeline" id="flow" aria-labelledby="flow-title">
+      <div class="head"><h2 id="flow-title" data-i18n="pipeline">Pipeline</h2><a class="anchor" href="#flow" aria-hidden="true" tabindex="-1">#</a></div>
+      <div class="chart" id="chart"></div>
       <ol class="steps">
         <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
         <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
@@ -87,7 +99,8 @@
     </div>
 
     <div class="side">
-    <section class="block place" data-i18n-aria="camera" aria-label="Camera">
+    <section class="block place" id="camera" aria-labelledby="camera-title">
+      <h2 class="sr" id="camera-title" data-i18n="camera">Camera</h2>
       <div class="frame">
         <div id="map"></div>
         <div class="zooms" role="group" aria-label="Zoom">
@@ -99,9 +112,9 @@
       </div>
     </section>
 
-    <section class="block bulletin" data-i18n-aria="compare" aria-label="Weather">
+    <section class="block bulletin" id="weather-block" aria-labelledby="weather-title">
       <div class="head">
-        <h2 data-i18n="compare">Weather</h2>
+        <h2 id="weather-title" data-i18n="compare">Weather</h2><a class="anchor" href="#weather-block" aria-hidden="true" tabindex="-1">#</a>
         <p class="sub" id="view-when"></p>
       </div>
       <p class="words" id="view-words" data-i18n="compareEmpty">No reading yet.</p>
@@ -123,9 +136,9 @@
     </div>
   </div>
 
-  <section class="block history">
+  <section class="block history" id="log" aria-labelledby="log-title">
     <div class="history-head">
-      <h2 data-i18n="history">History</h2>
+      <h2 id="log-title" data-i18n="history">History</h2><a class="anchor" href="#log" aria-hidden="true" tabindex="-1">#</a>
       <p class="count" id="count"></p>
       <div class="filters" role="tablist">
         <button type="button" class="on" data-filter="all" data-i18n="all">All</button>

@@ -136,7 +136,7 @@ h1 {
 
 .langs button.on {
   background: var(--pine);
-  color: #f6f3ec;
+  color: var(--paper);
   border-color: var(--pine);
 }
 
@@ -189,7 +189,7 @@ h2 {
 .live video {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #111;
+  background: #000;
   display: block;
 }
 
@@ -201,7 +201,7 @@ h2 {
   width: 100%;
   height: 100%;
   outline: none;
-  background: #d5d0c6;
+  background: var(--hair);
 }
 
 .cap {
@@ -238,7 +238,7 @@ h2 {
 
 .zooms button.on {
   background: var(--pine);
-  color: #f6f3ec;
+  color: var(--paper);
   border-color: var(--pine);
 }
 
@@ -255,7 +255,7 @@ h2 {
   width: 100%;
   display: block;
   border: 1px solid var(--hair);
-  background: #ece8e1;
+  background: var(--hair);
 }
 
 .bulletin .sub { margin: 9px 0 0; font-size: 12px; font-variant-numeric: tabular-nums; }
@@ -274,7 +274,7 @@ h2 {
   height: 130px;
   object-fit: cover;
   display: block;
-  background: #d5d0c6;
+  background: var(--hair);
 }
 
 .carousel button {
@@ -320,7 +320,7 @@ h2 {
 
 .filters button.on {
   background: var(--pine);
-  color: #f6f3ec;
+  color: var(--paper);
   border-color: var(--pine);
 }
 
@@ -377,7 +377,7 @@ h2 {
   height: 180px;
   object-fit: contain;
   display: block;
-  background: #ece8e1;
+  background: var(--hair);
 }
 
 /* Pipeline */
@@ -533,3 +533,133 @@ h2 {
   .steps { grid-template-columns: 1fr; }
   .filters { margin-left: 0; }
 }
+
+/* Getting about the page */
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  z-index: 2000;
+  padding: 10px 16px;
+  background: var(--pine);
+  color: var(--paper);
+  border-radius: 0 0 8px 0;
+}
+
+.skip:focus { left: 0; top: 0; }
+
+.sr {
+  /* Read aloud, never drawn: every section owes its name to a heading, and a
+     page whose headings are only pictures cannot be navigated by ear. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.onpage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 0;
+}
+
+.onpage a {
+  padding: 4px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.onpage a:hover, .onpage a:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+section[id] { scroll-margin-top: 82px; }
+
+.anchor {
+  margin-left: 6px;
+  color: var(--line);
+  font-size: 12px;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.head:hover .anchor, .history-head:hover .anchor, .anchor:focus-visible { opacity: 1; }
+
+:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+
+#theme {
+  min-width: 30px;
+  font-size: 12px;
+}
+
+/* The pipeline, drawn */
+
+.chart { padding: 14px 16px 4px; }
+
+.chart .flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.chart .asks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+
+.chart .lab {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.chart .join {
+  padding: 3px 9px;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.chart .step {
+  flex: 1 1 96px;
+  position: relative;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--shade);
+}
+
+.chart .flow .step + .step::before {
+  /* The arrow lives on the box that follows, so the last box has none. */
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  width: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.chart .step b {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.chart .step span { color: var(--muted); font-size: 11px; }
+
+.chart .step.out { border-color: var(--pine); background: none; }
+.chart .step.out b { color: var(--pine); }

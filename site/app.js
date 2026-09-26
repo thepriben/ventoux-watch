@@ -57,6 +57,9 @@ const COPY = {
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
       sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
+    heading: "heading",
+    climbing: "climbing",
+    descending: "descending",
     notInFrame: "Not in the picture",
     colCam: "Webcam",
     colApi: "Station",
@@ -65,6 +68,21 @@ const COPY = {
     relief: "3D view",
     reliefBack: "Webcam angle",
     reliefWide: "Full screen",
+    skip: "Skip to content",
+    sections: "Sections",
+    theme: "Dark mode",
+    themeBack: "Light mode",
+    chart: [
+      ["Stream", "HLS, 1 frame a second"],
+      ["Motion", "MOG2 at 640 px"],
+      ["Track", "3 frames, compact"],
+      ["Class", "YOLO11n on the crop"],
+      ["Ground", "Surface and distance"],
+      ["Name", "The rules decide"],
+      ["Published", "Only what is named"],
+    ],
+    chartJoin: ["OpenSky", "Trans'CoVe / ZOU", "OpenStreetMap"],
+    chartAsk: "Asked only when naming",
     periods: { day: "Day", twilight: "Dusk", night: "Night" },
     moon: "Moon",
     wind: "Wind",
@@ -137,6 +155,9 @@ const COPY = {
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
       sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
+    heading: "cap",
+    climbing: "en montée",
+    descending: "en descente",
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",
     colApi: "Station",
@@ -145,6 +166,21 @@ const COPY = {
     relief: "Vue 3D",
     reliefBack: "Angle webcam",
     reliefWide: "Plein écran",
+    skip: "Aller au contenu",
+    sections: "Sections",
+    theme: "Mode sombre",
+    themeBack: "Mode clair",
+    chart: [
+      ["Flux", "HLS, une image par seconde"],
+      ["Mouvement", "MOG2 à 640 px"],
+      ["Piste", "3 images, compacte"],
+      ["Classe", "YOLO11n sur la découpe"],
+      ["Sol", "Surface et distance"],
+      ["Nom", "Les règles tranchent"],
+      ["Publié", "Rien que le nommé"],
+    ],
+    chartJoin: ["OpenSky", "Trans'CoVe / ZOU", "OpenStreetMap"],
+    chartAsk: "Interrogé seulement pour nommer",
     periods: { day: "Jour", twilight: "Crépuscule", night: "Nuit" },
     moon: "Lune",
     wind: "Vent",
@@ -233,15 +269,54 @@ function locale() {
 
 // The 3D view is a separate module and must not keep a second copy of the
 // wording: one dictionary, or the same place ends up named two ways.
+const THEME_KEY = "ventoux-theme";
+let theme = localStorage.getItem(THEME_KEY)
+  || (window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+function applyTheme() {
+  document.documentElement.dataset.theme = theme;
+  const knob = document.getElementById("theme");
+  if (!knob) return;
+  const next = theme === "dark" ? t("themeBack") : t("theme");
+  knob.textContent = theme === "dark" ? "☀" : "◐";
+  knob.title = next;
+  knob.setAttribute("aria-label", next);
+  knob.setAttribute("aria-pressed", String(theme === "dark"));
+}
+
+document.getElementById("theme")?.addEventListener("click", () => {
+  theme = theme === "dark" ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, theme);
+  applyTheme();
+});
+document.addEventListener("ventoux-lang", applyTheme);
+applyTheme();
+
 window.ventoux = {
   locale,
   place: (key) => t("places")[key] || key,
   period: (key) => t("periods")[key] || key,
 };
 
+function drawChart() {
+  const chart = document.getElementById("chart");
+  if (!chart) return;
+  const steps = t("chart").map(([name, note], turn) => {
+    const last = turn === t("chart").length - 1 ? " out" : "";
+    return `<div class="step${last}"><b>${name}</b><span>${note}</span></div>`;
+  });
+  // On their own line, and never in the chain. These are asked at the naming
+  // step and nowhere else: a callsign or a timetable never decides that
+  // something moved, only what to call it once it has.
+  const joins = t("chartJoin").map((name) => `<span class="join">${name}</span>`);
+  chart.innerHTML = `<div class="flow">${steps.join("")}</div>`
+    + `<p class="asks"><span class="lab">${t("chartAsk")}</span>${joins.join("")}</p>`;
+}
+
 function applyLang() {
+  queueMicrotask(() => document.dispatchEvent(new CustomEvent("ventoux-lang")));
   document.documentElement.lang = lang;
-  document.dispatchEvent(new CustomEvent("ventoux-lang"));
+  drawChart();
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const value = t(node.dataset.i18n);
     if (typeof value === "string") node.textContent = value;
@@ -442,12 +517,33 @@ document.querySelectorAll(".filters button").forEach((button) => {
   });
 });
 
+function who(info) {
+  // The airline and flight number when the code is one we know, the raw
+  // callsign otherwise. Never both: repeating AAL746 after "American Airlines
+  // 746" tells the reader nothing they have not just read.
+  if (info.operator && info.flight) return `${info.operator} ${info.flight}`;
+  return info.callsign || "OpenSky";
+}
+
+function facts(info) {
+  const out = [];
+  if (info.altitude_m != null) out.push(`${Math.round(info.altitude_m).toLocaleString(locale())} m`);
+  if (info.speed_ms != null) out.push(`${Math.round(info.speed_ms * 3.6).toLocaleString(locale())} km/h`);
+  if (info.heading != null) out.push(`${t("heading")} ${Math.round(info.heading)}°`);
+  // A tenth of a metre a second is level flight; below that the reading is the
+  // instrument breathing, not the aircraft going anywhere.
+  if (info.climb_ms != null && Math.abs(info.climb_ms) >= 1) {
+    out.push(info.climb_ms > 0 ? t("climbing") : t("descending"));
+  }
+  if (info.distance_km != null) out.push(`${Math.round(info.distance_km)} km`);
+  return out;
+}
+
 function detail(event) {
   const info = event.detail || {};
   if (event.type === "plane") {
-    const altitude = info.altitude_m == null ? "" : `${Math.round(info.altitude_m).toLocaleString(locale())} m`;
     const place = info.seen ? "" : t("notInFrame");
-    return ["OpenSky", altitude, place, showText(info.context)].filter(Boolean).join(" · ");
+    return [who(info), ...facts(info), place, showText(info.context)].filter(Boolean).join(" · ");
   }
   if (event.type === "bus" && info.route) {
     return `${info.headsign || info.route} · ${info.scheduled || ""} · ${info.source || ""}`.trim();
