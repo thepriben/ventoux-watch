@@ -33,7 +33,6 @@ SURFACE_TAGS = {
     ("natural", "heath"): "meadow",
     ("natural", "scree"): "scree",
     ("leisure", "playground"): "playground",
-    ("leisure", "pitch"): "playground",
     ("amenity", "parking"): "parking",
     ("amenity", "parking_space"): "parking",
     ("building", "*"): "building",
