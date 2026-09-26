@@ -13,7 +13,13 @@ const SURFACE = {
   residential: 0x606067, living_street: 0x606067, service: 0x66666d,
   track: 0x8a7b5e, path: 0xa18a68, footway: 0xa18a68, steps: 0xa18a68,
   cycleway: 0x8a7b5e, pedestrian: 0x8b8b8f, parking: 0x6a6a71,
+  // The island is trodden grass over gravel, drier and paler than the pasture
+  // around it. Close enough in colour to be honest, far enough to be seen.
+  island: 0xa19e6e,
 };
+// Drawn just clear of the ground, so the tarmac does not fight the slope it
+// lies on for the same pixels.
+const LIFT_M = 0.35;
 const WALL = 0x9a8975;
 const ROOF = 0x7a5f52;
 const STEEL = 0xb9bec7;
@@ -57,13 +63,18 @@ async function start(host) {
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   host.appendChild(renderer.domElement);
 
+  // Everything the map draws is laid on the heightfield the page itself has
+  // built, never on a height computed elsewhere: read from a finer model, a
+  // road sinks under the very ground it is supposed to lie on.
+  const high = sampler(relief.terrain);
   const world = new THREE.Scene();
   world.add(ground(relief));
-  for (const road of relief.roads) world.add(ribbon(road.p, road.w, SURFACE[road.k] ?? SURFACE.track));
-  for (const area of relief.ribbons) world.add(slab(area.p, SURFACE[area.k] ?? SURFACE.parking));
-  for (const house of relief.buildings) world.add(block(house));
-  world.add(...wood(relief));
-  const named = relief.masts.map(column);
+  for (const road of relief.roads) world.add(ribbon(road.p, road.w, SURFACE[road.k] ?? SURFACE.track, high));
+  for (const area of relief.ribbons) world.add(slab(area.p, SURFACE[area.k] ?? SURFACE.parking, high));
+  for (const house of relief.buildings) world.add(block(house, high));
+  world.add(...wood(relief, high));
+  const named = relief.masts.map((mast) => column(mast, high))
+    .concat((relief.figures || []).map((figure) => carving(figure, high)));
   for (const mast of named) world.add(mast);
   world.add(here());
 
@@ -164,7 +175,7 @@ function ground(relief) {
   return new THREE.Mesh(shape, new THREE.MeshLambertMaterial({ vertexColors: true }));
 }
 
-function ribbon(line, width, colour) {
+function ribbon(line, width, colour, high) {
   /* A road from its centre line: the map keeps the line and the width apart,
      and so does this. */
   const half = Math.max(0.8, width / 2);
@@ -177,9 +188,11 @@ function ribbon(line, width, colour) {
     if (run.lengthSq() < 1e-9) run = new THREE.Vector2(1, 0);
     run.normalize();
     const side = new THREE.Vector2(-run.y, run.x).multiplyScalar(half);
-    const [east, north, up] = line[index];
-    left.push(spot(east + side.x, north + side.y, up));
-    right.push(spot(east - side.x, north - side.y, up));
+    const [east, north] = line[index];
+    const a = [east + side.x, north + side.y];
+    const b = [east - side.x, north - side.y];
+    left.push(spot(a[0], a[1], high(a[0], a[1]) + LIFT_M));
+    right.push(spot(b[0], b[1], high(b[0], b[1]) + LIFT_M));
   }
   const place = [];
   for (let index = 0; index + 1 < line.length; index += 1) {
@@ -192,15 +205,19 @@ function ribbon(line, width, colour) {
   return new THREE.Mesh(shape, tarmac(colour));
 }
 
-function slab(ring, colour) {
+function slab(ring, colour, high) {
   /* A car park, drawn corner by corner. Its corners carry their own heights,
      so it lies along the slope instead of hovering over it. */
-  const flat = ring.map(([east, north]) => new THREE.Vector2(east, north));
+  // A closed way repeats its first point at the end. Left in, the triangulator
+  // sees an edge of length zero and gives back nothing at all.
+  const shut = ring.length > 3 && ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1];
+  const corners = shut ? ring.slice(0, -1) : ring;
+  const flat = corners.map(([east, north]) => new THREE.Vector2(east, north));
   const place = [];
   for (const triangle of THREE.ShapeUtils.triangulateShape(flat, [])) {
     for (const corner of triangle) {
-      const [east, north, up] = ring[corner];
-      place.push(east, up, -north);
+      const [east, north] = corners[corner];
+      place.push(east, high(east, north) + LIFT_M / 2, -north);
     }
   }
   const shape = new THREE.BufferGeometry();
@@ -221,24 +238,25 @@ function tarmac(colour) {
   });
 }
 
-function block(house) {
+function block(house, high) {
   /* A building, raised off its own footprint to its own height. */
   const outline = new THREE.Shape(house.p.map(([east, north]) => new THREE.Vector2(east, north)));
   const shape = new THREE.ExtrudeGeometry(outline, { depth: house.h, bevelEnabled: false });
   shape.rotateX(-Math.PI / 2);
-  shape.translate(0, house.z, 0);
+  // Founded on the lowest corner, so a house on a slope is dug in rather than
+  // left standing on one leg.
+  shape.translate(0, Math.min(...house.p.map(([east, north]) => high(east, north))), 0);
   return new THREE.Mesh(shape, [
     new THREE.MeshLambertMaterial({ color: WALL }),
     new THREE.MeshLambertMaterial({ color: ROOF }),
   ]);
 }
 
-function wood(relief) {
+function wood(relief, high) {
   /* The woods, planted. The map gives the outline of a parcel and nothing of
      what stands in it, so the trees are sown on a fixed pattern, nudged about
      by a seeded roll of the dice: the same wood every time the page is opened,
      and never a plantation in rows. */
-  const high = sampler(relief.terrain);
   const roll = dice(20260926);
   const standing = [];
   for (const parcel of relief.woods) {
@@ -259,7 +277,7 @@ function wood(relief) {
       }
     }
   }
-  for (const [x, y, z, tall] of relief.trees) standing.push([x, y, z, tall, Math.hypot(x, y)]);
+  for (const [x, y, tall] of relief.trees) standing.push([x, y, high(x, y), tall, Math.hypot(x, y)]);
   if (!standing.length) return [];
   const close = standing.filter((tree) => tree[4] <= TRUNKS_M);
 
@@ -336,13 +354,23 @@ function dice(seed) {
   };
 }
 
-function column(mast) {
+function column(mast, high) {
   /* A tower or an aerial. Thin, and by far the tallest thing on the skyline. */
-  const [east, north, up] = mast.at;
+  const [east, north] = mast.at;
   const shape = new THREE.CylinderGeometry(mast.h / 22, mast.h / 14, mast.h, 8);
   const piece = new THREE.Mesh(shape, new THREE.MeshLambertMaterial({ color: STEEL }));
-  piece.position.set(east, up + mast.h / 2, -north);
+  piece.position.set(east, high(east, north) + mast.h / 2, -north);
   piece.name = mast.name;
+  return piece;
+}
+
+function carving(figure, high) {
+  /* A carved figure or a memorial stone: a metre of shoulders on a stump. */
+  const [east, north] = figure.at;
+  const shape = new THREE.CylinderGeometry(figure.h / 9, figure.h / 7, figure.h, 6);
+  const piece = new THREE.Mesh(shape, new THREE.MeshLambertMaterial({ color: TRUNK }));
+  piece.position.set(east, high(east, north) + figure.h / 2, -north);
+  piece.name = figure.name;
   return piece;
 }
 

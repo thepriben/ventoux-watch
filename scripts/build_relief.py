@@ -44,9 +44,6 @@ PLAIN_BUILDING_M = 6.0
 # it would fill the frame with its own wall and hide everything it was put there
 # to watch. Anything this close is what the camera is standing on.
 UNDERFOOT_M = 4.0
-# Drawn just clear of the ground, so the tarmac does not fight the slope it
-# lies on for the same pixels.
-LIFT_M = 0.35
 BROAD = {"forest": 1, "meadow": 2, "scree": 3}
 # One cell per elevation post: finer would invent a relief the model has not
 # got. This is only the broad cover, the roads come as vectors.
@@ -103,6 +100,7 @@ def main() -> int:
         "woods": _woods(ways),
         "trees": _trees(data, pose, terrain, eye, reach),
         "masts": _masts(data, pose, terrain, eye, reach),
+        "figures": _figures(data, pose, terrain, eye, reach),
     }
 
     out = root / "config" / "relief.json"
@@ -154,13 +152,15 @@ def _simplify(points: np.ndarray) -> np.ndarray:
     return kept
 
 
-def _drape(points: np.ndarray, terrain: Terrain, eye: float, lift: float) -> list[list[float]]:
-    """Put a line down on the ground, height and all, relative to the eye."""
-    out = []
-    for east, north in points:
-        height = terrain.height(float(east), float(north)) - eye + lift
-        out.append([round(float(east), 1), round(float(north), 1), round(height, 1)])
-    return out
+def _plan(points) -> list[list[float]]:
+    """A line or a ring seen from above, in metres east and north of the eye.
+
+    No heights. They are read off the heightfield when the scene is drawn, so
+    that a road lies on exactly the surface the page has under it. Computed
+    here instead, they came from a finer reading of the same model and sank
+    half a metre into the ground the page had drawn.
+    """
+    return [[round(float(east), 1), round(float(north), 1)] for east, north in points]
 
 
 def _roads(ways, terrain: Terrain, eye: float) -> list[dict]:
@@ -175,21 +175,29 @@ def _roads(ways, terrain: Terrain, eye: float) -> list[dict]:
                 "k": kind,
                 "w": round(road_width_m(tags), 1),
                 "r": tags.get("junction") == "roundabout",
-                "p": _drape(_simplify(points), terrain, eye, LIFT_M),
+                "p": _plan(_simplify(points)),
             }
         )
     return out
 
 
 def _ribbons(ways, terrain: Terrain, eye: float) -> list[dict]:
-    """The paved surfaces drawn corner by corner: car parks and their bays."""
+    """The flat surfaces drawn corner by corner: car parks, and the island.
+
+    A roundabout comes as a single ring, which is its centre line and not its
+    outline. Filled, it gives the whole disc; the carriageway is then laid over
+    it as a ribbon, and what stays visible in the middle is the planted island.
+    Without it the roundabout is a grey band among grey bands, and the one
+    feature everybody recognises here cannot be made out at all.
+    """
     out = []
     for tags, points in ways:
-        if tags.get("highway") or surface_of(tags) != "parking":
-            continue
         if len(points) < 4 or not np.allclose(points[0], points[-1]):
             continue
-        out.append({"k": "parking", "p": _drape(_simplify(points), terrain, eye, LIFT_M / 2)})
+        if tags.get("junction") == "roundabout":
+            out.append({"k": "island", "p": _plan(_simplify(points))})
+        elif not tags.get("highway") and surface_of(tags) == "parking":
+            out.append({"k": "parking", "p": _plan(_simplify(points))})
     return out
 
 
@@ -207,15 +215,7 @@ def _buildings(ways, terrain: Terrain, eye: float) -> list[dict]:
             continue
         if float(np.min(np.hypot(points[:, 0], points[:, 1]))) <= UNDERFOOT_M:
             continue
-        ring = _simplify(points)
-        floor = min(terrain.height(float(east), float(north)) for east, north in ring) - eye
-        out.append(
-            {
-                "h": round(_tall(tags), 1),
-                "z": round(float(floor), 1),
-                "p": [[round(float(east), 1), round(float(north), 1)] for east, north in ring],
-            }
-        )
+        out.append({"h": round(_tall(tags), 1), "p": _plan(_simplify(points))})
     return out
 
 
@@ -271,7 +271,7 @@ def _trees(data: dict, pose: Pose, terrain: Terrain, eye: float, reach: float) -
             tall = float(str(tags.get("height") or "").split()[0])
         except (TypeError, ValueError, IndexError):
             tall = 9.0
-        out.append([round(east, 1), round(north, 1), round(terrain.height(east, north) - eye, 1), round(tall, 1)])
+        out.append([round(east, 1), round(north, 1), round(tall, 1)])
     return out
 
 
@@ -294,8 +294,39 @@ def _masts(data: dict, pose: Pose, terrain: Terrain, eye: float, reach: float) -
         out.append(
             {
                 "name": tags.get("name") or _plain(tags),
-                "at": [round(east, 1), round(north, 1), round(terrain.height(east, north) - eye, 1)],
+                "at": [round(east, 1), round(north, 1)],
                 "h": round(_lift(tags) or 12.0, 1),
+            }
+        )
+    return out
+
+
+def _figures(data: dict, pose: Pose, terrain: Terrain, eye: float, reach: float) -> list[dict]:
+    """The carved figures and the memorials, which are what people point at.
+
+    Three metres of wood standing on the island of a roundabout is the one thing
+    everybody here recognises, and it reads from any angle, which a painted
+    surface does not.
+    """
+    scale = math.cos(math.radians(pose.lat))
+    out = []
+    for element in data.get("elements") or []:
+        tags = element.get("tags") or {}
+        if tags.get("tourism") != "artwork" and tags.get("historic") != "memorial":
+            continue
+        spot = element.get("center") or element
+        lat, lon = spot.get("lat"), spot.get("lon")
+        if lat is None or lon is None:
+            continue
+        east = (lon - pose.lon) * 111_320.0 * scale
+        north = (lat - pose.lat) * 110_540.0
+        if math.hypot(east, north) > reach:
+            continue
+        out.append(
+            {
+                "name": tags.get("name") or _plain(tags),
+                "at": [round(east, 1), round(north, 1)],
+                "h": 2.6,
             }
         )
     return out
