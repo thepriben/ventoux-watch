@@ -1,6 +1,48 @@
 {
   "events": [
     {
+      "id": "2026-09-26T14-13-07Z-plane-101",
+      "t": "2026-09-26T14:13:07Z",
+      "type": "plane",
+      "label": "NJE379K",
+      "zone": "sky",
+      "confidence": 0.9,
+      "thumb": "data/thumbs/2026-09-26T14-13-07Z-plane-101.jpg",
+      "clip_url": "",
+      "detail": {
+        "icao24": "493283",
+        "callsign": "NJE379K",
+        "altitude_m": 6705.6,
+        "operator": "",
+        "flight": "",
+        "country": "Portugal",
+        "speed_ms": 202.95,
+        "heading": 74.41,
+        "climb_ms": 0,
+        "distance_km": 57.5,
+        "gap": 0.117,
+        "seen": true,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.0473,
+          "area_ratio": 0.00065,
+          "duration_s": 10.7,
+          "frames": 6
+        },
+        "surface": "forest",
+        "box": [
+          0.8234,
+          0.1278,
+          0.0594,
+          0.0917
+        ],
+        "count": 5
+      },
+      "closeup": "data/closeups/2026-09-26T14-13-07Z-plane-101.jpg"
+    },
+    {
       "id": "2026-09-26T14-12-27Z-vehicle-100",
       "t": "2026-09-26T14:12:27Z",
       "type": "vehicle",
