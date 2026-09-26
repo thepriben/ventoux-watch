@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-26T12-07-45Z-vehicle-106",
+      "t": "2026-09-26T12:07:45Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "roundabout",
+      "confidence": 0.481,
+      "thumb": "data/thumbs/2026-09-26T12-07-45Z-vehicle-106.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "box": [
+          0.1016,
+          0.8139,
+          0.1234,
+          0.15
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T11-58-36Z-vehicle-45",
       "t": "2026-09-26T11:58:36Z",
       "type": "vehicle",
