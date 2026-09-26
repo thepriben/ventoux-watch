@@ -4,22 +4,30 @@
       "id": "2026-09-26T13-22-02Z-vehicle-148",
       "t": "2026-09-26T13:22:02Z",
       "type": "vehicle",
-      "label": "Véhicule",
+      "label": "Voiture",
       "zone": "roundabout",
-      "confidence": 0.709,
+      "confidence": 0.913,
       "thumb": "data/thumbs/2026-09-26T13-22-02Z-vehicle-148.jpg",
       "clip_url": "",
       "detail": {
+        "width_m": 4.8,
         "period": "day",
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.103,
+          "area_ratio": 0.02301,
+          "duration_s": 15.1,
+          "frames": 5
+        },
+        "surface": "roundabout",
         "box": [
-          0.0656,
-          0.7917,
-          0.1281,
-          0.1528
+          0.0766,
+          0.8028,
+          0.1453,
+          0.1583
         ],
-        "count": 2
+        "count": 4
       }
     },
     {
