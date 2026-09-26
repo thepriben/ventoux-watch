@@ -1,11 +1,11 @@
 {
   "last": {
-    "t": "2026-09-26T15:35:30Z",
+    "t": "2026-09-26T15:50:49Z",
     "webcam": "ciel dégagé",
     "period": "day",
     "moon": false,
     "api": "couvert",
-    "temp_c": 17,
+    "temp_c": 16,
     "photo": "data/view.jpg"
   }
 }
