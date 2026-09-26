@@ -18,6 +18,11 @@ BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
 # Read the other way round it would not hold: a patch of light lying on the
 # tarmac close to the camera measures as tall as a house, because the height
 # is read as if the thing stood upright. Only the low end is trustworthy.
+MAX_GAP = 0.12
+# How far across the picture an aircraft may sit from what moved and still be
+# called the same thing. Wide on purpose: the sky is read once every few
+# minutes and an airliner covers fifteen kilometres between two readings, which
+# at a hundred kilometres out is most of this budget on its own.
 SKY_REACH_M = 120_000
 # How far an aircraft can be and still be worth matching. Beyond that a jet is
 # under two pixels wide and its contrail is indistinguishable from cloud, so a
@@ -92,6 +97,8 @@ class Observation:
     camera_pitch: float = 0.0
     camera_vfov: float = 50.0
     fixtures: list[dict] = field(default_factory=list)
+    at_x: float = -1.0
+    at_y: float = -1.0
 
 
 @dataclass
@@ -108,6 +115,57 @@ class Decision:
         return self.action == "publish"
 
 
+OPERATORS = {
+    # The three letters that open a callsign are the operator's ICAO code. Only
+    # the ones actually seen over Mont Serein are listed: a guessed airline is
+    # worse than none, and an unknown code is simply left as it came.
+    "AAL": "American Airlines", "AFR": "Air France", "BAW": "British Airways",
+    "CCM": "Air Corsica", "DLH": "Lufthansa", "EJU": "easyJet Europe",
+    "EWG": "Eurowings", "EZS": "easyJet Switzerland", "EZY": "easyJet",
+    "KLM": "KLM", "RAM": "Royal Air Maroc", "RYR": "Ryanair",
+    "SWR": "Swiss", "TAP": "TAP Air Portugal", "TVF": "Transavia France",
+    "TUI": "TUI fly", "UAE": "Emirates", "UPS": "UPS Airlines",
+    "VLG": "Vueling", "VOE": "Volotea", "WZZ": "Wizz Air",
+}
+
+
+def operator_of(callsign: str) -> str:
+    """The airline behind a callsign, when its code is one we have met."""
+    code = callsign[:3].upper()
+    return OPERATORS.get(code, "") if len(callsign) > 3 and code.isalpha() else ""
+
+
+def flight_of(callsign: str) -> str:
+    """The flight number, which is what a passenger would recognise."""
+    rest = callsign[3:].strip()
+    return rest if operator_of(callsign) and rest else ""
+
+
+def describe(item: dict) -> dict:
+    """Everything worth keeping about one aircraft, from one state vector.
+
+    One place, because the sky is read down two paths now and a flight named by
+    one of them must not come out fuller than the same flight named by the other.
+    """
+    callsign = str(item.get("callsign") or "").strip()
+    altitude = item.get("altitude_m")
+    kept = {
+        "icao24": str(item.get("icao24") or "").strip().lower(),
+        "callsign": callsign,
+        "altitude_m": altitude if isinstance(altitude, (int, float)) else None,
+        "operator": operator_of(callsign),
+        "flight": flight_of(callsign),
+        "country": str(item.get("country") or "").strip(),
+        "speed_ms": item.get("speed_ms"),
+        "heading": item.get("heading"),
+        "climb_ms": item.get("climb_ms"),
+    }
+    for extra in ("distance_km", "gap"):
+        if item.get(extra) is not None:
+            kept[extra] = item[extra]
+    return kept
+
+
 def choose_aircraft(aircraft: list[dict]) -> tuple[dict | None, str]:
     """Name one aircraft, or none when the sky is empty or ambiguous."""
     by_icao: dict[str, dict] = {}
@@ -118,11 +176,7 @@ def choose_aircraft(aircraft: list[dict]) -> tuple[dict | None, str]:
         altitude = item.get("altitude_m")
         if not isinstance(altitude, (int, float)):
             altitude = None
-        by_icao[icao] = {
-            "icao24": icao,
-            "callsign": str(item.get("callsign") or "").strip(),
-            "altitude_m": altitude,
-        }
+        by_icao[icao] = describe(item)
     items = list(by_icao.values())
     if not items:
         return None, "none"
@@ -192,7 +246,38 @@ def _best(detections: list[Detection], names: set[str]) -> Detection | None:
 
 
 def _aircraft_label(aircraft: dict) -> str:
-    return aircraft["callsign"] or aircraft["icao24"].upper()
+    """What to call it: the airline and flight when known, the callsign if not.
+
+    "American Airlines 746" is the same aircraft as "AAL746", but only one of
+    them means anything to somebody reading the history.
+    """
+    if aircraft.get("operator") and aircraft.get("flight"):
+        return f"{aircraft['operator']} {aircraft['flight']}"
+    return aircraft.get("callsign") or str(aircraft.get("icao24") or "").upper()
+
+
+def _gap_in_frame(aircraft: dict, obs: Observation, away: float) -> float | None:
+    """How far, across the picture, this aircraft sits from what moved.
+
+    A pinhole reading of the camera: good near the middle of the frame, a little
+    optimistic at the edges. It is used to rank a handful of aircraft that are
+    tens of degrees apart, never to place anything, so the slack does not
+    matter and the number is written into the history to be argued with.
+    """
+    if not 0 <= obs.at_x <= 1 or not 0 <= obs.at_y <= 1:
+        return None
+    altitude = aircraft.get("altitude_m")
+    if not isinstance(altitude, (int, float)) or away <= 0:
+        return None
+    azimuth = _azimuth(obs.camera_lat, obs.camera_lon, float(aircraft["lat"]), float(aircraft["lon"]))
+    across = (azimuth - obs.camera_bearing + 540) % 360 - 180
+    climb = altitude - obs.camera_ele - _earth_drop_m(away)
+    rise = math.degrees(math.atan2(climb, away))
+    wide = math.tan(math.radians(obs.camera_fov / 2))
+    tall = math.tan(math.radians(obs.camera_vfov / 2))
+    sx = 0.5 + math.tan(math.radians(across)) / (2 * wide)
+    sy = 0.5 - math.tan(math.radians(rise - obs.camera_pitch)) / (2 * tall)
+    return math.hypot(sx - obs.at_x, sy - obs.at_y)
 
 
 def in_camera_view(aircraft: dict, obs: Observation) -> bool:
@@ -313,7 +398,39 @@ def decide(obs: Observation) -> Decision:
             return _motion(obs, "sky_mass", "Masse dans le ciel", "Trop large pour un avion. Nuage, ou changement de lumière.")
         if obs.travel < obs.min_travel:
             return _motion(obs, "sky_still", "Point dans le ciel", "Ça n'a pas traversé le ciel. La balise et les étoiles fixes sont déjà écartées.")
-        visible = [item for item in obs.aircraft if in_camera_view(item, obs)]
+        visible = []
+        for item in obs.aircraft:
+            if not in_camera_view(item, obs):
+                continue
+            # How far it was, kept with it: an aircraft named in the history
+            # without its distance cannot be checked against the picture, where
+            # ninety kilometres is a hair and nine is a shape.
+            away = _distance_m(obs.camera_lat, obs.camera_lon, float(item["lat"]), float(item["lon"]))
+            seen = {**item, "distance_km": round(away / 1000, 1)}
+            gap = _gap_in_frame(item, obs, away)
+            if gap is not None:
+                seen["gap"] = round(gap, 3)
+            visible.append(seen)
+        # When the blob's place in the picture is known, the aircraft that lands
+        # nearest it wins. Height and distance were only ever standing in for
+        # this: they guessed which aircraft one would see, where this checks.
+        near = [item for item in visible if item.get("gap") is not None]
+        if near:
+            near.sort(key=lambda item: item["gap"])
+            if near[0]["gap"] > MAX_GAP:
+                # Aircraft in the sky, but none of them where the thing is. That
+                # is the useful answer: what moved was a bird, a cloud edge or
+                # an insect, and the nearest jet would have been a coincidence
+                # dressed up as an identification.
+                return _motion(obs, "none_at_that_spot", "Mouvement dans le ciel",
+                               "Aucun avion à cet endroit de l'image. Ce n'est pas un avion.")
+            if len(near) == 1 or near[0]["gap"] <= 0.5 * near[1]["gap"]:
+                found = describe(near[0])
+                return _stamp(
+                    Decision("publish", "plane", _aircraft_label(found), reason="in_frame",
+                             detail={**found, "seen": True}, confidence=0.9),
+                    obs,
+                )
         chosen, why = choose_aircraft(visible)
         if chosen is None:
             return _motion(obs, why, "Mouvement dans le ciel", "Aucun avion visible dans l'image. Le secteur OpenSky ne suffit pas.")

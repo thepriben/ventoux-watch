@@ -112,6 +112,16 @@ class SkyArchive:
                     "lon": state[5],
                     "lat": state[6],
                     "altitude_m": state[7] if state[7] is not None else state[13],
+                    # Everything the state vector measures, kept because a
+                    # callsign alone says almost nothing: the same six letters
+                    # cover a jet at cruise and the same jet on the approach,
+                    # and only the speed, the heading and the climb tell them
+                    # apart in a picture where the aircraft is one pixel wide.
+                    "country": state[2] or "",
+                    "ground": bool(state[8]),
+                    "speed_ms": state[9],
+                    "heading": state[10],
+                    "climb_ms": state[11],
                 }
             )
         with self.path.open("a", encoding="utf-8") as handle:

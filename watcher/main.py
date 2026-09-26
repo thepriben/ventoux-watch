@@ -164,6 +164,10 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         colour=body_colour(frame, track.best_bbox) if frame is not None and current.period == "day" else "",
         landmark=(landmark or {}).get("name", ""),
         lit_ratio=lit,
+        # The middle of the blob, not its corner: an aircraft is matched against
+        # where the thing is, and a box records where it begins.
+        at_x=box[0] + box[2] / 2 if box else -1.0,
+        at_y=box[1] + box[3] / 2 if box else -1.0,
         **_eye(cfg, scene_map),
     )
     decision = decide(obs)

@@ -101,8 +101,52 @@ class NamingTests(unittest.TestCase):
         )
         self.assertTrue(decision.publish)
         self.assertEqual(decision.type, "plane")
-        self.assertEqual(decision.label, "AFR472")
+        self.assertEqual(decision.label, "Air France 472")
         self.assertTrue(decision.detail["seen"])
+        self.assertEqual(decision.detail["callsign"], "AFR472")
+        self.assertAlmostEqual(decision.detail["distance_km"], 2.0, places=1)
+
+    def test_the_aircraft_where_the_motion_is_gets_the_name(self):
+        west = _ahead(44.183501, 5.2621281, 100, 30000)
+        east = _ahead(44.183501, 5.2621281, 150, 30000)
+        sky = [
+            {"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 9000, "lat": west[0], "lon": west[1]},
+            {"icao24": "bb0002", "callsign": "BAW200", "altitude_m": 9000, "lat": east[0], "lon": east[1]},
+        ]
+        left = decide(Observation(zone="sky", travel=0.05, area_ratio=0.001, aircraft=sky, at_x=0.08, at_y=0.23))
+        right = decide(Observation(zone="sky", travel=0.05, area_ratio=0.001, aircraft=sky, at_x=0.59, at_y=0.23))
+        self.assertEqual(left.label, "Air France 100")
+        self.assertEqual(right.label, "British Airways 200")
+        self.assertEqual(left.reason, "in_frame")
+
+    def test_nothing_is_named_when_no_aircraft_is_at_that_spot(self):
+        lat, lon = _ahead(44.183501, 5.2621281, 100, 30000)
+        decision = decide(
+            Observation(
+                zone="sky",
+                travel=0.05,
+                area_ratio=0.001,
+                aircraft=[{"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 9000, "lat": lat, "lon": lon}],
+                at_x=0.60,
+                at_y=0.23,
+            )
+        )
+        self.assertEqual(decision.type, "motion")
+        self.assertEqual(decision.reason, "none_at_that_spot")
+        self.assertNotIn("AFR", decision.label)
+
+    def test_an_unknown_operator_keeps_its_callsign(self):
+        lat, lon = _ahead(44.183501, 5.2621281, 140, 2000)
+        decision = decide(
+            Observation(
+                zone="sky",
+                travel=0.05,
+                area_ratio=0.001,
+                aircraft=[{"icao24": "4d20c0", "callsign": "WMT4407", "altitude_m": 1800, "lat": lat, "lon": lon}],
+            )
+        )
+        self.assertEqual(decision.label, "WMT4407")
+        self.assertEqual(decision.detail["operator"], "")
 
     def test_a_high_aircraft_outside_the_picture_is_not_named(self):
         decision = decide(
