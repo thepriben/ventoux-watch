@@ -33,8 +33,8 @@
     {
       "id": "2026-09-26T05-00-45Z-vehicle-13",
       "t": "2026-09-26T05:00:45Z",
-      "type": "vehicle",
-      "label": "Voiture et piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "other",
       "confidence": 0.459,
       "thumb": "data/thumbs/2026-09-26T05-00-45Z-vehicle-13.jpg",
@@ -44,12 +44,21 @@
         "weather": "ciel dégagé",
         "context": "au crépuscule, ciel dégagé",
         "box": [
-          0.5156,
-          0.9,
-          0.2547,
-          0.1
-        ]
-      }
+          0.6391,
+          0.9333,
+          0.0822,
+          0.0259
+        ],
+        "drawn": [
+          289,
+          242,
+          364,
+          269
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T04-32-00Z-person-12",

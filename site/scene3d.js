@@ -307,16 +307,17 @@ function marker(at, colour) {
   const [east, north, floor] = at;
   const pin = new THREE.Group();
   const skin = new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.85 });
-  // Kept to the size of the thing it stands for. A taller mark would read as
-  // another lamp post and would hide the very ground it is pointing at.
-  const ring = new THREE.Mesh(new THREE.RingGeometry(1.15, 1.45, 32), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.45, side: THREE.DoubleSide }));
+  // Nothing standing on the ground, and nothing joining the two parts. A post
+  // with a bright head is a street lamp, and the one real lamp here was
+  // surveyed and measured: a mark that looked like a second one would be
+  // inventing a light that does not exist.
+  const ring = new THREE.Mesh(new THREE.RingGeometry(1.15, 1.45, 32), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.5, side: THREE.DoubleSide }));
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(east, floor + 0.1, -north);
-  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 3.2, 6), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.35 }));
-  beam.position.set(east, floor + 1.6, -north);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 10), skin);
-  head.position.set(east, floor + 3.4, -north);
-  pin.add(ring, beam, head);
+  const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.1, 4), skin);
+  arrow.rotation.x = Math.PI;
+  arrow.position.set(east, floor + 2.9, -north);
+  pin.add(ring, arrow);
   return pin;
 }
 

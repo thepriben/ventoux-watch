@@ -6,7 +6,27 @@
   --hair: #e8e4db;
   --pine: #1e3a30;
   --card: #fffdfa;
+  --veil: rgba(244, 242, 237, 0.94);
+  --shade: rgba(23, 23, 26, 0.06);
 }
+
+:root[data-theme="dark"] {
+  /* Not the light sheet inverted: paper goes grey and ink goes muddy that way.
+     These are picked so the webcam picture, which is what the page is for,
+     still looks like a photograph and not a lit window in a dark room. */
+  --paper: #14161a;
+  --ink: #e9eaec;
+  --muted: #9aa0a8;
+  --line: #2b2f36;
+  --hair: #22262c;
+  --pine: #9dd3ba;
+  --card: #1b1e23;
+  --veil: rgba(20, 22, 26, 0.94);
+  --shade: rgba(255, 255, 255, 0.07);
+}
+
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
 
 * { box-sizing: border-box; }
 
@@ -24,7 +44,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(244, 242, 237, 0.94);
+  background: var(--veil);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
