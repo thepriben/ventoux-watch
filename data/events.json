@@ -1,6 +1,34 @@
 {
   "events": [
     {
+      "id": "2026-09-26T14-58-57Z-cycle-6",
+      "t": "2026-09-26T14:58:57Z",
+      "type": "cycle",
+      "label": "Vélo",
+      "zone": "roundabout",
+      "confidence": 0.685,
+      "thumb": "data/thumbs/2026-09-26T14-58-57Z-cycle-6.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.1243,
+          "area_ratio": 0.00619,
+          "duration_s": 3.6,
+          "frames": 4
+        },
+        "surface": "island",
+        "box": [
+          0.1078,
+          0.8389,
+          0.0719,
+          0.0861
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T14-56-40Z-vehicle-221",
       "t": "2026-09-26T14:56:40Z",
       "type": "vehicle",
