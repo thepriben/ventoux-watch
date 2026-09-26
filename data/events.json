@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-26T18-40-45Z-vehicle-315",
+      "t": "2026-09-26T18:40:45Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "other",
+      "confidence": 0.457,
+      "thumb": "data/thumbs/2026-09-26T18-40-45Z-vehicle-315.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "night",
+        "weather": "couvert",
+        "context": "de nuit, couvert",
+        "box": [
+          0.0,
+          0.4444,
+          0.1125,
+          0.2278
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T18-30-28Z-person-314",
       "t": "2026-09-26T18:30:28Z",
       "type": "person",
