@@ -5,20 +5,28 @@
       "t": "2026-09-26T10:52:32Z",
       "type": "person",
       "label": "Piéton",
-      "zone": "roundabout",
-      "confidence": 0.44,
+      "zone": "other",
+      "confidence": 0.5,
       "thumb": "data/thumbs/2026-09-26T10-52-32Z-person-87.jpg",
       "clip_url": "",
       "detail": {
         "period": "day",
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.0,
+          "area_ratio": 0.00066,
+          "duration_s": 0.0,
+          "frames": 2
+        },
+        "surface": "path",
         "box": [
-          0.1734,
-          0.7833,
-          0.0234,
-          0.0417
-        ]
+          0.4406,
+          0.6944,
+          0.0141,
+          0.0472
+        ],
+        "count": 2
       }
     },
     {
