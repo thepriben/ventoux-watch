@@ -117,6 +117,7 @@ class Observation:
     lit_ratio: float = 0.0
     frames: int = 0
     clipped: bool = False
+    box_w: float = 0.0
     camera_lat: float = 44.183501
     camera_lon: float = 5.2621281
     camera_ele: float = 1390.0
@@ -316,6 +317,21 @@ def _aircraft_label(aircraft: dict) -> str:
 # events on one night were named from nothing but a person read at 0.43, both
 # starting at exactly x = 0, both in fact the rear lights of a car.
 EDGE_CONF = 0.6
+# The widest a walker has ever been in this picture, with room to spare. Sixty
+# three of them by day fill six hundredths of the width on average and a quarter
+# at the very most; the four ever named after dark filled nearly half, wider
+# than the widest vehicle of any day, and three were confirmed cars head-on or
+# going away. Two headlights are read as a person, and no measurement of the
+# ground can say otherwise where the ground is not surveyed. This one can.
+PERSON_WIDEST = 0.28
+# The least the model must see before the night rule may call a vehicle. That
+# rule was written because a car body is dark after sunset and only its lights
+# show, so it named on the shape of the ground alone. Counted over one evening
+# it had named sixteen vehicles with nothing detected at all against four with
+# something, and every one of the sixteen that was checked turned out to be a
+# headlight crossing the grass or the lit edge of the terrace. A car read
+# faintly, even as a person, is still a car; a car read as nothing is a lamp.
+NIGHT_CONF = 0.25
 NIGHT_FRAMES = 6
 NIGHT_SECONDS = 3.0
 SUN_LOW = 15.0
@@ -577,6 +593,8 @@ def decide(obs: Observation) -> Decision:
         animal = _best(obs.detections, {"dog", "horse"})
         cycle = _best(obs.detections, CYCLES)
         beast = _best(obs.detections, BEASTS)
+        if person is not None and obs.box_w > PERSON_WIDEST:
+            person = None
         if obs.clipped and not obs.surface:
             best = max((hit.conf for hit in obs.detections), default=0.0)
             if best < EDGE_CONF:
@@ -657,7 +675,8 @@ def decide(obs: Observation) -> Decision:
             # brightest thing on this hillside at night is a patch of grass a
             # headlight is crossing, and it fits a car exactly.
             steady = obs.frames >= NIGHT_FRAMES and obs.duration_s >= NIGHT_SECONDS
-            if person is None and _fits(obs, "car") and steady and obs.travel >= obs.min_travel:
+            glimpsed = max((hit.conf for hit in obs.detections), default=0.0) >= NIGHT_CONF
+            if person is None and glimpsed and _fits(obs, "car") and steady and obs.travel >= obs.min_travel:
                 return _stamp(
                     Decision(
                         "publish",

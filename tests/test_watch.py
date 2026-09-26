@@ -350,7 +350,7 @@ class NamingTests(unittest.TestCase):
     def test_car_lights_name_a_vehicle_at_night(self):
         decision = decide(
             Observation(zone="road", travel=0.05, period="night", lit_ratio=0.06, surface="road",
-                        frames=9, duration_s=5.0)
+                        frames=9, duration_s=5.0, detections=[Detection("person", 0.45)])
         )
         self.assertEqual(decision.type, "vehicle")
         self.assertEqual(decision.reason, "car_lights")
@@ -364,7 +364,9 @@ class NamingTests(unittest.TestCase):
         beam = Observation(zone="other", surface="road", period="night", lit_ratio=0.06,
                            travel=0.1162, duration_s=0.2, frames=2, width_m=3.3, height_m=0.8)
         self.assertEqual(decide(beam).type, "motion")
-        steady = replace(beam, frames=9, duration_s=5.0, travel=0.2)
+        self.assertEqual(decide(replace(beam, frames=9, duration_s=5.0, travel=0.2)).type, "motion")
+        steady = replace(beam, frames=9, duration_s=5.0, travel=0.2,
+                         detections=[Detection("car", 0.30)])
         self.assertEqual(decide(steady).type, "vehicle")
 
     def test_lights_off_the_road_stay_unnamed(self):
@@ -383,6 +385,7 @@ class NamingTests(unittest.TestCase):
                 frames=9,
                 duration_s=5.0,
                 detections=[Detection("person", 0.42)],
+                box_w=0.08,
             )
         )
         self.assertEqual(decision.type, "vehicle")
@@ -758,7 +761,8 @@ class SkyTests(unittest.TestCase):
         self.assertEqual(decide(speck).type, "motion")
         self.assertEqual(decide(speck).reason, "too_small")
         car = Observation(zone="other", surface="roundabout", period="night", travel=0.2,
-                          frames=9, duration_s=5.0, width_m=2.6, height_m=0.98)
+                          frames=9, duration_s=5.0, width_m=2.6, height_m=0.98,
+                          detections=[Detection("car", 0.30)])
         self.assertEqual(decide(car).type, "vehicle")
 
     def test_what_stands_still_on_the_island_is_the_furniture(self):
@@ -913,3 +917,20 @@ class EdgeOfFrameTests(unittest.TestCase):
     def test_the_edge_rule_waits_for_an_unsurveyed_floor(self):
         known = replace(self._clipped(detections=[Detection("person", 0.43)]), surface="roundabout")
         self.assertNotEqual(decide(known).reason, "edge_of_frame")
+
+
+class WalkerWidthTests(unittest.TestCase):
+    """Sixty three walkers by day were measured before this rule was written."""
+
+    def test_a_walker_half_the_picture_wide_is_not_a_walker(self):
+        # 20:55, a car going away, and 20:30 and 21:08 coming the other way.
+        for width, conf in ((0.436, 0.71), (0.434, 0.44), (0.323, 0.43)):
+            wide = Observation(zone="road", period="night", travel=0.2, surface="road",
+                               frames=9, duration_s=5.0, box_w=width,
+                               detections=[Detection("person", conf)])
+            self.assertNotEqual(decide(wide).type, "person", f"largeur {width}")
+
+    def test_a_walker_of_the_usual_width_is_still_named(self):
+        usual = Observation(zone="road", period="day", travel=0.2, surface="road",
+                            box_w=0.062, detections=[Detection("person", 0.55)])
+        self.assertEqual(decide(usual).type, "person")
