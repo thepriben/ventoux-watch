@@ -196,8 +196,13 @@ def _ribbons(ways, terrain: Terrain, eye: float) -> list[dict]:
             continue
         if tags.get("junction") == "roundabout":
             out.append({"k": "island", "p": _plan(_simplify(points))})
-        elif not tags.get("highway") and surface_of(tags) in {"parking", "playground"}:
-            out.append({"k": surface_of(tags), "p": _plan(_simplify(points))})
+        elif not tags.get("highway") and surface_of(tags) in {"parking", "playground", "pool"}:
+            area = {"k": surface_of(tags), "p": _plan(_simplify(points))}
+            # A frame tall enough to be surveyed is drawn standing. Nothing is
+            # assumed: an area without a height stays a patch on the ground.
+            if tall := _surveyed_height(tags):
+                area["h"] = round(tall, 1)
+            out.append(area)
     return out
 
 
@@ -217,6 +222,14 @@ def _buildings(ways, terrain: Terrain, eye: float) -> list[dict]:
             continue
         out.append({"h": round(_tall(tags), 1), "p": _plan(_simplify(points))})
     return out
+
+
+def _surveyed_height(tags: dict) -> float:
+    """The height on the map, or nothing. Unlike a chalet, no figure is assumed."""
+    try:
+        return float(str(tags.get("height") or "").split()[0])
+    except (TypeError, ValueError, IndexError):
+        return 0.0
 
 
 def _tall(tags: dict) -> float:

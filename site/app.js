@@ -55,7 +55,7 @@ const COPY = {
     places: {
       road: "Road", roundabout: "Roundabout", parking: "Car park", path: "Path",
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
-      sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", other: "Off the road",
+      sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
     notInFrame: "Not in the picture",
     colCam: "Webcam",
@@ -135,7 +135,7 @@ const COPY = {
     places: {
       road: "Chaussée", roundabout: "Rond-point", parking: "Parking", path: "Sentier",
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
-      sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", other: "Hors chaussée",
+      sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
     notInFrame: "Pas dans l'image",
     colCam: "Webcam",

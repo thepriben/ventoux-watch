@@ -8,11 +8,14 @@ plus the ground elevation of every point it had to look up.
 from __future__ import annotations
 
 import json
+import logging
 import math
 import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+log = logging.getLogger("ventoux.osm")
 
 AGENT = "ventoux-watch/0.1 (github.com/thepriben/ventoux-watch)"
 MIRRORS = (
@@ -33,6 +36,7 @@ SURFACE_TAGS = {
     ("natural", "heath"): "meadow",
     ("natural", "scree"): "scree",
     ("leisure", "playground"): "playground",
+    ("leisure", "swimming_pool"): "pool",
     ("amenity", "parking"): "parking",
     ("amenity", "parking_space"): "parking",
     ("building", "*"): "building",
@@ -88,6 +92,15 @@ def around(lat: float, lon: float, radius_m: float, cache: Path, max_age_s: int 
         ");out body geom;"
     )
     payload = _ask(query)
+    if not (payload.get("elements") or []):
+        # Overpass answers an empty set instead of an error when it is being
+        # restarted. Written to disk, that emptiness becomes the map: every
+        # surface turns unknown and the watcher stops recognising the road it
+        # has been watching for weeks. A blank answer is never an answer.
+        log.warning("OpenStreetMap a repondu a vide, la carte en place est conservee")
+        if cache.is_file():
+            return json.loads(cache.read_text(encoding="utf-8"))
+        raise RuntimeError("OpenStreetMap n'a rien renvoye et il n'y a pas de carte en cache")
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(payload), encoding="utf-8")
     return payload

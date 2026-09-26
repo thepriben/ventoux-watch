@@ -17,6 +17,7 @@ const SURFACE = {
   // around it. Close enough in colour to be honest, far enough to be seen.
   island: 0xa19e6e,
   playground: 0xb8a24a,
+  pool: 0x2f6f9e,
 };
 // Drawn just clear of the ground, so the tarmac does not fight the slope it
 // lies on for the same pixels.
@@ -71,7 +72,10 @@ async function start(host) {
   const world = new THREE.Scene();
   world.add(ground(relief));
   for (const road of relief.roads) world.add(ribbon(road.p, road.w, SURFACE[road.k] ?? SURFACE.track, high));
-  for (const area of relief.ribbons) world.add(slab(area.p, SURFACE[area.k] ?? SURFACE.parking, high));
+  for (const area of relief.ribbons) {
+    world.add(slab(area.p, SURFACE[area.k] ?? SURFACE.parking, high));
+    if (area.h) world.add(standing(area, SURFACE[area.k] ?? SURFACE.parking, high));
+  }
   for (const house of relief.buildings) world.add(block(house, high));
   world.add(...wood(relief, high));
   const named = relief.masts.map((mast) => column(mast, high))
@@ -213,6 +217,28 @@ function ribbon(line, width, colour, high) {
   shape.setAttribute("position", new THREE.Float32BufferAttribute(place, 3));
   shape.computeVertexNormals();
   return new THREE.Mesh(shape, tarmac(colour));
+}
+
+function standing(area, colour, high) {
+  /* An open structure standing on its own footprint: a post at each corner and
+     a rail joining their tops. Drawn hollow because that is what it is — a
+     solid block of the same size would read as a shed and hide what is behind. */
+  const ring = area.p;
+  const shut = ring.length > 3 && ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1];
+  const corners = shut ? ring.slice(0, -1) : ring;
+  const group = new THREE.Group();
+  const skin = new THREE.MeshLambertMaterial({ color: colour });
+  const rail = [];
+  for (const [east, north] of corners) {
+    const foot = high(east, north) + LIFT_M / 2;
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, area.h, 6), skin);
+    post.position.set(east, foot + area.h / 2, -north);
+    group.add(post);
+    rail.push(new THREE.Vector3(east, foot + area.h, -north));
+  }
+  rail.push(rail[0].clone());
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rail), new THREE.LineBasicMaterial({ color: colour })));
+  return group;
 }
 
 function slab(ring, colour, high) {

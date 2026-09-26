@@ -26,6 +26,7 @@ LETTERS = {
     "e": "scree",
     "i": "island",
     "g": "playground",
+    "w": "pool",
 }
 CODES = {name: letter for letter, name in LETTERS.items() if name}
 

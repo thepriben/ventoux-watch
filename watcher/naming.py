@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 from watcher.scenemap import DRIVABLE, FLAMMABLE
 
-NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree", "island", "playground"}
+NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree", "island", "playground", "pool"}
 
 # The widest a thing of that kind can be where it stands, in metres. The scene
 # map turns a box into ground metres, so a walker eight metres across is light

@@ -45,7 +45,7 @@ MAP_STEP_M = 1.0
 ROAD_SLACK_M = 2.5
 # Later wins. A car park is drawn corner by corner and a road is only a centre
 # line with a guessed width, so the car park has the last word over the tarmac.
-PAINT_ORDER = ["meadow", "scree", "forest", "path", "road", "roundabout", "island", "playground", "parking", "building"]
+PAINT_ORDER = ["meadow", "scree", "forest", "path", "road", "roundabout", "island", "playground", "pool", "parking", "building"]
 
 
 def main() -> int:
