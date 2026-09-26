@@ -5,8 +5,8 @@
       "t": "2026-09-26T13:20:48Z",
       "type": "person",
       "label": "Piéton",
-      "zone": "roundabout",
-      "confidence": 0.741,
+      "zone": "other",
+      "confidence": 0.86,
       "thumb": "data/thumbs/2026-09-26T13-20-48Z-person-145.jpg",
       "clip_url": "",
       "detail": {
@@ -14,11 +14,12 @@
         "weather": "peu nuageux",
         "context": "de jour, peu nuageux",
         "box": [
-          0.2766,
-          0.7556,
-          0.0781,
-          0.0667
-        ]
+          0.5656,
+          0.8361,
+          0.0516,
+          0.1083
+        ],
+        "count": 4
       }
     },
     {
