@@ -30,7 +30,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from watcher.config import load_config
-from watcher.frustum import Pose, distance_m, fit, march, project
+from watcher.frustum import Pose, distance_m, enu, fit, march, project
 from watcher.geometry import load_zones
 from watcher.osm import around, road_width_m, surface_of
 from watcher.scenemap import CODES
@@ -128,6 +128,7 @@ def main() -> int:
                 "grid": rows,
                 "reach": _shrink(far),
                 "landmarks": _landmarks(data, pose, terrain, rms, reach),
+                "lamps": _lamps(data, pose, terrain),
             },
             ensure_ascii=False,
             indent=2,
@@ -209,6 +210,60 @@ def _island(image: np.ndarray, shape: np.ndarray, tags: dict, codes: dict) -> No
     cv2.fillPoly(inner, [shape], 1)
     cv2.polylines(inner, [shape], True, 0, carriage)
     image[inner.astype(bool)] = int(codes["island"])
+
+
+LAMP_M = 7.0
+# Measured off the webcam, not assumed. The lamp saturates twelve pixels at the
+# top of its mast on a night average; at seven metres the surveyed node projects
+# onto them, and onto the same column of the picture to within five pixels
+# across, an agreement nothing was fitted to produce.
+LIT_RADIUS_M = 18.0
+
+
+def _lamps(data: dict, pose: Pose, terrain: Terrain) -> list[dict]:
+    """The surveyed street lamps, with the patch of ground each one lights.
+
+    At night this lamp is the brightest thing in the picture and it paints the
+    roundabout white. Headlights sweeping through that patch, and the patch
+    itself brightening as cloud passes, both read as movement. Knowing where the
+    light falls is what separates a thing that moved from light that changed.
+    """
+    out = []
+    for node in data.get("elements") or []:
+        tags = node.get("tags") or {}
+        if node.get("type") != "node" or tags.get("highway") != "street_lamp":
+            continue
+        lat, lon = float(node["lat"]), float(node["lon"])
+        east, north, _ = enu(pose, lat, lon, 0.0)
+        foot = terrain.height(east, north)
+        head = project(pose, lat, lon, foot + LAMP_M)
+        if head is None:
+            continue
+        edge = []
+        for step in range(0, 360, 30):
+            angle = math.radians(step)
+            far = _offset(lat, lon, LIT_RADIUS_M * math.sin(angle), LIT_RADIUS_M * math.cos(angle))
+            seen = project(pose, far[0], far[1], terrain.height(*enu(pose, far[0], far[1], 0.0)[:2]))
+            if seen is not None:
+                edge.append(seen)
+        if len(edge) < 6:
+            continue
+        xs = [x for x, _ in edge]
+        ys = [y for _, y in edge]
+        out.append(
+            {
+                "lat": round(lat, 7),
+                "lon": round(lon, 7),
+                "head": [round(head[0], 4), round(head[1], 4)],
+                "pool": [round(min(xs), 4), round(min(ys), 4), round(max(xs), 4), round(max(ys), 4)],
+                "radius_m": LIT_RADIUS_M,
+            }
+        )
+    return out
+
+
+def _offset(lat: float, lon: float, east_m: float, north_m: float) -> tuple[float, float]:
+    return lat + north_m / 111_320.0, lon + east_m / (111_320.0 * math.cos(math.radians(lat)))
 
 
 def _landmarks(data: dict, pose: Pose, terrain: Terrain, rms: float, reach_m: float) -> list[dict]:

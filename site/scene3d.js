@@ -25,6 +25,9 @@ const LIFT_M = 0.35;
 const WALL = 0x9a8975;
 const ROOF = 0x7a5f52;
 const STEEL = 0xb9bec7;
+const LAMP_ON = 0xffd9a0; const LAMP_OFF = 0x6b6b66;
+const LAMP_REACH_M = 45; const LAMP_POWER = 140;
+const BEACON_ON = 0xff2b1e; const BEACON_OFF = 0x5e3a36;
 const FOLIAGE = [0x345c2c, 0x3e6b33, 0x4a7a3a, 0x2e5228];
 const TRUNK = 0x4a3b2c;
 // A tree every twelve metres is what a pine wood looks like up here. Sown at
@@ -81,13 +84,17 @@ async function start(host) {
   const named = relief.masts.map((mast) => column(mast, high))
     .concat((relief.figures || []).map((figure) => carving(figure, high)));
   for (const mast of named) world.add(mast);
+  const lamps = (relief.lamps || []).map((lamp) => streetlight(lamp, high));
+  for (const lamp of lamps) world.add(lamp.post);
+  const beacons = (relief.beacons || []).map((mark) => obstacle(mark, high));
+  for (const mark of beacons) world.add(mark.bulb);
   world.add(here());
 
   const fill = new THREE.AmbientLight(0xffffff, 1);
   const beam = new THREE.DirectionalLight(0xffffff, 1);
   const star = new THREE.Mesh(new THREE.SphereGeometry(70, 16, 12), new THREE.MeshBasicMaterial());
   world.add(fill, beam, star);
-  const daylight = () => paintHour(world, pose, { fill, beam, star });
+  const daylight = () => paintHour(world, pose, { fill, beam, star, lamps, beacons });
   daylight();
   setInterval(daylight, 60000);
 
@@ -217,6 +224,34 @@ function ribbon(line, width, colour, high) {
   shape.setAttribute("position", new THREE.Float32BufferAttribute(place, 3));
   shape.computeVertexNormals();
   return new THREE.Mesh(shape, tarmac(colour));
+}
+
+function obstacle(mark, high) {
+  /* The red lamp an aircraft is meant to see, on top of the summit transmitter.
+     Small on purpose: three pixels is all it is in the night picture, and made
+     bigger it would look like the fire it must never be mistaken for. */
+  const [east, north] = mark.at;
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(2.2, 8, 6), new THREE.MeshBasicMaterial({ color: BEACON_OFF }));
+  bulb.position.set(east, high(east, north) + mark.h, -north);
+  return { bulb };
+}
+
+function streetlight(lamp, high) {
+  /* A mast, a head, and a light that only burns after dark. It is the brightest
+     thing in the night picture, so the night scene is built around it. */
+  const [east, north] = lamp.at;
+  const foot = high(east, north);
+  const post = new THREE.Group();
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.16, lamp.h, 6), new THREE.MeshLambertMaterial({ color: STEEL }));
+  mast.position.set(east, foot + lamp.h / 2, -north);
+  post.add(mast);
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 8), new THREE.MeshBasicMaterial({ color: LAMP_OFF }));
+  bulb.position.set(east, foot + lamp.h, -north);
+  post.add(bulb);
+  const glow = new THREE.PointLight(LAMP_ON, 0, LAMP_REACH_M, 2);
+  glow.position.set(east, foot + lamp.h - 0.2, -north);
+  post.add(glow);
+  return { post, bulb, glow };
 }
 
 function standing(area, colour, high) {
@@ -442,6 +477,13 @@ function sun(when, lat, lon) {
 function paintHour(world, pose, parts) {
   const now = sun(new Date(), pose.lat, pose.lon);
   const lit = ease(now.height, DUSK_LOW, DUSK_HIGH);
+  for (const lamp of parts.lamps || []) {
+    // Full power once the sun is properly down, off in daylight, the way a
+    // photocell switches it on the real roundabout.
+    lamp.glow.intensity = LAMP_POWER * (1 - lit);
+    lamp.bulb.material.color.setHex(lit > 0.6 ? LAMP_OFF : LAMP_ON);
+  }
+  for (const mark of parts.beacons || []) mark.bulb.material.color.setHex(lit > 0.6 ? BEACON_OFF : BEACON_ON);
   const hour = lit > 0.5 ? mix(HOURS.dusk, HOURS.day, (lit - 0.5) * 2) : mix(HOURS.night, HOURS.dusk, lit * 2);
 
   world.background = wash(hour.top, hour.low);

@@ -101,6 +101,8 @@ def main() -> int:
         "trees": _trees(data, pose, terrain, eye, reach),
         "masts": _masts(data, pose, terrain, eye, reach),
         "figures": _figures(data, pose, terrain, eye, reach),
+        "lamps": _lamps(data, pose, reach),
+        "beacons": _beacons(data, pose, reach),
     }
 
     out = root / "config" / "relief.json"
@@ -111,6 +113,8 @@ def main() -> int:
     print(f"Bâtiments: {len(payload['buildings'])}")
     print(f"Bois     : {len(payload['woods'])} parcelles, {len(payload['trees'])} arbres isolés")
     print(f"Mâts     : {len(payload['masts'])}")
+    print(f"Lampadaires: {len(payload['lamps'])}")
+    print(f"Balises  : {len(payload['beacons'])}")
     print(f"Écrit    : {out}  ({out.stat().st_size // 1024} ko)")
     return 0
 
@@ -311,6 +315,66 @@ def _masts(data: dict, pose: Pose, terrain: Terrain, eye: float, reach: float) -
                 "h": round(_lift(tags) or 12.0, 1),
             }
         )
+    return out
+
+
+LAMP_M = 7.0
+BEACON_M = 45.0
+# Above this a structure carries an obstacle light for aircraft. The summit
+# transmitter is seventy-eight metres and its red lamp is three pixels of the
+# night picture, at the very spot this puts it.
+
+
+def _beacons(data: dict, pose: Pose, reach: float) -> list[dict]:
+    """The red lamps that burn all night on the tall structures."""
+    scale = math.cos(math.radians(pose.lat))
+    out = []
+    for element in data.get("elements") or []:
+        tags = element.get("tags") or {}
+        if tags.get("man_made") not in {"tower", "mast"}:
+            continue
+        tall = _lift(tags) or 0.0
+        if tall < BEACON_M:
+            continue
+        spot = element.get("center") or _middle(element) or element
+        lat, lon = spot.get("lat"), spot.get("lon")
+        if lat is None or lon is None:
+            continue
+        east = (lon - pose.lon) * 111_320.0 * scale
+        north = (lat - pose.lat) * 110_540.0
+        if math.hypot(east, north) > reach:
+            continue
+        out.append({"at": [round(east, 1), round(north, 1)], "h": round(tall, 1)})
+    return out
+
+
+def _middle(element: dict) -> dict | None:
+    points = element.get("geometry") or []
+    if not points:
+        return None
+    return {"lat": sum(p["lat"] for p in points) / len(points), "lon": sum(p["lon"] for p in points) / len(points)}
+
+
+
+def _lamps(data: dict, pose: Pose, reach: float) -> list[dict]:
+    """The street lamps, with the height read off the night picture.
+
+    Seven metres is not a convention: the lamp saturates a dozen pixels at the
+    top of its mast, and that is the height at which the surveyed node lands on
+    them. Drawn short, the light would pour out of the wrong place and the one
+    thing that shapes the night view would be shaped wrongly.
+    """
+    scale = math.cos(math.radians(pose.lat))
+    out = []
+    for node in data.get("elements") or []:
+        tags = node.get("tags") or {}
+        if node.get("type") != "node" or tags.get("highway") != "street_lamp":
+            continue
+        east = (node["lon"] - pose.lon) * 111_320.0 * scale
+        north = (node["lat"] - pose.lat) * 110_540.0
+        if math.hypot(east, north) > reach:
+            continue
+        out.append({"at": [round(east, 1), round(north, 1)], "h": round(_lift(tags) or LAMP_M, 1)})
     return out
 
 

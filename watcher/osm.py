@@ -85,6 +85,8 @@ def around(lat: float, lon: float, radius_m: float, cache: Path, max_age_s: int 
         f'node["tourism"="artwork"]({box});'
         f'node["historic"]({box});'
         f'node["natural"="tree"]({box});'
+        # The one lamp on the roundabout is what the night picture is made of.
+        f'node["highway"="street_lamp"]({box});'
         # Masts carry a red lamp for aircraft. At night it blinks in place and
         # reads like the first flame of a fire, so it has to be on the map.
         f'way["man_made"]({box});'
