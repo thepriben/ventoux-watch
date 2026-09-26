@@ -409,7 +409,7 @@ h2 {
 #relief:active { cursor: grabbing; }
 #relief canvas { display: block; }
 
-#relief:fullscreen {
+.relief .stage:fullscreen {
   aspect-ratio: auto;
   display: flex;
   align-items: center;
@@ -417,14 +417,26 @@ h2 {
   background: #000;
 }
 
-.relief .tools { display: flex; gap: 6px; }
+.relief .stage:fullscreen #relief { aspect-ratio: auto; }
+
+.relief .tools {
+  /* Over the view, not above it: in full screen everything outside the stage
+     is gone, and the button that puts the camera back where the webcam looks
+     is the one thing you need most once you have turned the scene around. */
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
 
 #relief-back, #relief-wide {
   padding: 3px 9px;
-  border: 1px solid var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 999px;
-  background: none;
-  color: var(--ink);
+  background: rgba(12, 18, 28, 0.5);
+  color: #fff;
   font: inherit;
   font-size: 11px;
   cursor: pointer;

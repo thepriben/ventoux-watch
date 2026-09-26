@@ -114,11 +114,19 @@ async function start(host) {
   }
   home();
   document.getElementById("relief-back")?.addEventListener("click", home);
+  // The stage goes full screen, not the canvas: the buttons live inside it, and
+  // a full screen that swallowed the one that puts the camera back would strand
+  // anyone who had turned the scene around.
+  const stage = document.getElementById("relief-stage") || host;
   document.getElementById("relief-wide")?.addEventListener("click", () => {
     if (document.fullscreenElement) document.exitFullscreen();
-    else host.requestFullscreen?.();
+    else stage.requestFullscreen?.();
   });
-  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("fullscreenchange", () => {
+    const wide = document.getElementById("relief-wide");
+    if (wide) wide.textContent = document.fullscreenElement === stage ? "⤡" : "⤢";
+    fit();
+  });
 
   const caption = document.getElementById("relief-name");
   const finder = new THREE.Raycaster();
@@ -137,8 +145,9 @@ async function start(host) {
     // Sixteen by nine, always. Filling a screen of another shape would widen
     // or crop the field of view, and the whole point is that this is the
     // webcam's field of view and no other.
-    const room = document.fullscreenElement === host ? host.clientHeight * aspect : Infinity;
-    const width = Math.min(host.clientWidth, room);
+    const wide = document.fullscreenElement === stage;
+    const room = wide ? stage.clientHeight * aspect : Infinity;
+    const width = Math.min(wide ? stage.clientWidth : host.clientWidth, room);
     renderer.setSize(width, Math.round(width / aspect));
   }
   window.addEventListener("resize", fit);
