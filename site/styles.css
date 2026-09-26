@@ -56,34 +56,22 @@ body {
   padding-right: 24px;
 }
 
+/* One row, always. The bar is read once on arrival and is in the way for the
+   rest of the visit, so it spends the width it has rather than the height it
+   does not: a section jumped to from here has to arrive whole, and every pixel
+   this takes is a pixel the section cannot have. */
 .top-inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 28px;
-  min-height: 64px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  transition: min-height 0.18s, padding 0.18s;
+  gap: 6px 20px;
+  min-height: 44px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
-/* Once the page has moved, the header gives its room back. The station, the
-   wind and the humidity are worth reading when you arrive and are in the way
-   for the rest of the visit: a section jumped to from the bar has to land
-   above the fold, not behind the thing that sent you there. */
-.top.tight .top-inner {
-  min-height: 40px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.top.tight .eyebrow,
-.top.tight .facts .sub {
-  display: none;
-}
-
-.top.tight .facts dd { font-size: 13px; }
-.top.tight h1 { font-size: 17px; }
-.top.tight .onpage a { padding-top: 6px; padding-bottom: 5px; }
+.top-inner .eyebrow { display: none; }
+.top-inner h1 { font-size: 16px; }
 
 main {
   display: flex;
@@ -111,17 +99,22 @@ h1 {
 .facts {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   margin: 0 0 0 auto;
 }
 
 .facts > div {
-  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0 14px;
   border-left: 1px solid var(--line);
   min-width: 0;
 }
 
 .facts dt {
-  margin: 0 0 1px;
+  margin: 0;
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -130,7 +123,7 @@ h1 {
 
 .facts dd {
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
@@ -206,14 +199,27 @@ h2 {
 
 .live, .place { padding: 0; }
 
+/* Two of these were narrow because they sat in a side column that no longer
+   exists. Their text has no business running the width of the screen. */
+.bulletin > *:not(.shot), .sequence > * { max-width: 680px; }
+
+/* Narrower than the column and centred. At full width the webcam alone was
+   taller than the room left under the bar, so its own section could not be
+   shown whole, which is the one thing a page like this owes a reader. */
 .live video {
-  width: 100%;
+  width: min(100%, 720px);
+  margin: 0 auto;
   aspect-ratio: 16 / 9;
   background: #000;
   display: block;
 }
 
-.frame { position: relative; aspect-ratio: 4 / 3; }
+.frame {
+  position: relative;
+  width: min(100%, 460px);
+  margin: 0 auto;
+  aspect-ratio: 4 / 3;
+}
 
 #map {
   position: absolute;
@@ -440,6 +446,8 @@ h2 {
 .relief .stage { position: relative; }
 
 #relief {
+  width: min(100%, 720px);
+  margin: 0 auto;
   aspect-ratio: 16 / 9;
   background: #1d2b3f;
   overflow: hidden;
@@ -458,6 +466,23 @@ h2 {
 }
 
 .relief .stage:fullscreen #relief { aspect-ratio: auto; }
+
+.relief .wake {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: rgba(16, 24, 34, 0.72);
+  color: #f2f5f8;
+  font: 11px/1.2 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.relief .stage.awake #relief { outline: 2px solid var(--pine); outline-offset: -2px; }
 
 .relief .tools {
   /* Over the view, not above it: in full screen everything outside the stage
@@ -592,15 +617,11 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  border-top: 1px solid var(--hair);
 }
 
 .onpage a {
   position: relative;
-  padding: 9px 13px 8px;
+  padding: 12px 10px 11px;
   color: var(--muted);
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -644,8 +665,9 @@ h2 {
 .bulletin .shot {
   position: relative;
   /* Smaller: this is a thumbnail of the sky, not the view itself, which is
-     already playing live at the top of the page. */
-  width: 62%;
+     already playing live at the top of the page. Capped rather than given a
+     share of the width, since this card now has the whole page to spread in. */
+  width: min(62%, 330px);
   min-width: 190px;
   margin: 8px 0 2px;
 }
@@ -669,7 +691,7 @@ a.out {
 
 a.out:hover, a.out:focus-visible { border-bottom-color: currentColor; }
 
-section[id] { scroll-margin-top: 78px; }
+section[id] { scroll-margin-top: 56px; }
 
 .anchor {
   margin-left: 6px;

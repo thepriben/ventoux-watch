@@ -57,6 +57,7 @@ const COPY = {
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
       sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
+    reliefWake: "Click to turn the view",
     follow: "its track",
     nearestStation: "Nearest weather station:",
     from: "from",
@@ -159,6 +160,7 @@ const COPY = {
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
       sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
+    reliefWake: "Cliquer pour tourner la vue",
     follow: "sa trace",
     nearestStation: "Station météo la plus proche :",
     from: "de",
@@ -817,6 +819,8 @@ function paintCamera() {
 let sequenceFrames = [];
 let sequenceIndex = 0;
 
+const FOOT = 14;
+
 function followSections() {
   /* Put a section on screen whole, and underline the one being read.
 
@@ -836,13 +840,17 @@ function followSections() {
   const waterline = () => (top?.offsetHeight || 78) + 8;
 
   const reveal = (part) => {
-    // The bar is measured folded, since any landing is past the fold anyway.
-    top?.classList.add("tight");
     const line = waterline();
     const room = window.innerHeight - line;
     const box = part.getBoundingClientRect();
     let y = window.scrollY + box.top - line;
-    if (box.height < room) y -= (room - box.height) / 2;
+    if (box.height < room) {
+      // Settle on the foot of the section, not its head. What tells a reader
+      // that a section is finished is seeing where it stops; landing on the
+      // title leaves them to guess how much is still below.
+      y = window.scrollY + box.bottom - window.innerHeight + FOOT;
+      y = Math.min(y, window.scrollY + box.top - line);
+    }
     window.scrollTo({ top: Math.max(Math.round(y), 0), behavior: "smooth" });
   };
 
@@ -858,15 +866,14 @@ function followSections() {
 
   const mark = () => {
     // Anything past the first screenful means the visit has started.
-    top?.classList.toggle("tight", window.scrollY > 40);
     const line = waterline();
-    let here = parts[0];
-    let most = 0;
-    for (const part of parts) {
+    // Whichever section the waterline itself falls in. Counting visible pixels
+    // instead handed the underline to the history the moment any of it showed,
+    // because it is forty thousand pixels long and wins any such contest.
+    let here = parts.find((part) => {
       const box = part.getBoundingClientRect();
-      const seen = Math.min(box.bottom, window.innerHeight) - Math.max(box.top, line);
-      if (seen > most) { most = seen; here = part; }
-    }
+      return box.top <= line && box.bottom > line;
+    }) || parts.find((part) => part.getBoundingClientRect().top > line) || parts[0];
     if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) here = parts[parts.length - 1];
     for (const link of links) {
       const on = link.getAttribute("href") === `#${here.id}`;

@@ -109,6 +109,25 @@ async function start(host) {
 
   const camera = new THREE.PerspectiveCamera(vertical(pose.hfov, aspect), aspect, 1, 20000);
   const controls = new OrbitControls(camera, renderer.domElement);
+  /* Asleep until asked. A view this size sits right where the thumb wants to
+     scroll past it, and a canvas that swallows the wheel traps the reader
+     halfway down the page. It takes the mouse only once it has been woken,
+     and gives it back the moment attention goes elsewhere. */
+  controls.enabled = false;
+  const wake = document.getElementById("relief-wake");
+  const box = document.getElementById("relief-stage") || host;
+  const rouse = (awake) => {
+    controls.enabled = awake;
+    if (wake) wake.hidden = awake;
+    box?.classList.toggle("awake", awake);
+  };
+  renderer.domElement.addEventListener("pointerdown", () => rouse(true));
+  wake?.addEventListener("click", () => rouse(true));
+  document.addEventListener("pointerdown", (hit) => {
+    if (!box?.contains(hit.target)) rouse(false);
+  });
+  addEventListener("keydown", (hit) => { if (hit.key === "Escape") rouse(false); });
+  rouse(false);
   controls.enableDamping = true;
   controls.maxDistance = 7000;
   // The far slope, straight ahead: near enough that turning feels like walking

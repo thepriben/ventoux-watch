@@ -43,101 +43,27 @@
         <dd class="sub" id="named"></dd>
       </div>
       </dl>
+      <nav class="onpage" data-i18n-aria="sections" aria-label="Sections">
+        <a href="#live" data-i18n="live">Live</a>
+        <a href="#log" data-i18n="history">History</a>
+        <a href="#view3d" data-i18n="relief">3D view</a>
+        <a href="#camera" data-i18n="camera">Camera</a>
+        <a href="#weather-block" data-i18n="compare">Weather</a>
+        <a href="#flow" data-i18n="pipeline">Pipeline</a>
+      </nav>
       <p class="langs">
         <button type="button" data-lang="en" class="on">EN</button>
         <button type="button" data-lang="fr">FR</button>
         <button type="button" id="theme" title="Dark mode" aria-label="Dark mode" aria-pressed="false">◐</button>
       </p>
     </div>
-    <nav class="onpage" data-i18n-aria="sections" aria-label="Sections">
-      <a href="#live" data-i18n="live">Live</a>
-      <a href="#view3d" data-i18n="relief">3D view</a>
-      <a href="#flow" data-i18n="pipeline">Pipeline</a>
-      <a href="#camera" data-i18n="camera">Camera</a>
-      <a href="#weather-block" data-i18n="compare">Weather</a>
-      <a href="#log" data-i18n="history">History</a>
-    </nav>
   </header>
 
   <main id="content">
-  <div class="board">
-    <div class="main-col">
-    <section class="block live" id="live" aria-labelledby="live-title">
-      <h2 class="sr" id="live-title" data-i18n="live">Live</h2>
-      <video id="player" controls autoplay muted playsinline></video>
-    </section>
-
-    <section class="block relief" id="view3d" aria-labelledby="view3d-title">
-      <div class="head">
-        <h2 id="view3d-title" data-i18n="relief">3D view</h2><a class="anchor" href="#view3d" aria-hidden="true" tabindex="-1">#</a>
-      </div>
-      <div class="stage" id="relief-stage">
-        <div id="relief"></div>
-        <span class="tools">
-          <button type="button" id="relief-back" data-i18n="reliefBack">Webcam angle</button>
-          <button type="button" id="relief-wide" data-i18n-title="reliefWide" title="Full screen" aria-label="Full screen">⤢</button>
-        </span>
-        <p class="cap" id="relief-name" hidden></p>
-        <div class="card" id="relief-card" hidden></div>
-      </div>
-    </section>
-
-    <section class="block pipeline" id="flow" aria-labelledby="flow-title">
-      <div class="head"><h2 id="flow-title" data-i18n="pipeline">Pipeline</h2><a class="anchor" href="#flow" aria-hidden="true" tabindex="-1">#</a></div>
-      <div class="chart" id="chart"></div>
-      <ol class="steps">
-        <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
-        <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
-        <li><strong data-i18n="track">Track</strong><span data-i18n="trackText">A compact blob, tracked for at least 3 frames.</span></li>
-        <li><strong data-i18n="class">Class</strong><span data-i18n="classText">YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.</span></li>
-        <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.</span></li>
-        <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
-        <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
-        <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 5 s, area ×1.5, at least 8% warm pixels or a rising plume. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
-      </ol>
-    </section>
-    </div>
-
-    <div class="side">
-    <section class="block place" id="camera" aria-labelledby="camera-title">
-      <h2 class="sr" id="camera-title" data-i18n="camera">Camera</h2>
-      <div class="frame">
-        <div id="map"></div>
-        <div class="zooms" role="group" aria-label="Zoom">
-          <button type="button" data-zoom="0">1</button>
-          <button type="button" data-zoom="1" class="on">2</button>
-          <button type="button" data-zoom="2">3</button>
-        </div>
-        <p class="cap"><span data-i18n="cameraText">Fixed, facing 140°.</span></p>
-      </div>
-    </section>
-
-    <section class="block bulletin" id="weather-block" aria-labelledby="weather-title">
-      <div class="head">
-        <h2 id="weather-title" data-i18n="compare">Weather</h2><a class="anchor" href="#weather-block" aria-hidden="true" tabindex="-1">#</a>
-        <p class="sub" id="view-when"></p>
-      </div>
-      <p class="words" id="view-words" data-i18n="compareEmpty">No reading yet.</p>
-      <div class="shot" id="view-shot" hidden>
-        <img id="view-photo" alt="">
-        <span class="moon" id="view-moon" hidden></span>
-      </div>
-      <p class="sub" id="view-station"></p>
-    </section>
-
-    <section class="block sequence" id="sequence" hidden>
-      <div class="head">
-        <h2 data-i18n="around">Around</h2>
-        <p class="sub"><span id="sequence-meta"></span> · <a id="sequence-osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <span id="seq-count"></span></p>
-      </div>
-      <div class="carousel">
-        <button type="button" id="seq-prev" aria-label="Previous">‹</button>
-        <a id="seq-frame" target="_blank" rel="noopener noreferrer"><img id="seq-img" alt=""></a>
-        <button type="button" id="seq-next" aria-label="Next">›</button>
-      </div>
-    </section>
-    </div>
-  </div>
+  <section class="block live" id="live" aria-labelledby="live-title">
+    <h2 class="sr" id="live-title" data-i18n="live">Live</h2>
+    <video id="player" controls autoplay muted playsinline></video>
+  </section>
 
   <section class="block history" id="log" aria-labelledby="log-title">
     <div class="history-head">
@@ -165,6 +91,74 @@
       </thead>
       <tbody id="list"></tbody>
     </table>
+  </section>
+
+  <section class="block relief" id="view3d" aria-labelledby="view3d-title">
+    <div class="head">
+      <h2 id="view3d-title" data-i18n="relief">3D view</h2><a class="anchor" href="#view3d" aria-hidden="true" tabindex="-1">#</a>
+    </div>
+    <div class="stage" id="relief-stage">
+      <div id="relief"></div>
+      <span class="tools">
+        <button type="button" id="relief-back" data-i18n="reliefBack">Webcam angle</button>
+        <button type="button" id="relief-wide" data-i18n-title="reliefWide" title="Full screen" aria-label="Full screen">⤢</button>
+      </span>
+      <p class="cap" id="relief-name" hidden></p>
+      <div class="card" id="relief-card" hidden></div>
+    </div>
+  </section>
+
+  <section class="block place" id="camera" aria-labelledby="camera-title">
+    <h2 class="sr" id="camera-title" data-i18n="camera">Camera</h2>
+    <div class="frame">
+      <div id="map"></div>
+      <div class="zooms" role="group" aria-label="Zoom">
+        <button type="button" data-zoom="0">1</button>
+        <button type="button" data-zoom="1" class="on">2</button>
+        <button type="button" data-zoom="2">3</button>
+      </div>
+      <p class="cap"><span data-i18n="cameraText">Fixed, facing 140°.</span></p>
+    </div>
+  </section>
+
+  <section class="block sequence" id="sequence" hidden>
+    <div class="head">
+      <h2 data-i18n="around">Around</h2>
+      <p class="sub"><span id="sequence-meta"></span> · <a id="sequence-osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> · <span id="seq-count"></span></p>
+    </div>
+    <div class="carousel">
+      <button type="button" id="seq-prev" aria-label="Previous">‹</button>
+      <a id="seq-frame" target="_blank" rel="noopener noreferrer"><img id="seq-img" alt=""></a>
+      <button type="button" id="seq-next" aria-label="Next">›</button>
+    </div>
+  </section>
+
+  <section class="block bulletin" id="weather-block" aria-labelledby="weather-title">
+    <div class="head">
+      <h2 id="weather-title" data-i18n="compare">Weather</h2><a class="anchor" href="#weather-block" aria-hidden="true" tabindex="-1">#</a>
+      <p class="sub" id="view-when"></p>
+    </div>
+    <p class="words" id="view-words" data-i18n="compareEmpty">No reading yet.</p>
+    <div class="shot" id="view-shot" hidden>
+      <img id="view-photo" alt="">
+      <span class="moon" id="view-moon" hidden></span>
+    </div>
+    <p class="sub" id="view-station"></p>
+  </section>
+
+  <section class="block pipeline" id="flow" aria-labelledby="flow-title">
+    <div class="head"><h2 id="flow-title" data-i18n="pipeline">Pipeline</h2><a class="anchor" href="#flow" aria-hidden="true" tabindex="-1">#</a></div>
+    <div class="chart" id="chart"></div>
+    <ol class="steps">
+      <li><strong data-i18n="image">Frame</strong><span data-i18n="imageText">1 frame/s. ffmpeg reads the HLS stream.</span></li>
+      <li><strong data-i18n="motion">Motion</strong><span data-i18n="motionText">OpenCV MOG2, frame scaled to 640 px. If more than 35% changes, it is light, and it is ignored. The red beacon on the summit is excluded.</span></li>
+      <li><strong data-i18n="track">Track</strong><span data-i18n="trackText">A compact blob, tracked for at least 3 frames.</span></li>
+      <li><strong data-i18n="class">Class</strong><span data-i18n="classText">YOLO11 nano, ONNX, on the crop only. Person, car, bus, truck.</span></li>
+      <li><strong data-i18n="plane">Plane</strong><span data-i18n="planeText">OpenSky. A callsign is kept only when that aircraft is in the camera’s view, close enough to be seen. Otherwise the history says it is not in the picture.</span></li>
+      <li><strong data-i18n="bus">Bus</strong><span data-i18n="busText">Trans'CoVe or ZOU. A single trip within ±15 min gives the route. Otherwise “Bus”, from a confidence of 0.6.</span></li>
+      <li><strong data-i18n="crowd">Crowd</strong><span data-i18n="crowdText">4 people or more, held for 8 seconds.</span></li>
+      <li><strong data-i18n="fire">Fire</strong><span data-i18n="fireText">On the slope, 5 s, area ×1.5, at least 8% warm pixels or a rising plume. Not at dusk. In rain, fog, or snow, it takes 20%.</span></li>
+    </ol>
   </section>
 
   <div id="loupe" hidden><img alt=""></div>
