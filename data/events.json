@@ -6,7 +6,7 @@
       "type": "person",
       "label": "Piéton",
       "zone": "other",
-      "confidence": 0.571,
+      "confidence": 0.704,
       "thumb": "data/thumbs/2026-09-26T15-34-55Z-person-243.jpg",
       "clip_url": "",
       "detail": {
@@ -14,12 +14,12 @@
         "weather": "couvert",
         "context": "de jour, couvert",
         "box": [
-          0.4437,
-          0.7222,
-          0.0109,
-          0.0389
+          0.6844,
+          0.6917,
+          0.0172,
+          0.0556
         ],
-        "count": 4
+        "count": 5
       }
     },
     {
