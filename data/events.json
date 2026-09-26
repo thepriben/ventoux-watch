@@ -1,6 +1,36 @@
 {
   "events": [
     {
+      "id": "2026-09-26T05-48-39Z-vehicle-1",
+      "t": "2026-09-26T05:48:39Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "other",
+      "confidence": 0.512,
+      "thumb": "data/thumbs/2026-09-26T05-48-39Z-vehicle-1.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "ciel dégagé",
+        "context": "au crépuscule, ciel dégagé",
+        "measured": {
+          "travel": 0.5444,
+          "area_ratio": 0.00115,
+          "duration_s": 7.5,
+          "frames": 11
+        },
+        "surface": "roundabout",
+        "box": [
+          0.3844,
+          0.8306,
+          0.2,
+          0.1417
+        ],
+        "count": 2
+      },
+      "closeup": "data/closeups/2026-09-26T05-48-39Z-vehicle-1.jpg"
+    },
+    {
       "id": "2026-09-26T05-26-39Z-plane-15",
       "t": "2026-09-26T05:26:39Z",
       "type": "plane",
@@ -124,29 +154,6 @@
       },
       "closeup": "data/closeups/2026-09-26T04-32-00Z-person-12.jpg",
       "review": "accepted"
-    },
-    {
-      "id": "2026-09-26T04-26-47Z-person-11",
-      "t": "2026-09-26T04:26:47Z",
-      "type": "person",
-      "label": "Piéton",
-      "zone": "roundabout",
-      "confidence": 0.752,
-      "thumb": "data/thumbs/2026-09-26T04-26-47Z-person-11.jpg",
-      "clip_url": "",
-      "detail": {
-        "period": "night",
-        "weather": "ciel dégagé",
-        "context": "de nuit, ciel dégagé",
-        "box": [
-          0.3172,
-          0.8056,
-          0.0422,
-          0.0472
-        ],
-        "count": 6
-      },
-      "closeup": "data/closeups/2026-09-26T04-26-47Z-person-11.jpg"
     },
     {
       "id": "2026-09-26T04-25-02Z-vehicle-1",
