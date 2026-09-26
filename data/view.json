@@ -1,14 +1,9 @@
 {
   "last": {
-    "t": "2026-09-26T18:55:05Z",
+    "t": "2026-09-26T19:09:36Z",
     "webcam": "ciel dégagé",
     "period": "night",
-    "moon": true,
-    "moon_at": {
-      "cx": 0.2129,
-      "cy": 0.2307,
-      "r": 0.0182
-    },
+    "moon": false,
     "api": "couvert",
     "temp_c": 13,
     "photo": "data/view.jpg"
