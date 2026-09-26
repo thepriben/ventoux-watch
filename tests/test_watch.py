@@ -891,3 +891,25 @@ class SingleWatcherTests(unittest.TestCase):
         freed = subprocess.run([sys.executable, "-c", code, str(lock), "0"], capture_output=True, text=True)
         self.assertEqual(freed.stdout.strip(), "True")
         lock.unlink(missing_ok=True)
+
+
+class EdgeOfFrameTests(unittest.TestCase):
+    """A blob cut by the border of the picture has no size worth trusting."""
+
+    def _clipped(self, **extra):
+        return Observation(zone="roundabout", period="night", travel=0.2, clipped=True,
+                           surface="", frames=9, duration_s=5.0, **extra)
+
+    def test_a_weak_reading_at_the_edge_names_nothing(self):
+        # The measurements of 20:30, which were the rear lights of a car.
+        cut = self._clipped(detections=[Detection("person", 0.43)])
+        self.assertEqual(decide(cut).type, "motion")
+        self.assertEqual(decide(cut).reason, "edge_of_frame")
+
+    def test_a_sure_reading_at_the_edge_still_counts(self):
+        seen = self._clipped(detections=[Detection("person", 0.82)])
+        self.assertEqual(decide(seen).type, "person")
+
+    def test_the_edge_rule_waits_for_an_unsurveyed_floor(self):
+        known = replace(self._clipped(detections=[Detection("person", 0.43)]), surface="roundabout")
+        self.assertNotEqual(decide(known).reason, "edge_of_frame")

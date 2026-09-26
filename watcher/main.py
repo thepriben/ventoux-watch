@@ -168,6 +168,10 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         # The middle of the blob, not its corner: an aircraft is matched against
         # where the thing is, and a box records where it begins.
         frames=track.frames,
+        # Running off the edge of the picture means the size on the ground is
+        # a measurement of whatever part stayed inside it.
+        clipped=bool(box) and (box[0] <= 0.002 or box[1] <= 0.002
+                               or box[0] + box[2] >= 0.998 or box[1] + box[3] >= 0.998),
         at_x=box[0] + box[2] / 2 if box else -1.0,
         at_y=box[1] + box[3] / 2 if box else -1.0,
         sun_bearing=solar_azimuth(when, cfg["camera"]["lat"], cfg["camera"]["lon"]),

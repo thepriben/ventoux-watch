@@ -116,6 +116,7 @@ class Observation:
     landmark: str = ""
     lit_ratio: float = 0.0
     frames: int = 0
+    clipped: bool = False
     camera_lat: float = 44.183501
     camera_lon: float = 5.2621281
     camera_ele: float = 1390.0
@@ -309,6 +310,12 @@ def _aircraft_label(aircraft: dict) -> str:
 # or the lit edge of the chalet terrace does not. Before these two lines the
 # rule asked only that the patch fit a car and be bright, and it filed sixteen
 # events in the first hour of one night, fourteen with nothing detected at all.
+# What a weak reading needs when the blob runs off the edge of the picture.
+# A clipped track has no size: half of it is outside the frame, so the surveyed
+# footprint, the car test and the walker test are all measuring a fragment. Two
+# events on one night were named from nothing but a person read at 0.43, both
+# starting at exactly x = 0, both in fact the rear lights of a car.
+EDGE_CONF = 0.6
 NIGHT_FRAMES = 6
 NIGHT_SECONDS = 3.0
 SUN_LOW = 15.0
@@ -570,6 +577,16 @@ def decide(obs: Observation) -> Decision:
         animal = _best(obs.detections, {"dog", "horse"})
         cycle = _best(obs.detections, CYCLES)
         beast = _best(obs.detections, BEASTS)
+        if obs.clipped and not obs.surface:
+            best = max((hit.conf for hit in obs.detections), default=0.0)
+            if best < EDGE_CONF:
+                return _motion(
+                    obs,
+                    "edge_of_frame",
+                    "Mouvement au bord de l'image",
+                    "La tache sort du cadre et le sol n'est pas relevé là : sa taille est inconnue, "
+                    "et rien n'a été reconnu assez sûrement pour la nommer sans elle.",
+                )
         if obs.width_m > BIGGEST_M["truck"]:
             return _motion(
                 obs,
