@@ -2742,8 +2742,8 @@
     {
       "id": "2026-09-26T09-18-10Z-person-18",
       "t": "2026-09-26T09:18:10Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "cycle",
+      "label": "Deux-roues",
       "zone": "road",
       "confidence": 0.741,
       "thumb": "data/thumbs/2026-09-26T09-18-10Z-person-18.jpg",
@@ -2765,8 +2765,11 @@
           0.0609,
           0.1194
         ],
-        "count": 2
-      }
+        "count": 2,
+        "correction": "Deux-roues",
+        "reading": "Deux-roues, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T09-10-21Z-vehicle-43",
@@ -2793,8 +2796,8 @@
     {
       "id": "2026-09-26T09-06-59Z-vehicle-41",
       "t": "2026-09-26T09:06:59Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "roundabout",
       "confidence": 0.545,
       "thumb": "data/thumbs/2026-09-26T09-06-59Z-vehicle-41.jpg",
@@ -2809,8 +2812,11 @@
           0.0422,
           0.1056
         ],
-        "count": 3
-      }
+        "count": 3,
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T09-00-43Z-person-15",
@@ -2938,8 +2944,8 @@
     {
       "id": "2026-09-26T08-25-10Z-person-32",
       "t": "2026-09-26T08:25:10Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "other",
       "confidence": 0.49,
       "thumb": "data/thumbs/2026-09-26T08-25-10Z-person-32.jpg",
@@ -2953,14 +2959,17 @@
           0.9417,
           0.1641,
           0.0583
-        ]
-      }
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T08-21-38Z-person-11",
       "t": "2026-09-26T08:21:38Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "other",
       "confidence": 0.497,
       "thumb": "data/thumbs/2026-09-26T08-21-38Z-person-11.jpg",
@@ -2982,8 +2991,11 @@
           0.0406,
           0.0722
         ],
-        "count": 2
-      }
+        "count": 2,
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T08-12-23Z-vehicle-9",
@@ -3039,8 +3051,8 @@
     {
       "id": "2026-09-26T08-03-07Z-person-27",
       "t": "2026-09-26T08:03:07Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "truck",
+      "label": "Camion",
       "zone": "other",
       "confidence": 0.586,
       "thumb": "data/thumbs/2026-09-26T08-03-07Z-person-27.jpg",
@@ -3054,14 +3066,17 @@
           0.8389,
           0.3578,
           0.1611
-        ]
-      }
+        ],
+        "correction": "Camion",
+        "reading": "Camion, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T07-57-53Z-vehicle-8",
       "t": "2026-09-26T07:57:53Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "roundabout",
       "confidence": 0.58,
       "thumb": "data/thumbs/2026-09-26T07-57-53Z-vehicle-8.jpg",
@@ -3076,29 +3091,11 @@
           0.0938,
           0.1694
         ],
-        "count": 3
-      }
-    },
-    {
-      "id": "2026-09-26T07-35-41Z-person-24",
-      "t": "2026-09-26T07:35:41Z",
-      "type": "person",
-      "label": "Piéton",
-      "zone": "road",
-      "confidence": 0.406,
-      "thumb": "data/thumbs/2026-09-26T07-35-41Z-person-24.jpg",
-      "clip_url": "",
-      "detail": {
-        "period": "day",
-        "weather": "ciel dégagé",
-        "context": "de jour, ciel dégagé",
-        "box": [
-          0.2891,
-          0.9306,
-          0.1562,
-          0.0694
-        ]
-      }
+        "count": 3,
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T07-32-48Z-person-22",
