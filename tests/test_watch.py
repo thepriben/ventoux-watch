@@ -135,6 +135,34 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(decision.reason, "none_at_that_spot")
         self.assertNotIn("AFR", decision.label)
 
+    def test_two_aircraft_at_the_same_spot_name_neither(self):
+        """The real failure of 26 September, kept as a test.
+
+        A contrail at eleven thousand metres was signed by an aircraft flying at
+        four, because the old rule picked the lowest in the sector. Two jets
+        side by side in the frame must produce no name at all.
+        """
+        one = _ahead(44.183501, 5.2621281, 128, 60000)
+        two = _ahead(44.183501, 5.2621281, 131, 60000)
+        low = _ahead(44.183501, 5.2621281, 175, 40000)
+        decision = decide(
+            Observation(
+                zone="sky",
+                travel=0.05,
+                area_ratio=0.001,
+                aircraft=[
+                    {"icao24": "aa0001", "callsign": "DLH100", "altitude_m": 11500, "lat": one[0], "lon": one[1]},
+                    {"icao24": "bb0002", "callsign": "VLG200", "altitude_m": 11000, "lat": two[0], "lon": two[1]},
+                    {"icao24": "cc0003", "callsign": "AAL300", "altitude_m": 4000, "lat": low[0], "lon": low[1]},
+                ],
+                at_x=0.46,
+                at_y=0.27,
+            )
+        )
+        self.assertEqual(decision.type, "motion")
+        self.assertEqual(decision.reason, "several_at_that_spot")
+        self.assertNotIn("AAL", decision.label)
+
     def test_an_unknown_operator_keeps_its_callsign(self):
         lat, lon = _ahead(44.183501, 5.2621281, 140, 2000)
         decision = decide(

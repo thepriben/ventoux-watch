@@ -80,6 +80,7 @@ REFRAME = {
     },
 }
 DROP = {
+    "2026-09-26T04:26:47Z": "les pierres de l'îlot central sous le lampadaire, personne dedans",
     "2026-09-26T00:05:47Z": "un motif d'un mètre sur la chaussée, trop petit pour un véhicule",
     "2026-09-25T22:11:35Z": "l'îlot central du rond-point, ses pierres et ses figures",
     "2026-09-25T21:39:29Z": "le revêtement de la chaussée qui prend la lumière",

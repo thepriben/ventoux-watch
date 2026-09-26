@@ -57,6 +57,8 @@ const COPY = {
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
       sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
+    from: "from",
+    to: "towards",
     heading: "heading",
     climbing: "climbing",
     descending: "descending",
@@ -155,6 +157,8 @@ const COPY = {
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
       sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
+    from: "de",
+    to: "vers",
     heading: "cap",
     climbing: "en montée",
     descending: "en descente",
@@ -525,6 +529,17 @@ function who(info) {
   return info.callsign || "OpenSky";
 }
 
+function route(info) {
+  // One end is worth printing on its own: an aircraft still in the air has no
+  // filed arrival yet, and "from Philadelphia" is the whole story anyway.
+  const from = info.from_town || info.from;
+  const to = info.to_town || info.to;
+  if (from && to) return `${from} → ${to}`;
+  if (from) return `${t("from")} ${from}`;
+  if (to) return `${t("to")} ${to}`;
+  return "";
+}
+
 function facts(info) {
   const out = [];
   if (info.altitude_m != null) out.push(`${Math.round(info.altitude_m).toLocaleString(locale())} m`);
@@ -543,7 +558,7 @@ function detail(event) {
   const info = event.detail || {};
   if (event.type === "plane") {
     const place = info.seen ? "" : t("notInFrame");
-    return [who(info), ...facts(info), place, showText(info.context)].filter(Boolean).join(" · ");
+    return [who(info), route(info), ...facts(info), place, showText(info.context)].filter(Boolean).join(" · ");
   }
   if (event.type === "bus" && info.route) {
     return `${info.headsign || info.route} · ${info.scheduled || ""} · ${info.source || ""}`.trim();
@@ -735,6 +750,38 @@ function paintCamera() {
 let sequenceFrames = [];
 let sequenceIndex = 0;
 
+function followSections() {
+  /* Underline the section being read.
+
+     The watched line sits just under the header, not at the top of the window:
+     a section is "the one being read" from the moment its heading clears the
+     bar, and the last section on the page must be able to win even when it is
+     too short to fill the screen. */
+  const links = [...document.querySelectorAll(".onpage a")];
+  const parts = links.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+  if (!parts.length) return;
+  const mark = () => {
+    const line = (document.querySelector(".top")?.offsetHeight || 120) + 8;
+    let here = parts[0];
+    for (const part of parts) if (part.getBoundingClientRect().top <= line) here = part;
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) here = parts[parts.length - 1];
+    for (const link of links) {
+      const on = link.getAttribute("href") === `#${here.id}`;
+      if (on) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    }
+  };
+  let waiting = false;
+  addEventListener("scroll", () => {
+    // Once per frame at most. Scrolling fires far faster than the page repaints.
+    if (waiting) return;
+    waiting = true;
+    requestAnimationFrame(() => { waiting = false; mark(); });
+  }, { passive: true });
+  addEventListener("resize", mark);
+  mark();
+}
+
 applyLang();
 setInterval(tick, 1000);
 loadWeather();
@@ -804,3 +851,4 @@ document.querySelector("#seq-next").addEventListener("click", () => stepSequence
 load();
 setInterval(load, 60000);
 loadSequence();
+followSections();

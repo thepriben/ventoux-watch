@@ -564,22 +564,49 @@ h2 {
 .onpage {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: -4px 0 0;
+  gap: 2px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  border-top: 1px solid var(--hair);
 }
 
 .onpage a {
-  padding: 4px 11px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  position: relative;
+  padding: 9px 13px 8px;
   color: var(--muted);
   font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-decoration: none;
 }
 
-.onpage a:hover, .onpage a:focus-visible { color: var(--ink); border-color: var(--ink); }
+.onpage a:hover, .onpage a:focus-visible { color: var(--ink); }
 
-section[id] { scroll-margin-top: 82px; }
+/* The section being read, underlined. Nothing moves and nothing is added to
+   the page when it changes: a bar that grew or shrank would drag the eye away
+   from the webcam, which is the one thing here worth looking at. */
+.onpage a::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 0;
+  height: 2px;
+  background: var(--pine);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.onpage a[aria-current="true"] { color: var(--ink); }
+.onpage a[aria-current="true"]::after { opacity: 1; }
+
+@media (max-width: 640px) {
+  .onpage { overflow-x: auto; flex-wrap: nowrap; }
+  .onpage a { white-space: nowrap; }
+}
+
+section[id] { scroll-margin-top: 124px; }
 
 .anchor {
   margin-left: 6px;

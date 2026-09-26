@@ -30,7 +30,55 @@ class SkyArchive:
         self.asked = 0.0
         self.token = ""
         self.token_until = 0.0
+        self.routes: dict[str, dict] = {}
         self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def route(self, icao24: str, when: float) -> dict:
+        """Where this aircraft took off from and where it is going.
+
+        Asked only once an aircraft has been named, which happens a few times a
+        day at most, and each answer is kept: the same jet crossing twice in one
+        afternoon is one call, not two. An unanswered lookup returns nothing and
+        the event is published without a route rather than delayed for one.
+        """
+        icao24 = str(icao24 or "").strip().lower()
+        if not icao24:
+            return {}
+        if icao24 in self.routes:
+            return self.routes[icao24]
+        # A day either side. A transatlantic leg lasts eight hours and OpenSky
+        # files it under its departure, so a narrow window finds nothing.
+        begin, end = int(when - 86400), int(when + 3600)
+        url = (
+            "https://opensky-network.org/api/flights/aircraft"
+            f"?icao24={icao24}&begin={begin}&end={end}"
+        )
+        found = {}
+        for flight in self._get(url) or []:
+            if not isinstance(flight, dict):
+                continue
+            # The leg that was in the air when we saw it, not the one before.
+            if not flight.get("firstSeen", 0) <= when <= flight.get("lastSeen", 0) + 7200:
+                continue
+            found = {
+                "from": (flight.get("estDepartureAirport") or "").strip().upper(),
+                "to": (flight.get("estArrivalAirport") or "").strip().upper(),
+            }
+            break
+        self.routes[icao24] = found
+        return found
+
+    def _get(self, url: str):
+        request = urllib.request.Request(url, headers={"User-Agent": AGENT})
+        token = self._bearer()
+        if token:
+            request.add_header("Authorization", f"Bearer {token}")
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                return json.loads(response.read().decode())
+        except Exception as exc:
+            log.info("OpenSky sans réponse pour %s: %s", url.rsplit("/", 1)[-1][:40], exc)
+            return None
 
     def _bearer(self) -> str:
         """A fresh access token, kept until shortly before it expires.

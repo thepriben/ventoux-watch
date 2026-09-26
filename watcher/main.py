@@ -16,6 +16,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from watcher.airports import describe_route
 from watcher.config import load_config
 from watcher.detect import YoloDetector, body_colour, car_lights, count_persons
 from watcher.drive import DriveUploader
@@ -181,6 +182,10 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         "frames": track.frames,
     }
     decision.detail.setdefault("measured", measured)
+    if decision.type == "plane" and decision.detail.get("icao24"):
+        # Asked now and not before: a route costs a call to OpenSky, and until
+        # the rule has settled on one aircraft there is nothing to ask about.
+        decision.detail.update(describe_route(sky.route(decision.detail["icao24"], track.updated)))
     if decision.type == "motion" and track.zone == "sky":
         store.add_candidate(when, track.zone, decision.reason, decision.detail)
         return

@@ -431,6 +431,13 @@ def decide(obs: Observation) -> Decision:
                              detail={**found, "seen": True}, confidence=0.9),
                     obs,
                 )
+            # Several aircraft near the same spot and no way to tell them apart.
+            # The answer is that we do not know, and it must be given here: left
+            # to fall through, the older rule below would pick the lowest of
+            # them, which is how a contrail at eleven thousand metres came to be
+            # signed by an aircraft flying at four.
+            return _motion(obs, "several_at_that_spot", "Avion non identifié",
+                           "Plusieurs avions à cet endroit de l'image, aucun moyen de les départager.")
         chosen, why = choose_aircraft(visible)
         if chosen is None:
             return _motion(obs, why, "Mouvement dans le ciel", "Aucun avion visible dans l'image. Le secteur OpenSky ne suffit pas.")
