@@ -27,7 +27,7 @@ from watcher.motion import MotionDetector, smoke_ratio, warm_ratio
 from watcher.naming import Observation, decide
 from watcher.opensky import SkyArchive
 from watcher.publish import publish
-from watcher.scene import SceneReader, ViewLog
+from watcher.scene import SceneReader, ViewLog, solar_azimuth, solar_elevation
 from watcher.scenemap import FLAMMABLE, SceneMap
 from watcher.store import Store
 
@@ -169,6 +169,8 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         # where the thing is, and a box records where it begins.
         at_x=box[0] + box[2] / 2 if box else -1.0,
         at_y=box[1] + box[3] / 2 if box else -1.0,
+        sun_bearing=solar_azimuth(when, cfg["camera"]["lat"], cfg["camera"]["lon"]),
+        sun_elevation=solar_elevation(when, cfg["camera"]["lat"], cfg["camera"]["lon"]),
         **_eye(cfg, scene_map),
     )
     decision = decide(obs)

@@ -27,8 +27,9 @@
           0.1703,
           0.1444
         ],
-        "count": 2
-      }
+        "count": 3
+      },
+      "closeup": "data/closeups/2026-09-26T14-46-45Z-vehicle-3.jpg"
     },
     {
       "id": "2026-09-26T14-44-18Z-vehicle-2",
@@ -82,53 +83,10 @@
       }
     },
     {
-      "id": "2026-09-26T14-36-14Z-plane-1",
-      "t": "2026-09-26T14:36:14Z",
-      "type": "plane",
-      "label": "TUI fly 42V",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T14-36-14Z-plane-1.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "3c743a",
-        "callsign": "TUI42V",
-        "altitude_m": 10972.8,
-        "operator": "TUI fly",
-        "flight": "42V",
-        "country": "Germany",
-        "speed_ms": 243.61,
-        "heading": 22.34,
-        "climb_ms": 0,
-        "distance_km": 102.8,
-        "gap": 0.116,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.2627,
-          "area_ratio": 0.00074,
-          "duration_s": 14.8,
-          "frames": 23
-        },
-        "from": "LEIB",
-        "from_town": "Ibiza (Eivissa)",
-        "surface": "forest",
-        "box": [
-          0.7391,
-          0.1778,
-          0.0406,
-          0.0306
-        ]
-      },
-      "closeup": "data/closeups/2026-09-26T14-36-14Z-plane-1.jpg"
-    },
-    {
       "id": "2026-09-26T14-35-52Z-person-209",
       "t": "2026-09-26T14:35:52Z",
       "type": "person",
-      "label": "Piéton",
+      "label": "Piétons et une voiture",
       "zone": "roundabout",
       "confidence": 0.629,
       "thumb": "data/thumbs/2026-09-26T14-35-52Z-person-209.jpg",
@@ -142,8 +100,11 @@
           0.7556,
           0.075,
           0.1194
-        ]
-      }
+        ],
+        "correction": "Piétons et une voiture",
+        "reading": "Piétons et une voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T14-33-49Z-person-208",
@@ -200,7 +161,7 @@
       "id": "2026-09-26T14-29-47Z-person-202",
       "t": "2026-09-26T14:29:47Z",
       "type": "person",
-      "label": "Piéton",
+      "label": "Piétons et une voiture",
       "zone": "road",
       "confidence": 0.851,
       "thumb": "data/thumbs/2026-09-26T14-29-47Z-person-202.jpg",
@@ -215,8 +176,11 @@
           0.1,
           0.1028
         ],
-        "count": 3
-      }
+        "count": 3,
+        "correction": "Piétons et une voiture",
+        "reading": "Piétons et une voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T14-28-46Z-vehicle-201",
@@ -266,7 +230,7 @@
       "id": "2026-09-26T14-23-45Z-vehicle-193",
       "t": "2026-09-26T14:23:45Z",
       "type": "vehicle",
-      "label": "Véhicule",
+      "label": "Deux véhicules et un piéton",
       "zone": "other",
       "confidence": 0.818,
       "thumb": "data/thumbs/2026-09-26T14-23-45Z-vehicle-193.jpg",
@@ -281,50 +245,11 @@
           0.1734,
           0.0889
         ],
-        "count": 7
-      }
-    },
-    {
-      "id": "2026-09-26T14-21-40Z-plane-110",
-      "t": "2026-09-26T14:21:40Z",
-      "type": "plane",
-      "label": "easyJet Europe 68YQ",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T14-21-40Z-plane-110.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "4403f0",
-        "callsign": "EJU68YQ",
-        "altitude_m": 10058.4,
-        "operator": "easyJet Europe",
-        "flight": "68YQ",
-        "country": "Austria",
-        "speed_ms": 217.03,
-        "heading": 232.13,
-        "climb_ms": 0,
-        "distance_km": 93.0,
-        "gap": 0.084,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.1439,
-          "area_ratio": 0.00066,
-          "duration_s": 23.7,
-          "frames": 22
-        },
-        "surface": "forest",
-        "box": [
-          0.7125,
-          0.2028,
-          0.0266,
-          0.025
-        ],
-        "count": 9
+        "count": 7,
+        "correction": "Deux véhicules et un piéton",
+        "reading": "Deux véhicules et un piéton, indiqué à la main."
       },
-      "closeup": "data/closeups/2026-09-26T14-21-40Z-plane-110.jpg"
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T14-21-24Z-person-189",
@@ -378,47 +303,6 @@
       }
     },
     {
-      "id": "2026-09-26T14-18-38Z-plane-108",
-      "t": "2026-09-26T14:18:38Z",
-      "type": "plane",
-      "label": "Eurowings 22B",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T14-18-38Z-plane-108.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "3c55c8",
-        "callsign": "EWG22B",
-        "altitude_m": 10363.2,
-        "operator": "Eurowings",
-        "flight": "22B",
-        "country": "Germany",
-        "speed_ms": 245.84,
-        "heading": 24.74,
-        "climb_ms": 0,
-        "distance_km": 107.7,
-        "gap": 0.105,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.0693,
-          "area_ratio": 0.00051,
-          "duration_s": 18.3,
-          "frames": 29
-        },
-        "surface": "forest",
-        "box": [
-          0.8359,
-          0.1861,
-          0.0203,
-          0.025
-        ]
-      },
-      "closeup": "data/closeups/2026-09-26T14-18-38Z-plane-108.jpg"
-    },
-    {
       "id": "2026-09-26T14-15-05Z-vehicle-188",
       "t": "2026-09-26T14:15:05Z",
       "type": "vehicle",
@@ -438,48 +322,6 @@
           0.1556
         ]
       }
-    },
-    {
-      "id": "2026-09-26T14-13-07Z-plane-101",
-      "t": "2026-09-26T14:13:07Z",
-      "type": "plane",
-      "label": "NJE379K",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T14-13-07Z-plane-101.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "493283",
-        "callsign": "NJE379K",
-        "altitude_m": 6705.6,
-        "operator": "",
-        "flight": "",
-        "country": "Portugal",
-        "speed_ms": 202.95,
-        "heading": 74.41,
-        "climb_ms": 0,
-        "distance_km": 57.5,
-        "gap": 0.117,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.0473,
-          "area_ratio": 0.00065,
-          "duration_s": 10.7,
-          "frames": 6
-        },
-        "surface": "forest",
-        "box": [
-          0.8234,
-          0.1278,
-          0.0594,
-          0.0917
-        ],
-        "count": 7
-      },
-      "closeup": "data/closeups/2026-09-26T14-13-07Z-plane-101.jpg"
     },
     {
       "id": "2026-09-26T14-12-27Z-vehicle-100",
@@ -1055,46 +897,6 @@
       }
     },
     {
-      "id": "2026-09-26T13-20-47Z-plane-80",
-      "t": "2026-09-26T13:20:47Z",
-      "type": "plane",
-      "label": "Transavia France 8222",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T13-20-47Z-plane-80.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "39dd02",
-        "callsign": "TVF8222",
-        "altitude_m": 11887.2,
-        "operator": "Transavia France",
-        "flight": "8222",
-        "country": "France",
-        "speed_ms": 233.43,
-        "heading": 145.96,
-        "climb_ms": 0,
-        "distance_km": 84.3,
-        "gap": 0.038,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.0979,
-          "area_ratio": 0.00048,
-          "duration_s": 0.9,
-          "frames": 4
-        },
-        "surface": "sky",
-        "box": [
-          0.5656,
-          0.2194,
-          0.0172,
-          0.0333
-        ]
-      }
-    },
-    {
       "id": "2026-09-26T13-18-10Z-vehicle-79",
       "t": "2026-09-26T13:18:10Z",
       "type": "vehicle",
@@ -1200,48 +1002,6 @@
       }
     },
     {
-      "id": "2026-09-26T13-13-32Z-plane-70",
-      "t": "2026-09-26T13:13:32Z",
-      "type": "plane",
-      "label": "PGT5AA",
-      "zone": "sky",
-      "confidence": 0.7,
-      "thumb": "data/thumbs/2026-09-26T13-13-32Z-plane-70.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "4bc84f",
-        "callsign": "PGT5AA",
-        "altitude_m": 2240.28,
-        "operator": "",
-        "flight": "",
-        "country": "Turkey",
-        "speed_ms": 151.72,
-        "heading": 255.87,
-        "climb_ms": -10.4,
-        "distance_km": 104.7,
-        "gap": 0.261,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.36,
-          "area_ratio": 0.00057,
-          "duration_s": 7.8,
-          "frames": 8
-        },
-        "surface": "forest",
-        "box": [
-          0.6906,
-          0.2,
-          0.0172,
-          0.0333
-        ],
-        "count": 7
-      },
-      "closeup": "data/closeups/2026-09-26T13-13-32Z-plane-70.jpg"
-    },
-    {
       "id": "2026-09-26T13-10-07Z-person-137",
       "t": "2026-09-26T13:10:07Z",
       "type": "person",
@@ -1259,47 +1019,6 @@
           0.8889,
           0.0938,
           0.1111
-        ],
-        "count": 4
-      }
-    },
-    {
-      "id": "2026-09-26T13-08-44Z-plane-65",
-      "t": "2026-09-26T13:08:44Z",
-      "type": "plane",
-      "label": "LXJ569",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T13-08-44Z-plane-65.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "a748ec",
-        "callsign": "LXJ569",
-        "altitude_m": 8145.78,
-        "operator": "",
-        "flight": "",
-        "country": "United States",
-        "speed_ms": 228.76,
-        "heading": 142.13,
-        "climb_ms": -10.73,
-        "distance_km": 31.3,
-        "gap": 0.115,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.0797,
-          "area_ratio": 0.00011,
-          "duration_s": 0.3,
-          "frames": 5
-        },
-        "surface": "sky",
-        "box": [
-          0.5062,
-          0.1278,
-          0.0094,
-          0.0139
         ],
         "count": 4
       }
@@ -2820,47 +2539,6 @@
       "review": "accepted"
     },
     {
-      "id": "2026-09-26T09-34-54Z-plane-19",
-      "t": "2026-09-26T09:34:54Z",
-      "type": "plane",
-      "label": "FBRFS",
-      "zone": "sky",
-      "confidence": 0.9,
-      "thumb": "data/thumbs/2026-09-26T09-34-54Z-plane-19.jpg",
-      "clip_url": "",
-      "detail": {
-        "icao24": "3844b2",
-        "callsign": "FBRFS",
-        "altitude_m": 3048,
-        "operator": "",
-        "flight": "",
-        "country": "",
-        "speed_ms": null,
-        "heading": null,
-        "climb_ms": null,
-        "distance_km": 8.8,
-        "gap": 0.11,
-        "seen": true,
-        "period": "day",
-        "weather": "peu nuageux",
-        "context": "de jour, peu nuageux",
-        "measured": {
-          "travel": 0.0975,
-          "area_ratio": 0.00065,
-          "duration_s": 7.3,
-          "frames": 8
-        },
-        "surface": "sky",
-        "box": [
-          0.3422,
-          0.0778,
-          0.0422,
-          0.0333
-        ],
-        "count": 3
-      }
-    },
-    {
       "id": "2026-09-26T09-23-35Z-person-45",
       "t": "2026-09-26T09:23:35Z",
       "type": "car",
@@ -3360,40 +3038,6 @@
           0.1167
         ]
       }
-    },
-    {
-      "id": "2026-09-26T06-07-05Z-fire-4",
-      "t": "2026-09-26T06:07:05Z",
-      "type": "fire",
-      "label": "Départ de feu",
-      "zone": "slope",
-      "confidence": 0.846,
-      "thumb": "data/thumbs/2026-09-26T06-07-05Z-fire-4.jpg",
-      "clip_url": "",
-      "detail": {
-        "warm_ratio": 0.846,
-        "smoke_ratio": 0.005,
-        "rise": 0.0,
-        "grow": 29.21,
-        "width_m": 60.9,
-        "surface": "forest",
-        "period": "day",
-        "weather": "ciel dégagé",
-        "context": "de jour, ciel dégagé",
-        "measured": {
-          "travel": 0.1038,
-          "area_ratio": 0.01597,
-          "duration_s": 6.9,
-          "frames": 7
-        },
-        "box": [
-          0.0625,
-          0.4694,
-          0.125,
-          0.1306
-        ]
-      },
-      "closeup": "data/closeups/2026-09-26T06-07-05Z-fire-4.jpg"
     },
     {
       "id": "2026-09-26T05-48-39Z-vehicle-1",

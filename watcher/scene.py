@@ -86,6 +86,31 @@ def solar_period(when: datetime, lat: float, lon: float) -> str:
     return "night"
 
 
+def solar_azimuth(when: datetime, lat: float, lon: float) -> float:
+    """Which way the sun is, in degrees clockwise from north. `when` is UTC.
+
+    Worth having because a low sun through the trees is warm, wide and growing,
+    which is every sign of a fire but one: it is exactly where the sun is.
+    """
+    moment = when.astimezone(timezone.utc)
+    day = moment.timetuple().tm_yday
+    hour = moment.hour + moment.minute / 60 + moment.second / 3600
+    gamma = 2 * math.pi / 365 * (day - 1 + (hour - 12) / 24)
+    eqtime = 229.18 * (0.000075 + 0.001868 * math.cos(gamma) - 0.032077 * math.sin(gamma)
+                       - 0.014615 * math.cos(2 * gamma) - 0.040849 * math.sin(2 * gamma))
+    decl = (0.006918 - 0.399912 * math.cos(gamma) + 0.070257 * math.sin(gamma)
+            - 0.006758 * math.cos(2 * gamma) + 0.000907 * math.sin(2 * gamma)
+            - 0.002697 * math.cos(3 * gamma) + 0.00148 * math.sin(3 * gamma))
+    hour_angle = math.radians((hour * 60 + eqtime + 4 * lon) / 4 - 180)
+    lat_r = math.radians(lat)
+    elevation = math.radians(solar_elevation(moment, lat, lon))
+    east = -math.sin(hour_angle) * math.cos(decl)
+    north = math.sin(decl) * math.cos(lat_r) - math.cos(hour_angle) * math.cos(decl) * math.sin(lat_r)
+    if abs(math.cos(elevation)) < 1e-9:
+        return 0.0
+    return math.degrees(math.atan2(east, north)) % 360
+
+
 def solar_elevation(when: datetime, lat: float, lon: float) -> float:
     """NOAA solar elevation in degrees. `when` is UTC."""
     moment = when.astimezone(timezone.utc)

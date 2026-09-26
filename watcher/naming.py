@@ -16,6 +16,16 @@ BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0,
              "bicycle": 3.0, "motorcycle": 3.5, "dog": 2.0, "horse": 3.5}
 CYCLES = {"bicycle", "motorcycle"}
 BEASTS = {"dog", "horse"}
+SURFACE_WORD = {"forest": "la forêt", "meadow": "la prairie", "scree": "la pierraille",
+                "building": "un bâtiment", "road": "la route", "roundabout": "le rond-point",
+                "parking": "le parking", "island": "l'îlot", "playground": "l'aire de jeux",
+                "pool": "la piscine", "path": "le chemin"}
+
+
+def _place_word(surface: str) -> str:
+    return SURFACE_WORD.get(surface, "le relief")
+
+
 CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
 BEAST_WORD = {"dog": "Chien", "horse": "Cheval"}
 # Nothing that drives or walks stands lower than this. Below it, on the
@@ -28,12 +38,36 @@ MAX_GAP = 0.12
 # called the same thing. Wide on purpose: the sky is read once every few
 # minutes and an airliner covers fifteen kilometres between two readings, which
 # at a hundred kilometres out is most of this budget on its own.
-SKY_REACH_M = 120_000
+PLANE_SPAN_M = 40.0
+FRAME_PX = 1920.0
+# Below two pixels across there is nothing to see: no shape, no motion that is
+# not noise. A forty-metre airliner reaches two pixels of this frame at thirty
+# kilometres, and half a pixel at a hundred. Every aircraft this watcher named
+# in its first day was between fifty and a hundred kilometres out, which is to
+# say none of them was in the picture at all; the white patch that moved was a
+# cloud, and the callsign that fitted it was arithmetic, not sight.
+SKY_REACH_M = 30_000
+BLOAT = 25.0
+# How much larger than the aircraft the moving patch may be and still be called
+# that aircraft. Generous: the blob is the union of a track, the jpeg smears a
+# bright thing on blue, and a contrail belongs to the aircraft that made it.
+# Twenty-five times the area is five times across. Beyond that it is weather.
+SKY_REACH_M_OLD = 120_000
 # How far an aircraft can be and still be worth matching. Beyond that a jet is
 # under two pixels wide and its contrail is indistinguishable from cloud, so a
 # name put to it would be a guess dressed up as a reading.
 
 LOWEST_M = 0.6
+SURFACE_WORD = {"forest": "la forêt", "meadow": "la prairie", "scree": "la pierraille",
+                "building": "un bâtiment", "road": "la route", "roundabout": "le rond-point",
+                "parking": "le parking", "island": "l'îlot", "playground": "l'aire de jeux",
+                "pool": "la piscine", "path": "le chemin"}
+
+
+def _place_word(surface: str) -> str:
+    return SURFACE_WORD.get(surface, "le relief")
+
+
 CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
 # A scooter and a motorbike are one class to the model and one word here. The
 # difference matters to whoever rides it and to nobody reading this page.
@@ -108,6 +142,8 @@ class Observation:
     fixtures: list[dict] = field(default_factory=list)
     at_x: float = -1.0
     at_y: float = -1.0
+    sun_bearing: float = -1.0
+    sun_elevation: float = 90.0
 
 
 @dataclass
@@ -265,6 +301,33 @@ def _aircraft_label(aircraft: dict) -> str:
     return aircraft.get("callsign") or str(aircraft.get("icao24") or "").upper()
 
 
+SUN_LOW = 15.0
+SUN_NEAR = 8.0
+# A sun higher than fifteen degrees no longer shines through the trees into the
+# lens, and eight degrees of bearing is about the width of the glare it makes.
+
+
+def _facing_the_sun(obs: Observation) -> bool:
+    """True when the warm patch sits in the direction the sun is coming from."""
+    if obs.sun_bearing < 0 or obs.sun_elevation > SUN_LOW or not 0 <= obs.at_x <= 1:
+        return False
+    wide = math.tan(math.radians(obs.camera_fov / 2))
+    across = math.degrees(math.atan((obs.at_x - 0.5) * 2 * wide))
+    return abs((obs.camera_bearing + across - obs.sun_bearing + 540) % 360 - 180) <= SUN_NEAR
+
+
+def _apparent_area(away: float, obs: Observation) -> float:
+    """What fraction of the frame an airliner covers at this distance.
+
+    Tiny, and that is the point: the number is what tells a jet from the cloud
+    it was hiding behind, and nothing else in this file can.
+    """
+    if away <= 0:
+        return 0.0
+    angle = math.degrees(2 * math.atan(PLANE_SPAN_M / (2 * away)))
+    return (angle / obs.camera_fov) * (angle / max(obs.camera_vfov, 1e-6))
+
+
 def _gap_in_frame(aircraft: dict, obs: Observation, away: float) -> float | None:
     """How far, across the picture, this aircraft sits from what moved.
 
@@ -365,6 +428,18 @@ def decide(obs: Observation) -> Decision:
         # trees, minutes before any flame is large enough to colour a pixel.
         plume = obs.smoke_ratio >= obs.fire_smoke and obs.rise >= obs.fire_rise
         if (flame or plume) and obs.area_grow >= obs.fire_grow:
+            if not plume and _facing_the_sun(obs):
+                # Warm, wide and growing, with no smoke and no plume rising, in
+                # the exact direction of a sun that has just cleared the ridge.
+                # The hour label was not enough: this one arrived six minutes
+                # after the sun passed six degrees and was filed as daylight.
+                return _motion(
+                    obs,
+                    "low_sun",
+                    "Soleil bas dans les arbres",
+                    f"Le soleil est à {obs.sun_elevation:.0f}° de hauteur, juste dans cette direction. "
+                    "C'est sa lumière dans les branches, et il n'y a pas de fumée.",
+                )
             if obs.landmark and obs.travel < obs.min_travel:
                 # The red lamp on the summit mast blinks in place all night.
                 # It grows and it is warm, and it is not a fire.
@@ -403,6 +478,18 @@ def decide(obs: Observation) -> Decision:
             )
 
     if obs.zone == "sky":
+        if obs.surface and obs.surface != "sky":
+            # The sky zone is one polygon drawn once; the scene map is surveyed
+            # square by square. Where they disagree the map wins: a patch of
+            # white sitting against the tree line is a cloud on the ridge, not
+            # an airliner eleven kilometres up, however well a flight happens
+            # to line up with it.
+            return _motion(
+                obs,
+                "against_the_ground",
+                "Mouvement devant le relief",
+                f"Ça se détache sur {_place_word(obs.surface)}, pas sur le ciel. Un avion ne passe pas devant.",
+            )
         if obs.area_ratio > obs.max_sky_area:
             return _motion(obs, "sky_mass", "Masse dans le ciel", "Trop large pour un avion. Nuage, ou changement de lumière.")
         if obs.travel < obs.min_travel:
@@ -415,6 +502,9 @@ def decide(obs: Observation) -> Decision:
             # without its distance cannot be checked against the picture, where
             # ninety kilometres is a hair and nine is a shape.
             away = _distance_m(obs.camera_lat, obs.camera_lon, float(item["lat"]), float(item["lon"]))
+            if obs.area_ratio > BLOAT * _apparent_area(away, obs):
+                # Too big to be this aircraft, whatever the sky says is there.
+                continue
             seen = {**item, "distance_km": round(away / 1000, 1)}
             gap = _gap_in_frame(item, obs, away)
             if gap is not None:

@@ -23,6 +23,9 @@ RENAME = {
     # Le 26 septembre, relu à la main. Presque tous les « piétons » du
     # rond-point étaient des cyclistes et des motards : le détecteur n'avait
     # ni vélo ni moto dans sa liste, et ne pouvait rendre que le cavalier.
+    "2026-09-26T14:35:52Z": ("person", "Piétons et une voiture", None, None),
+    "2026-09-26T14:29:47Z": ("person", "Piétons et une voiture", None, None),
+    "2026-09-26T14:23:45Z": ("vehicle", "Deux véhicules et un piéton", None, None),
     "2026-09-26T07:14:55Z": ("car", "Voiture", None, None),  # une 2e non entourée
     "2026-09-26T09:18:10Z": ("cycle", "Deux-roues", None, None),
     "2026-09-26T09:06:59Z": ("car", "Voiture", None, None),
@@ -103,6 +106,20 @@ REFRAME = {
     },
 }
 DROP = {
+    # Les huit avions du 26 septembre. Tous des nuages : le plus proche était
+    # à 8,8 km et la tache faisait trente-sept fois la taille de l'appareil,
+    # les autres entre cinquante et cent kilomètres, où un avion de ligne
+    # occupe un demi-pixel et ne peut tout simplement pas être vu.
+    "2026-09-26T14:36:14Z": "un nuage sur la crête, l'avion était à 103 km et large d'un demi-pixel",
+    "2026-09-26T14:21:40Z": "un nuage sur la crête, l'avion était à 93 km",
+    "2026-09-26T14:18:38Z": "un nuage sur la crête, l'avion était à 108 km",
+    "2026-09-26T14:13:07Z": "un nuage sur la crête, l'avion était à 58 km",
+    "2026-09-26T13:20:47Z": "une traînée diffuse, l'avion était à 84 km",
+    "2026-09-26T13:13:32Z": "un nuage sur la crête, l'avion était à 105 km",
+    "2026-09-26T13:08:44Z": "une tache de 80 fois la taille de l'avion, à 31 km",
+    "2026-09-26T09:34:54Z": "une tache de 37 fois la taille de l'avion, à 8,8 km",
+    # Le soleil levant dans les arbres, à 97 degrés ; la tache était à 95.
+    "2026-09-26T06:07:05Z": "le soleil levant dans les arbres, aucune fumée",
     "2026-09-26T07:35:41Z": "rien dans la découpe, sur la chaussée",
     "2026-09-26T10:52:32Z": "rien dans la découpe, hors chaussée",
     "2026-09-26T05:26:39Z": "une traînée à onze mille mètres signée d'un avion qui volait à quatre",

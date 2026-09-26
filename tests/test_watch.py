@@ -107,28 +107,28 @@ class NamingTests(unittest.TestCase):
         self.assertAlmostEqual(decision.detail["distance_km"], 2.0, places=1)
 
     def test_the_aircraft_where_the_motion_is_gets_the_name(self):
-        west = _ahead(44.183501, 5.2621281, 100, 30000)
-        east = _ahead(44.183501, 5.2621281, 150, 30000)
+        west = _ahead(44.183501, 5.2621281, 100, 12000)
+        east = _ahead(44.183501, 5.2621281, 150, 12000)
         sky = [
-            {"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 9000, "lat": west[0], "lon": west[1]},
-            {"icao24": "bb0002", "callsign": "BAW200", "altitude_m": 9000, "lat": east[0], "lon": east[1]},
+            {"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 3500, "lat": west[0], "lon": west[1]},
+            {"icao24": "bb0002", "callsign": "BAW200", "altitude_m": 3500, "lat": east[0], "lon": east[1]},
         ]
-        left = decide(Observation(zone="sky", travel=0.05, area_ratio=0.001, aircraft=sky, at_x=0.08, at_y=0.23))
-        right = decide(Observation(zone="sky", travel=0.05, area_ratio=0.001, aircraft=sky, at_x=0.59, at_y=0.23))
+        left = decide(Observation(zone="sky", travel=0.05, area_ratio=0.00012, aircraft=sky, at_x=0.080, at_y=0.310))
+        right = decide(Observation(zone="sky", travel=0.05, area_ratio=0.00012, aircraft=sky, at_x=0.590, at_y=0.310))
         self.assertEqual(left.label, "Air France 100")
         self.assertEqual(right.label, "British Airways 200")
         self.assertEqual(left.reason, "in_frame")
 
     def test_nothing_is_named_when_no_aircraft_is_at_that_spot(self):
-        lat, lon = _ahead(44.183501, 5.2621281, 100, 30000)
+        lat, lon = _ahead(44.183501, 5.2621281, 100, 12000)
         decision = decide(
             Observation(
                 zone="sky",
                 travel=0.05,
-                area_ratio=0.001,
-                aircraft=[{"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 9000, "lat": lat, "lon": lon}],
+                area_ratio=0.00012,
+                aircraft=[{"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 3500, "lat": lat, "lon": lon}],
                 at_x=0.60,
-                at_y=0.23,
+                at_y=0.31,
             )
         )
         self.assertEqual(decision.type, "motion")
@@ -142,26 +142,62 @@ class NamingTests(unittest.TestCase):
         four, because the old rule picked the lowest in the sector. Two jets
         side by side in the frame must produce no name at all.
         """
-        one = _ahead(44.183501, 5.2621281, 128, 60000)
-        two = _ahead(44.183501, 5.2621281, 131, 60000)
-        low = _ahead(44.183501, 5.2621281, 175, 40000)
+        one = _ahead(44.183501, 5.2621281, 128, 12000)
+        two = _ahead(44.183501, 5.2621281, 131, 12000)
+        low = _ahead(44.183501, 5.2621281, 150, 12000)
         decision = decide(
             Observation(
                 zone="sky",
                 travel=0.05,
-                area_ratio=0.001,
+                area_ratio=0.00012,
                 aircraft=[
-                    {"icao24": "aa0001", "callsign": "DLH100", "altitude_m": 11500, "lat": one[0], "lon": one[1]},
-                    {"icao24": "bb0002", "callsign": "VLG200", "altitude_m": 11000, "lat": two[0], "lon": two[1]},
-                    {"icao24": "cc0003", "callsign": "AAL300", "altitude_m": 4000, "lat": low[0], "lon": low[1]},
+                    {"icao24": "aa0001", "callsign": "DLH100", "altitude_m": 3500, "lat": one[0], "lon": one[1]},
+                    {"icao24": "bb0002", "callsign": "VLG200", "altitude_m": 3500, "lat": two[0], "lon": two[1]},
+                    {"icao24": "cc0003", "callsign": "AAL300", "altitude_m": 3400, "lat": low[0], "lon": low[1]},
                 ],
-                at_x=0.46,
-                at_y=0.27,
+                at_x=0.408,
+                at_y=0.310,
             )
         )
         self.assertEqual(decision.type, "motion")
         self.assertEqual(decision.reason, "several_at_that_spot")
         self.assertNotIn("AAL", decision.label)
+
+    def test_a_cloud_is_too_big_to_be_the_jet_behind_it(self):
+        """Eight airlines signed a day of weather because nobody checked size.
+
+        At a hundred kilometres an airliner covers half a pixel of this frame.
+        Any patch large enough for the motion detector to see is, by that fact
+        alone, not the aircraft.
+        """
+        lat, lon = _ahead(44.183501, 5.2621281, 140, 90000)
+        decision = decide(
+            Observation(
+                zone="sky",
+                travel=0.05,
+                area_ratio=0.00074,
+                aircraft=[{"icao24": "aa0001", "callsign": "TUI42V", "altitude_m": 11000, "lat": lat, "lon": lon}],
+                at_x=0.5,
+                at_y=0.3,
+            )
+        )
+        self.assertEqual(decision.type, "motion")
+        self.assertNotIn("TUI", decision.label)
+
+    def test_a_patch_on_the_tree_line_is_not_in_the_sky(self):
+        lat, lon = _ahead(44.183501, 5.2621281, 140, 12000)
+        decision = decide(
+            Observation(
+                zone="sky",
+                travel=0.05,
+                area_ratio=0.00012,
+                surface="forest",
+                aircraft=[{"icao24": "aa0001", "callsign": "AFR100", "altitude_m": 3500, "lat": lat, "lon": lon}],
+                at_x=0.5,
+                at_y=0.31,
+            )
+        )
+        self.assertEqual(decision.reason, "against_the_ground")
 
     def test_an_unknown_operator_keeps_its_callsign(self):
         lat, lon = _ahead(44.183501, 5.2621281, 140, 2000)
@@ -220,6 +256,28 @@ class NamingTests(unittest.TestCase):
         )
         self.assertEqual(decision.type, "person")
         self.assertEqual(decision.label, "Piéton")
+
+    def test_the_rising_sun_in_the_trees_is_not_a_fire(self):
+        """26 September, 08:07. Warm, wide, growing, and no smoke at all.
+
+        The hour said daylight because the sun had cleared six degrees six
+        minutes earlier, so the twilight guard let it through. Only the sun's
+        own bearing settles it: ninety-seven degrees, and the patch at
+        ninety-five.
+        """
+        glare = dict(
+            zone="slope", surface="forest", duration_s=6.9, warm_ratio=0.846, smoke_ratio=0.005,
+            rise=0.0, area_grow=29.21, width_m=60.9, period="day", travel=0.1038,
+            area_ratio=0.01597, at_x=0.125, at_y=0.535, camera_bearing=126.713, camera_fov=78.755,
+            fire_sustain_s=5.0, fire_grow=1.6, fire_warm=0.35, fire_smoke=0.35, fire_rise=0.008,
+        )
+        sun = decide(Observation(sun_bearing=97.0, sun_elevation=6.0, **glare))
+        self.assertEqual(sun.type, "motion")
+        self.assertEqual(sun.reason, "low_sun")
+        # The same patch with the sun high and on the other side is a fire, and
+        # must stay one: this guard may not become a way of never alerting.
+        fire = decide(Observation(sun_bearing=250.0, sun_elevation=40.0, **glare))
+        self.assertEqual(fire.type, "fire")
 
     def test_car_on_the_road_is_published(self):
         decision = decide(Observation(zone="road", travel=0.08, detections=[Detection("car", 0.8)]))
@@ -505,8 +563,18 @@ class FrameOfSkyTests(unittest.TestCase):
                            camera_ele=1390.0, camera_bearing=126.713, camera_fov=78.755,
                            camera_pitch=-6.021, camera_vfov=49.563)
 
-    def test_an_airliner_forty_kilometres_out_is_in_the_picture(self):
+    def test_an_airliner_forty_kilometres_out_is_too_far_to_be_seen(self):
+        """It is in the frame and still not in the picture.
+
+        Forty kilometres puts an airliner inside every angle the camera covers
+        and makes it one pixel and a half across, which is nothing. Naming it
+        was how a day of clouds came to be signed by eight airlines.
+        """
         plane = {"lat": 44.15, "lon": 5.76, "altitude_m": 11000}
+        self.assertFalse(in_camera_view(plane, self.eye()))
+
+    def test_an_aircraft_close_enough_to_show_is_in_the_picture(self):
+        plane = {"lat": 44.10, "lon": 5.42, "altitude_m": 3200}
         self.assertTrue(in_camera_view(plane, self.eye()))
 
     def test_the_same_airliner_overhead_is_not(self):
