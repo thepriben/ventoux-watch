@@ -3,22 +3,31 @@
     {
       "id": "2026-09-26T07-32-48Z-person-22",
       "t": "2026-09-26T07:32:48Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "vehicle",
+      "label": "Voiture",
       "zone": "other",
-      "confidence": 0.475,
+      "confidence": 0.823,
       "thumb": "data/thumbs/2026-09-26T07-32-48Z-person-22.jpg",
       "clip_url": "",
       "detail": {
+        "width_m": 4.3,
         "period": "day",
         "weather": "ciel dégagé",
         "context": "de jour, ciel dégagé",
+        "measured": {
+          "travel": 0.1199,
+          "area_ratio": 0.01688,
+          "duration_s": 7.1,
+          "frames": 2
+        },
+        "surface": "roundabout",
         "box": [
-          0.4109,
-          0.8111,
-          0.1766,
-          0.1889
-        ]
+          0.475,
+          0.8667,
+          0.1656,
+          0.1333
+        ],
+        "count": 3
       }
     },
     {
