@@ -232,6 +232,7 @@ const LABELS = {
   "Moto": "Motorbike",
   "Deux-roues": "Two-wheeler",
   "Piétons et une voiture": "Pedestrians and a car",
+  "Voiture et piétons": "A car and pedestrians",
   "Deux véhicules et un piéton": "Two vehicles and a pedestrian",
   "Soleil bas dans les arbres": "Low sun in the trees",
   "Mouvement devant le relief": "Motion against the hillside",

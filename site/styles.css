@@ -464,6 +464,13 @@ h2 {
 
 .relief .cap em { font-style: normal; font-weight: 600; }
 
+.relief .card .shot {
+  display: block;
+  width: 100%;
+  border-radius: 3px;
+  margin-bottom: 7px;
+}
+
 .relief .card {
   /* Follows the pointer, so it must never sit under it and swallow the move. */
   position: absolute;

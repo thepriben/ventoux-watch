@@ -339,7 +339,14 @@ function tags(event, at) {
     .filter(Boolean)
     .map((word) => `<span class="tag">${escape(word)}</span>`)
     .join("");
-  return `<div class="when">${escape(when.toLocaleTimeString(words.locale(), clock))} · ${escape(when.toLocaleDateString(words.locale(), day))}</div>`
+  // The photograph first. The mark on the ground says where, and the words say
+  // what and when, but only the picture answers the question anybody actually
+  // has about an event on a webcam, which is what it looked like.
+  const shot = event.thumb
+    ? `<img class="shot" src="${escape(event.thumb)}" alt="" loading="lazy">`
+    : "";
+  return shot
+    + `<div class="when">${escape(when.toLocaleTimeString(words.locale(), clock))} · ${escape(when.toLocaleDateString(words.locale(), day))}</div>`
     + `<div class="what">${escape(event.label || event.type || "")}</div>`
     + `<div class="tags">${chips}</div>`;
 }

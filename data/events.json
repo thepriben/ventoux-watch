@@ -70,8 +70,8 @@
     {
       "id": "2026-09-26T15-43-54Z-person-22",
       "t": "2026-09-26T15:43:54Z",
-      "type": "vehicle",
-      "label": "Véhicule",
+      "type": "person",
+      "label": "Voiture et piétons",
       "zone": "roundabout",
       "confidence": 0.768,
       "thumb": "data/thumbs/2026-09-26T15-43-54Z-person-22.jpg",
@@ -86,8 +86,11 @@
           0.2484,
           0.0972
         ],
-        "count": 5
-      }
+        "count": 5,
+        "correction": "Voiture et piétons",
+        "reading": "Voiture et piétons, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T15-41-40Z-person-252",
