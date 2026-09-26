@@ -1,6 +1,28 @@
 {
   "events": [
     {
+      "id": "2026-09-26T14-23-45Z-vehicle-193",
+      "t": "2026-09-26T14:23:45Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "other",
+      "confidence": 0.818,
+      "thumb": "data/thumbs/2026-09-26T14-23-45Z-vehicle-193.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "box": [
+          0.5328,
+          0.9111,
+          0.1734,
+          0.0889
+        ],
+        "count": 2
+      }
+    },
+    {
       "id": "2026-09-26T14-21-40Z-plane-110",
       "t": "2026-09-26T14:21:40Z",
       "type": "plane",
@@ -38,7 +60,7 @@
           0.0266,
           0.025
         ],
-        "count": 4
+        "count": 9
       },
       "closeup": "data/closeups/2026-09-26T14-21-40Z-plane-110.jpg"
     },
