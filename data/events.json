@@ -1,10 +1,31 @@
 {
   "events": [
     {
+      "id": "2026-09-26T05-00-45Z-vehicle-13",
+      "t": "2026-09-26T05:00:45Z",
+      "type": "vehicle",
+      "label": "Voiture et piéton",
+      "zone": "other",
+      "confidence": 0.459,
+      "thumb": "data/thumbs/2026-09-26T05-00-45Z-vehicle-13.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "ciel dégagé",
+        "context": "au crépuscule, ciel dégagé",
+        "box": [
+          0.5156,
+          0.9,
+          0.2547,
+          0.1
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T04-32-00Z-person-12",
       "t": "2026-09-26T04:32:00Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture blanche",
       "zone": "other",
       "confidence": 0.555,
       "thumb": "data/thumbs/2026-09-26T04-32-00Z-person-12.jpg",
@@ -14,14 +35,23 @@
         "weather": "ciel dégagé",
         "context": "de nuit, ciel dégagé",
         "box": [
-          0.2547,
-          0.8139,
-          0.3219,
-          0.1861
+          0.125,
+          0.8,
+          0.0292,
+          0.037
         ],
-        "count": 3
+        "count": 3,
+        "drawn": [
+          50,
+          206,
+          84,
+          236
+        ],
+        "correction": "Voiture blanche",
+        "reading": "Voiture blanche, indiqué à la main."
       },
-      "closeup": "data/closeups/2026-09-26T04-32-00Z-person-12.jpg"
+      "closeup": "data/closeups/2026-09-26T04-32-00Z-person-12.jpg",
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T04-26-47Z-person-11",
