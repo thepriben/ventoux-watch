@@ -57,7 +57,7 @@ const COPY = {
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
       sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
-    follow: "track it",
+    follow: "its track",
     from: "from",
     to: "towards",
     heading: "heading",
@@ -158,7 +158,7 @@ const COPY = {
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
       sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
-    follow: "le suivre",
+    follow: "sa trace",
     from: "de",
     to: "vers",
     heading: "cap",
@@ -591,10 +591,14 @@ function detail(event) {
     const name = who(info);
     const words = [name === escapeText(showText(event.label)) ? "" : name,
       route(info), ...facts(info), place].filter(Boolean).join(" · ");
-    // Where to go and check. OpenSky is the source this name came from, so it
-    // is the place that can confirm or contradict it.
+    // Where to go and check. OpenSky named this aircraft but has retired its
+    // own website, so the link goes to a tracker that still answers, and asks
+    // it for the trace of the day we saw it rather than for a live position:
+    // the aircraft has long landed, and what is worth checking is the path it
+    // flew over this ridge at that hour.
     if (!info.icao24) return words;
-    const track = `https://opensky-network.org/aircraft-profile?icao24=${encodeURIComponent(info.icao24)}`;
+    const day = new Date(event.t).toISOString().slice(0, 10);
+    const track = `https://globe.adsbexchange.com/?icao=${encodeURIComponent(info.icao24)}&showTrace=${day}`;
     return `${words} · <a class="out" href="${track}" target="_blank" rel="noopener">${t("follow")}</a>`;
   }
   if (event.type === "bus" && info.route) {
@@ -792,22 +796,55 @@ let sequenceFrames = [];
 let sequenceIndex = 0;
 
 function followSections() {
-  /* Underline the section being read.
+  /* Put a section on screen whole, and underline the one being read.
 
-     The watched line sits just under the header, not at the top of the window:
-     a section is "the one being read" from the moment its heading clears the
-     bar, and the last section on the page must be able to win even when it is
-     too short to fill the screen. */
+     Every section on this page but the log is shorter than a screenful, so
+     landing on one has no business showing its first line and leaving its last
+     below the fold. Clicking a heading centres the section in the room left
+     under the bar; only the log, which is the whole history and has no bottom
+     worth reaching, is aligned by its top.
+
+     The underline follows whichever section fills most of the screen rather
+     than whichever one last crossed a line, because once a section is centred
+     its heading sits below that line and the previous one would keep winning. */
   const links = [...document.querySelectorAll(".onpage a")];
   const parts = links.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
   if (!parts.length) return;
   const top = document.querySelector(".top");
+  const waterline = () => (top?.offsetHeight || 78) + 8;
+
+  const reveal = (part) => {
+    // The bar is measured folded, since any landing is past the fold anyway.
+    top?.classList.add("tight");
+    const line = waterline();
+    const room = window.innerHeight - line;
+    const box = part.getBoundingClientRect();
+    let y = window.scrollY + box.top - line;
+    if (box.height < room) y -= (room - box.height) / 2;
+    window.scrollTo({ top: Math.max(Math.round(y), 0), behavior: "smooth" });
+  };
+
+  for (const link of links) {
+    link.addEventListener("click", (hit) => {
+      const part = document.querySelector(link.getAttribute("href"));
+      if (!part) return;
+      hit.preventDefault();
+      reveal(part);
+      history.replaceState(null, "", link.getAttribute("href"));
+    });
+  }
+
   const mark = () => {
     // Anything past the first screenful means the visit has started.
     top?.classList.toggle("tight", window.scrollY > 40);
-    const line = (top?.offsetHeight || 120) + 8;
+    const line = waterline();
     let here = parts[0];
-    for (const part of parts) if (part.getBoundingClientRect().top <= line) here = part;
+    let most = 0;
+    for (const part of parts) {
+      const box = part.getBoundingClientRect();
+      const seen = Math.min(box.bottom, window.innerHeight) - Math.max(box.top, line);
+      if (seen > most) { most = seen; here = part; }
+    }
     if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) here = parts[parts.length - 1];
     for (const link of links) {
       const on = link.getAttribute("href") === `#${here.id}`;
