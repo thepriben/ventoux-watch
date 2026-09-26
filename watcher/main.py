@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import subprocess
 import tempfile
 import time
@@ -158,11 +159,7 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         colour=body_colour(frame, track.best_bbox) if frame is not None and current.period == "day" else "",
         landmark=(landmark or {}).get("name", ""),
         lit_ratio=lit,
-        camera_lat=float(cfg["camera"]["lat"]),
-        camera_lon=float(cfg["camera"]["lon"]),
-        camera_ele=float(cfg["camera"].get("ele") or 1390),
-        camera_bearing=float(cfg["camera"].get("bearing") or 140),
-        camera_fov=float(cfg["camera"].get("fov") or 90),
+        **_eye(cfg, scene_map),
     )
     decision = decide(obs)
     measured = {
@@ -202,6 +199,30 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
     log.info("Publié %s %s", decision.type, decision.label)
     if decision.type in CLIP_TYPES:
         pending.append({"id": event["id"], "after": now + 4, "started": track.started - 8})
+
+
+def _eye(cfg, scene_map) -> dict:
+    """Where the camera is and where it points, preferring the fitted pose.
+
+    The figures typed into the config were a first guess; the pose in the scene
+    file was fitted against surveyed marks and sits fourteen degrees off it in
+    bearing. Asking whether an aircraft is in frame with the guess put it in the
+    wrong part of the sky.
+    """
+    camera = cfg["camera"]
+    pose = getattr(scene_map, "pose", None) or {}
+    hfov = float(pose.get("hfov") or camera.get("fov") or 90)
+    aspect = float(pose.get("aspect") or (16 / 9))
+    vfov = 2 * math.degrees(math.atan(math.tan(math.radians(hfov / 2)) / aspect))
+    return {
+        "camera_lat": float(pose.get("lat") or camera["lat"]),
+        "camera_lon": float(pose.get("lon") or camera["lon"]),
+        "camera_ele": float(pose.get("ele") or camera.get("ele") or 1390),
+        "camera_bearing": float(pose.get("yaw") if pose.get("yaw") is not None else (camera.get("bearing") or 140)),
+        "camera_fov": hfov,
+        "camera_pitch": float(pose.get("pitch") or 0.0),
+        "camera_vfov": vfov,
+    }
 
 
 def _burning(tracks, now, cfg, scene_map, alerted: set) -> list:

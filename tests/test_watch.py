@@ -13,7 +13,7 @@ from watcher.geometry import assign_zone
 from watcher.gtfs import GtfsIndex, load_feed
 from watcher.main import _crossed_sky, _might_be_bus
 from watcher.motion import MotionDetector, Track
-from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide
+from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide, in_camera_view
 from watcher.review import apply_review, parse_review
 from watcher.opensky import SkyArchive
 from watcher.scene import ViewLog, moon_in_sky, read_sky, solar_period, weather_label
@@ -388,6 +388,35 @@ class SceneTests(unittest.TestCase):
 
         frame = np.zeros((360, 640, 3), dtype=np.uint8)
         self.assertEqual(YoloDetector(str(path)).detect(frame), [])
+
+
+class FrameOfSkyTests(unittest.TestCase):
+    """The camera looks down and sideways, so height alone decides nothing."""
+
+    def eye(self):
+        return Observation(zone="sky", camera_lat=44.1833492432, camera_lon=5.262028106399995,
+                           camera_ele=1390.0, camera_bearing=126.713, camera_fov=78.755,
+                           camera_pitch=-6.021, camera_vfov=49.563)
+
+    def test_an_airliner_forty_kilometres_out_is_in_the_picture(self):
+        plane = {"lat": 44.15, "lon": 5.76, "altitude_m": 11000}
+        self.assertTrue(in_camera_view(plane, self.eye()))
+
+    def test_the_same_airliner_overhead_is_not(self):
+        plane = {"lat": 44.184, "lon": 5.263, "altitude_m": 11000}
+        self.assertFalse(in_camera_view(plane, self.eye()))
+
+    def test_a_water_bomber_low_and_close_is_in_the_picture(self):
+        bomber = {"lat": 44.165, "lon": 5.300, "altitude_m": 2200}
+        self.assertTrue(in_camera_view(bomber, self.eye()))
+
+    def test_nothing_behind_the_camera_counts(self):
+        plane = {"lat": 44.40, "lon": 5.10, "altitude_m": 6000}
+        self.assertFalse(in_camera_view(plane, self.eye()))
+
+    def test_too_far_to_read_is_refused(self):
+        speck = {"lat": 43.30, "lon": 6.60, "altitude_m": 11000}
+        self.assertFalse(in_camera_view(speck, self.eye()))
 
 
 class SkyTests(unittest.TestCase):

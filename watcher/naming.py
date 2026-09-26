@@ -18,6 +18,11 @@ BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
 # Read the other way round it would not hold: a patch of light lying on the
 # tarmac close to the camera measures as tall as a house, because the height
 # is read as if the thing stood upright. Only the low end is trustworthy.
+SKY_REACH_M = 120_000
+# How far an aircraft can be and still be worth matching. Beyond that a jet is
+# under two pixels wide and its contrail is indistinguishable from cloud, so a
+# name put to it would be a guess dressed up as a reading.
+
 LOWEST_M = 0.6
 # And the narrowest. Every vehicle ever confirmed here has measured at least
 # two metres and a half across the ground, a bus eleven. Below two metres there
@@ -84,6 +89,8 @@ class Observation:
     camera_ele: float = 1390.0
     camera_bearing: float = 140.0
     camera_fov: float = 90.0
+    camera_pitch: float = 0.0
+    camera_vfov: float = 50.0
     fixtures: list[dict] = field(default_factory=list)
 
 
@@ -198,13 +205,31 @@ def in_camera_view(aircraft: dict, obs: Observation) -> bool:
     if not isinstance(altitude, (int, float)):
         return False
     distance = _distance_m(obs.camera_lat, obs.camera_lon, float(lat), float(lon))
-    if distance > 5000:
+    if not 0 < distance <= SKY_REACH_M:
         return False
-    if altitude < obs.camera_ele or altitude - obs.camera_ele > 2500:
+    if altitude < obs.camera_ele:
         return False
     azimuth = _azimuth(obs.camera_lat, obs.camera_lon, float(lat), float(lon))
     relative = (azimuth - obs.camera_bearing + 540) % 360 - 180
-    return abs(relative) <= obs.camera_fov / 2
+    if abs(relative) > obs.camera_fov / 2:
+        return False
+    # The camera is tilted down, so its highest line of sight is barely twenty
+    # degrees up. An airliner directly overhead is not in the picture; the same
+    # airliner is, sixty kilometres out, near the top edge. Height alone tells
+    # nothing — only the angle it is seen at does.
+    climb = altitude - obs.camera_ele - _earth_drop_m(distance)
+    rise = math.degrees(math.atan2(climb, distance))
+    return obs.camera_pitch - obs.camera_vfov / 2 <= rise <= obs.camera_pitch + obs.camera_vfov / 2
+
+
+def _earth_drop_m(distance: float) -> float:
+    """How far the earth has curved away underfoot, eased by refraction.
+
+    Nothing at two kilometres, but ninety metres at forty and four hundred at
+    ninety, which is the difference between an aircraft inside the frame and one
+    below its lower edge.
+    """
+    return distance * distance / (2 * 6_371_000 * 7 / 6)
 
 
 def _distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
