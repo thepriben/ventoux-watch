@@ -38,7 +38,10 @@ def main() -> int:
         # missing any of those cannot be turned into a sentence anybody reads.
         if len(code) != 4 or not code.isalpha():
             continue
-        if row.get("scheduled_service") != "yes":
+        # Every field an aircraft can leave from, not only the ones with
+        # timetables: the aircraft actually named over this camera are light
+        # and private, and LSGK, where one of them came from, has no airline.
+        if row.get("type") in {"closed", ""}:
             continue
         town = (row.get("municipality") or "").strip()
         name = (row.get("name") or "").strip()
@@ -51,8 +54,8 @@ def main() -> int:
         }
     OUT.write_text(json.dumps(table, ensure_ascii=False, sort_keys=True, separators=(",", ":")), encoding="utf-8")
     size = OUT.stat().st_size / 1024
-    print(f"{len(table)} aéroports desservis écrits dans {OUT.relative_to(ROOT)} ({size:.0f} ko)")
-    for probe in ("KPHL", "LFMN", "LFML", "EGLL", "LFPG"):
+    print(f"{len(table)} aérodromes écrits dans {OUT.relative_to(ROOT)} ({size:.0f} ko)")
+    for probe in ("KPHL", "LFMN", "LSGK", "EGLL", "LFPG"):
         found = table.get(probe)
         print(f"   {probe} -> {found['town'] if found else '(absent)'}")
     return 0

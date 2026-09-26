@@ -63,7 +63,27 @@ body {
   min-height: 64px;
   padding-top: 10px;
   padding-bottom: 10px;
+  transition: min-height 0.18s, padding 0.18s;
 }
+
+/* Once the page has moved, the header gives its room back. The station, the
+   wind and the humidity are worth reading when you arrive and are in the way
+   for the rest of the visit: a section jumped to from the bar has to land
+   above the fold, not behind the thing that sent you there. */
+.top.tight .top-inner {
+  min-height: 40px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.top.tight .eyebrow,
+.top.tight .facts .sub {
+  display: none;
+}
+
+.top.tight .facts dd { font-size: 13px; }
+.top.tight h1 { font-size: 17px; }
+.top.tight .onpage a { padding-top: 6px; padding-bottom: 5px; }
 
 main {
   display: flex;
@@ -613,7 +633,23 @@ h2 {
   .onpage a { white-space: nowrap; }
 }
 
-section[id] { scroll-margin-top: 124px; }
+.log .event .sub {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+a.out {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+
+a.out:hover, a.out:focus-visible { border-bottom-color: currentColor; }
+
+section[id] { scroll-margin-top: 78px; }
 
 .anchor {
   margin-left: 6px;

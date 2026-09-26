@@ -574,6 +574,46 @@ class SceneTests(unittest.TestCase):
         self.assertEqual(YoloDetector(str(path)).detect(frame), [])
 
 
+class FoldingTests(unittest.TestCase):
+    """One card per passage, and the card must describe one moment."""
+
+    def _event(self, when, label, thumb):
+        return {"id": thumb, "t": when, "type": "vehicle", "label": label,
+                "zone": "roundabout", "confidence": 0.8, "thumb": f"data/thumbs/{thumb}.jpg",
+                "detail": {"box": [0.1, 0.8, 0.1, 0.1]}}
+
+    def test_the_card_shows_the_hour_of_the_photo_it_shows(self):
+        from watcher.store import fold_events
+        folded = fold_events([
+            self._event("2026-09-26T10:00:00Z", "Voiture", "a"),
+            self._event("2026-09-26T10:00:40Z", "Camion", "b"),
+        ])
+        self.assertEqual(len(folded), 1)
+        card = folded[0]
+        # Whichever sighting won, the hour and the picture come from the same one.
+        self.assertIn(card["t"].replace(":", "").replace("-", ""), ("20260926T100000Z", "20260926T100040Z"))
+        stamp = "a" if card["t"].endswith("00:00Z") else "b"
+        self.assertEqual(card["thumb"], f"data/thumbs/{stamp}.jpg")
+
+    def test_the_first_sighting_hour_is_not_lost(self):
+        from watcher.store import fold_events
+        folded = fold_events([
+            self._event("2026-09-26T10:00:00Z", "Voiture", "a"),
+            self._event("2026-09-26T10:00:40Z", "Camion", "b"),
+        ])
+        detail = folded[0]["detail"]
+        self.assertEqual(detail["count"], 2)
+        self.assertTrue(detail.get("since"))
+
+    def test_two_passages_far_apart_stay_two_cards(self):
+        from watcher.store import fold_events
+        folded = fold_events([
+            self._event("2026-09-26T10:00:00Z", "Voiture", "a"),
+            self._event("2026-09-26T11:30:00Z", "Voiture", "b"),
+        ])
+        self.assertEqual(len(folded), 2)
+
+
 class SkyFromThePictureTests(unittest.TestCase):
     """The forecast answers for the valley; the camera can see its own sky."""
 

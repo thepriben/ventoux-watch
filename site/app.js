@@ -57,6 +57,7 @@ const COPY = {
       meadow: "Meadow", forest: "Forest", building: "Building", slope: "Slope",
       sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
+    follow: "track it",
     from: "from",
     to: "towards",
     heading: "heading",
@@ -157,6 +158,7 @@ const COPY = {
       meadow: "Prairie", forest: "Forêt", building: "Bâti", slope: "Pente",
       sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
+    follow: "le suivre",
     from: "de",
     to: "vers",
     heading: "cap",
@@ -385,6 +387,14 @@ function tick() {
   });
 }
 
+function mapLink(spot) {
+  return `https://www.openstreetmap.org/?mlat=${spot.lat}&mlon=${spot.lon}#map=14/${spot.lat}/${spot.lon}`;
+}
+
+function escapeText(word) {
+  return String(word).replace(/[&<>"]/g, (mark) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[mark]));
+}
+
 function stationLabel() {
   return weatherNow ? t("weatherCodes")[weatherNow.code] || "" : "";
 }
@@ -394,11 +404,15 @@ function paintWeather() {
   const more = document.querySelector("#station-more");
   const distance = `${Math.round(km(CAMERA, station))} km`;
   if (!weatherNow) {
-    place.textContent = `${station.name} · ${distance}`;
+    place.innerHTML = `<a class="out" href="${mapLink(station)}" target="_blank" rel="noopener">${escapeText(station.name)}</a> · ${escapeText(distance)}`;
     return;
   }
   document.querySelector("#weather").textContent = Number.isFinite(weatherNow.temp) ? `${weatherNow.temp} °C` : "—";
-  place.textContent = [station.name, distance, stationLabel()].filter(Boolean).join(" · ");
+  // The name of the place is a claim about a location, so it carries the map
+  // that can check it. The reading comes from that point, not from this page.
+  const rest = [distance, stationLabel()].filter(Boolean).join(" · ");
+  place.innerHTML = `<a class="out" href="${mapLink(station)}" target="_blank" rel="noopener">${escapeText(station.name)}</a>`
+    + (rest ? ` · ${escapeText(rest)}` : "");
   if (more) {
     more.textContent = [
       Number.isFinite(weatherNow.wind) ? `${t("wind")} ${weatherNow.wind} km/h` : "",
@@ -537,8 +551,8 @@ function who(info) {
   // The airline and flight number when the code is one we know, the raw
   // callsign otherwise. Never both: repeating AAL746 after "American Airlines
   // 746" tells the reader nothing they have not just read.
-  if (info.operator && info.flight) return `${info.operator} ${info.flight}`;
-  return info.callsign || "OpenSky";
+  if (info.operator && info.flight) return escapeText(`${info.operator} ${info.flight}`);
+  return escapeText(info.callsign || "OpenSky");
 }
 
 function route(info) {
@@ -546,9 +560,9 @@ function route(info) {
   // filed arrival yet, and "from Philadelphia" is the whole story anyway.
   const from = info.from_town || info.from;
   const to = info.to_town || info.to;
-  if (from && to) return `${from} → ${to}`;
-  if (from) return `${t("from")} ${from}`;
-  if (to) return `${t("to")} ${to}`;
+  if (from && to) return `${escapeText(from)} → ${escapeText(to)}`;
+  if (from) return `${t("from")} ${escapeText(from)}`;
+  if (to) return `${t("to")} ${escapeText(to)}`;
   return "";
 }
 
@@ -570,7 +584,18 @@ function detail(event) {
   const info = event.detail || {};
   if (event.type === "plane") {
     const place = info.seen ? "" : t("notInFrame");
-    return [who(info), route(info), ...facts(info), place, showText(info.context)].filter(Boolean).join(" · ");
+    // No weather and no time of day here: the photograph beside this line
+    // already says both, and said in words they would need translating twice.
+    // The name is already the heading of this row when nothing better than
+    // the callsign was known, and saying it twice says nothing twice.
+    const name = who(info);
+    const words = [name === escapeText(showText(event.label)) ? "" : name,
+      route(info), ...facts(info), place].filter(Boolean).join(" · ");
+    // Where to go and check. OpenSky is the source this name came from, so it
+    // is the place that can confirm or contradict it.
+    if (!info.icao24) return words;
+    const track = `https://opensky-network.org/aircraft-profile?icao24=${encodeURIComponent(info.icao24)}`;
+    return `${words} · <a class="out" href="${track}" target="_blank" rel="noopener">${t("follow")}</a>`;
   }
   if (event.type === "bus" && info.route) {
     return `${info.headsign || info.route} · ${info.scheduled || ""} · ${info.source || ""}`.trim();
@@ -601,9 +626,13 @@ function render() {
     const info = event.detail || {};
     const people = Number(info.persons || 0);
     const title = people > 1 ? `${showText(event.label)} (${people})` : showText(event.label);
+    // Only for aircraft. The rest of this log is a time, a word and a picture
+    // on purpose; an aircraft is the one thing here that cannot be checked by
+    // looking, so it carries its numbers and the place they came from.
+    const extra = event.type === "plane" ? `<span class="sub">${detail(event)}</span>` : "";
     const place = t("places")[info.surface || event.zone] || "";
     return `<tr><td class="when"><time>${clock}</time><span>${day}</span></td>`
-      + `<td class="event">${escapeHtml(title)}</td>`
+      + `<td class="event">${escapeHtml(title)}${extra}</td>`
       + `<td class="place">${escapeHtml(place)}</td>`
       + `<td class="shot">${picture}</td></tr>`;
   }).join("");
@@ -772,8 +801,11 @@ function followSections() {
   const links = [...document.querySelectorAll(".onpage a")];
   const parts = links.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
   if (!parts.length) return;
+  const top = document.querySelector(".top");
   const mark = () => {
-    const line = (document.querySelector(".top")?.offsetHeight || 120) + 8;
+    // Anything past the first screenful means the visit has started.
+    top?.classList.toggle("tight", window.scrollY > 40);
+    const line = (top?.offsetHeight || 120) + 8;
     let here = parts[0];
     for (const part of parts) if (part.getBoundingClientRect().top <= line) here = part;
     if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) here = parts[parts.length - 1];
