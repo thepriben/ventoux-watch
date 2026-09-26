@@ -230,6 +230,7 @@ const LABELS = {
   "Piétons": "Pedestrians",
   "Vélo": "Bicycle",
   "Moto": "Motorbike",
+  "Deux-roues": "Two-wheeler",
   "Chien": "Dog",
   "Cheval": "Horse",
   "Piétons doublés par une voiture": "Pedestrians overtaken by a car",

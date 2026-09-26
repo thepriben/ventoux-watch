@@ -23,6 +23,13 @@ RENAME = {
     # Le 26 septembre, relu à la main. Presque tous les « piétons » du
     # rond-point étaient des cyclistes et des motards : le détecteur n'avait
     # ni vélo ni moto dans sa liste, et ne pouvait rendre que le cavalier.
+    "2026-09-26T07:14:55Z": ("car", "Voiture", None, None),  # une 2e non entourée
+    "2026-09-26T09:18:10Z": ("cycle", "Deux-roues", None, None),
+    "2026-09-26T09:06:59Z": ("car", "Voiture", None, None),
+    "2026-09-26T08:25:10Z": ("car", "Voiture", None, None),
+    "2026-09-26T08:21:38Z": ("car", "Voiture", None, None),
+    "2026-09-26T08:03:07Z": ("truck", "Camion", None, None),
+    "2026-09-26T07:57:53Z": ("car", "Voiture", None, None),
     "2026-09-26T13:55:51Z": ("cycle", "Moto", None, None),
     "2026-09-26T13:46:22Z": ("car", "Voiture", None, None),
     "2026-09-26T13:40:20Z": ("cycle", "Moto", None, None),
@@ -96,6 +103,7 @@ REFRAME = {
     },
 }
 DROP = {
+    "2026-09-26T07:35:41Z": "rien dans la découpe, sur la chaussée",
     "2026-09-26T10:52:32Z": "rien dans la découpe, hors chaussée",
     "2026-09-26T05:26:39Z": "une traînée à onze mille mètres signée d'un avion qui volait à quatre",
     "2026-09-26T04:26:47Z": "les pierres de l'îlot central sous le lampadaire, personne dedans",
