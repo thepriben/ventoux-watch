@@ -1,6 +1,40 @@
 {
   "events": [
     {
+      "id": "2026-09-26T16-55-37Z-vehicle-6",
+      "t": "2026-09-26T16:55:37Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "roundabout",
+      "confidence": 0.558,
+      "thumb": "data/thumbs/2026-09-26T16-55-37Z-vehicle-6.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "peu nuageux",
+        "context": "au crépuscule, peu nuageux",
+        "measured": {
+          "travel": 0.1632,
+          "area_ratio": 0.02535,
+          "duration_s": 9.3,
+          "frames": 4,
+          "width_m": 5.3,
+          "height_m": 3.2,
+          "seen_as": []
+        },
+        "surface": "roundabout",
+        "box": [
+          0.2781,
+          0.7306,
+          0.1547,
+          0.1639
+        ],
+        "count": 4,
+        "since": "2026-09-26T16:55:37Z"
+      },
+      "closeup": "data/closeups/2026-09-26T16-55-37Z-vehicle-6.jpg"
+    },
+    {
       "id": "2026-09-26T16-54-35Z-vehicle-4",
       "t": "2026-09-26T16:54:35Z",
       "type": "vehicle",
@@ -28,7 +62,9 @@
           0.7944,
           0.125,
           0.1694
-        ]
+        ],
+        "count": 2,
+        "since": "2026-09-26T16:54:35Z"
       }
     },
     {
