@@ -1,6 +1,34 @@
 {
   "events": [
     {
+      "id": "2026-09-26T12-45-42Z-person-57",
+      "t": "2026-09-26T12:45:42Z",
+      "type": "person",
+      "label": "Piéton",
+      "zone": "other",
+      "confidence": 0.447,
+      "thumb": "data/thumbs/2026-09-26T12-45-42Z-person-57.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.2078,
+          "area_ratio": 0.00221,
+          "duration_s": 1.6,
+          "frames": 11
+        },
+        "surface": "road",
+        "box": [
+          0.7172,
+          0.9167,
+          0.0266,
+          0.0833
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T12-39-53Z-vehicle-117",
       "t": "2026-09-26T12:39:53Z",
       "type": "vehicle",
