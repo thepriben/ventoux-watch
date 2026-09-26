@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import fcntl
 import logging
 import math
+import os
 import subprocess
 import tempfile
 import time
@@ -39,6 +41,9 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config()
     root = Path(cfg["_root"])
+    if not _only_one(root / "data" / "watch.lock"):
+        log.error("Un veilleur tourne déjà. Celui-ci s'arrête.")
+        return
     zones = load_zones(root / cfg["zones"])
     motion = MotionDetector(
         zones,
@@ -199,6 +204,31 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
     log.info("Publié %s %s", decision.type, decision.label)
     if decision.type in CLIP_TYPES:
         pending.append({"id": event["id"], "after": now + 4, "started": track.started - 8})
+
+
+_LOCK = None
+
+
+def _only_one(path: Path) -> bool:
+    """True when no other watcher holds the lock.
+
+    Two watchers on one camera read the same frames and write the same history
+    twice, and the second copy of an event is indistinguishable from a real one.
+    The handle is kept in a module global on purpose: closed, the lock would be
+    released and the guard would protect nothing.
+    """
+    global _LOCK
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _LOCK = path.open("w")
+    try:
+        fcntl.flock(_LOCK, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        _LOCK.close()
+        _LOCK = None
+        return False
+    _LOCK.write(f"{os.getpid()}\n")
+    _LOCK.flush()
+    return True
 
 
 def _eye(cfg, scene_map) -> dict:

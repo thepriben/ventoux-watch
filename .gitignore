@@ -21,3 +21,4 @@ _site/
 
 # Réponses OpenStreetMap et altitudes, refaites par scripts/build_scene.py
 data/osm/
+data/watch.lock

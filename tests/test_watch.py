@@ -1,5 +1,7 @@
 import json
 import math
+import subprocess
+import sys
 import time
 import unittest
 from datetime import datetime
@@ -585,3 +587,26 @@ class ReviewTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SingleWatcherTests(unittest.TestCase):
+    """Two watchers on one camera would write every event twice."""
+
+    def test_a_second_watcher_is_turned_away(self):
+        code = (
+            "import sys;from pathlib import Path;from watcher.main import _only_one;"
+            "print(_only_one(Path(sys.argv[1])), flush=True);import time;time.sleep(float(sys.argv[2]))"
+        )
+        lock = ROOT / "data" / "lock-test"
+        lock.unlink(missing_ok=True)
+        held = subprocess.Popen([sys.executable, "-c", code, str(lock), "5"], stdout=subprocess.PIPE, text=True)
+        try:
+            self.assertEqual(held.stdout.readline().strip(), "True")
+            second = subprocess.run([sys.executable, "-c", code, str(lock), "0"], capture_output=True, text=True)
+            self.assertEqual(second.stdout.strip(), "False")
+        finally:
+            held.terminate()
+            held.wait()
+        freed = subprocess.run([sys.executable, "-c", code, str(lock), "0"], capture_output=True, text=True)
+        self.assertEqual(freed.stdout.strip(), "True")
+        lock.unlink(missing_ok=True)
