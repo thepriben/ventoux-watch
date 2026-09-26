@@ -65,13 +65,31 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 20px;
-  min-height: 44px;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  min-height: 40px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 .top-inner .eyebrow { display: none; }
 .top-inner h1 { font-size: 16px; }
+
+/* The menu sits on the title's own line, and everything else shrinks to let it
+   fit there. A second row for six words costs thirty pixels of every section
+   below, every time anyone scrolls. */
+/* The title and the menu keep their full size; only the readings give ground.
+   Forbidding the whole row to wrap instead broke the title across two lines
+   and folded the menu in half, which cost more height than it saved. */
+.top-inner .brand,
+.top-inner .onpage { flex: 0 0 auto; white-space: nowrap; }
+/* No automatic margin before the end of the row. Placed on the menu it ate
+   every spare pixel of the first line, which is what pushed the readings onto
+   a second one: flex hands the leftover space to the first auto margin it
+   meets, and that margin was in the middle. */
+/* A basis of nothing, not of its natural width. With wrapping on, a flex item
+   that asks for its full width is moved to the next line rather than squeezed,
+   so asking for none is what keeps the readings on the title's line. */
+.top-inner .facts { flex: 1 1 0; min-width: 0; }
+.top-inner .langs { margin-left: auto; }
 
 main {
   display: flex;
@@ -100,22 +118,32 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  margin: 0 0 0 auto;
+  margin: 0;
 }
 
 .facts > div {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
-  padding: 0 14px;
+  gap: 5px;
+  padding: 0 10px;
   border-left: 1px solid var(--line);
+  /* Allowed to give ground. Without this the weather column claims the width
+     of its longest sentence, which alone pushes the whole row onto a second
+     line and undoes what the single row was for. */
   min-width: 0;
+  flex: 0 1 auto;
+}
+
+.facts .sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .facts dt {
   margin: 0;
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
@@ -123,14 +151,14 @@ h1 {
 
 .facts dd {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
 .facts .sub {
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 10px;
+  line-height: 1.3;
 }
 
 .sub, .empty { color: var(--muted); }
@@ -141,7 +169,7 @@ h1 {
   border: 1px solid var(--line);
   background: transparent;
   color: var(--muted);
-  padding: 4px 9px;
+  padding: 3px 7px;
   font: 11px/1.2 ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -207,7 +235,7 @@ h2 {
    taller than the room left under the bar, so its own section could not be
    shown whole, which is the one thing a page like this owes a reader. */
 .live video {
-  width: min(100%, 720px);
+  width: min(100%, 620px);
   margin: 0 auto;
   aspect-ratio: 16 / 9;
   background: #000;
@@ -216,7 +244,7 @@ h2 {
 
 .frame {
   position: relative;
-  width: min(100%, 460px);
+  width: min(100%, 380px);
   margin: 0 auto;
   aspect-ratio: 4 / 3;
 }
@@ -446,7 +474,7 @@ h2 {
 .relief .stage { position: relative; }
 
 #relief {
-  width: min(100%, 720px);
+  width: min(100%, 620px);
   margin: 0 auto;
   aspect-ratio: 16 / 9;
   background: #1d2b3f;
@@ -621,7 +649,7 @@ h2 {
 
 .onpage a {
   position: relative;
-  padding: 12px 10px 11px;
+  padding: 11px 8px 10px;
   color: var(--muted);
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -691,7 +719,7 @@ a.out {
 
 a.out:hover, a.out:focus-visible { border-bottom-color: currentColor; }
 
-section[id] { scroll-margin-top: 56px; }
+section[id] { scroll-margin-top: 50px; }
 
 .anchor {
   margin-left: 6px;
