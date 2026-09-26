@@ -182,6 +182,12 @@ def _on_track(track, now, cfg, yolo, sky, gtfs, store, last_fire, pending, scene
         "area_ratio": round(obs.area_ratio, 5),
         "duration_s": round(max(0.0, track.updated - track.started), 1),
         "frames": track.frames,
+        # The surveyed footprint and what the model actually returned. Every
+        # correction so far has had to be diagnosed by guessing at these after
+        # the fact; written down, the next one is read straight off the entry.
+        "width_m": round(width_m, 1),
+        "height_m": round(obs.height_m, 1),
+        "seen_as": [f"{hit.cls} {hit.conf:.2f}" for hit in detections[:4]],
     }
     decision.detail.setdefault("measured", measured)
     if decision.type == "plane" and decision.detail.get("icao24"):

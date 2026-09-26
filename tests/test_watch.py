@@ -279,6 +279,25 @@ class NamingTests(unittest.TestCase):
         fire = decide(Observation(sun_bearing=250.0, sun_elevation=40.0, **glare))
         self.assertEqual(fire.type, "fire")
 
+    def test_a_car_shaped_patch_is_not_a_walker(self):
+        """26 September, all afternoon. The model reads a car on this
+        roundabout at about a quarter confidence and the people beside it at
+        half, so every car came out as a pedestrian. Four metres by one and a
+        half is not somebody on foot, whatever the model is surest of.
+        """
+        ground = dict(zone="roundabout", travel=0.08, width_m=4.3, height_m=1.4)
+        car = decide(Observation(detections=[Detection("person", 0.48), Detection("car", 0.26)], **ground))
+        self.assertEqual(car.type, "vehicle")
+        self.assertEqual(car.reason, "shape")
+        # With no vehicle class at all it must refuse rather than invent one.
+        bare = decide(Observation(detections=[Detection("person", 0.48)], **ground))
+        self.assertEqual(bare.type, "motion")
+        self.assertNotEqual(bare.label, "Piéton")
+        # And a walker-shaped patch is still a walker.
+        walk = decide(Observation(zone="roundabout", travel=0.08, width_m=0.7, height_m=1.7,
+                                  detections=[Detection("person", 0.48)]))
+        self.assertEqual(walk.label, "Piéton")
+
     def test_car_on_the_road_is_published(self):
         decision = decide(Observation(zone="road", travel=0.08, detections=[Detection("car", 0.8)]))
         self.assertEqual(decision.type, "vehicle")

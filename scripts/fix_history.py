@@ -23,6 +23,9 @@ RENAME = {
     # Le 26 septembre, relu à la main. Presque tous les « piétons » du
     # rond-point étaient des cyclistes et des motards : le détecteur n'avait
     # ni vélo ni moto dans sa liste, et ne pouvait rendre que le cavalier.
+    "2026-09-26T15:29:13Z": ("car", "Voiture", None, None),
+    "2026-09-26T15:16:56Z": ("car", "Voiture", None, None),
+    "2026-09-26T14:50:10Z": ("car", "Voiture", None, None),
     "2026-09-26T14:35:52Z": ("person", "Piétons et une voiture", None, None),
     "2026-09-26T14:29:47Z": ("person", "Piétons et une voiture", None, None),
     "2026-09-26T14:23:45Z": ("vehicle", "Deux véhicules et un piéton", None, None),

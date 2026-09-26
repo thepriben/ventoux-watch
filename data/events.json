@@ -32,8 +32,8 @@
     {
       "id": "2026-09-26T15-29-13Z-person-241",
       "t": "2026-09-26T15:29:13Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "other",
       "confidence": 0.511,
       "thumb": "data/thumbs/2026-09-26T15-29-13Z-person-241.jpg",
@@ -47,8 +47,11 @@
           0.9139,
           0.1531,
           0.0861
-        ]
-      }
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T15-26-49Z-person-240",
@@ -96,8 +99,8 @@
     {
       "id": "2026-09-26T15-16-56Z-person-236",
       "t": "2026-09-26T15:16:56Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "roundabout",
       "confidence": 0.487,
       "thumb": "data/thumbs/2026-09-26T15-16-56Z-person-236.jpg",
@@ -112,8 +115,11 @@
           0.0469,
           0.0583
         ],
-        "count": 3
-      }
+        "count": 3,
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T15-14-25Z-vehicle-13",
@@ -453,8 +459,8 @@
     {
       "id": "2026-09-26T14-50-10Z-person-215",
       "t": "2026-09-26T14:50:10Z",
-      "type": "person",
-      "label": "Piéton",
+      "type": "car",
+      "label": "Voiture",
       "zone": "road",
       "confidence": 0.506,
       "thumb": "data/thumbs/2026-09-26T14-50-10Z-person-215.jpg",
@@ -468,8 +474,11 @@
           0.7028,
           0.0672,
           0.0583
-        ]
-      }
+        ],
+        "correction": "Voiture",
+        "reading": "Voiture, indiqué à la main."
+      },
+      "review": "accepted"
     },
     {
       "id": "2026-09-26T14-48-18Z-vehicle-1",

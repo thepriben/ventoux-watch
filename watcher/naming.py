@@ -16,6 +16,10 @@ BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0,
              "bicycle": 3.0, "motorcycle": 3.5, "dog": 2.0, "horse": 3.5}
 CYCLES = {"bicycle", "motorcycle"}
 BEASTS = {"dog", "horse"}
+CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
+# A scooter and a motorbike are one class to the model and one word here. The
+# difference matters to whoever rides it and to nobody reading this page.
+BEAST_WORD = {"dog": "Chien", "horse": "Cheval"}
 SURFACE_WORD = {"forest": "la forêt", "meadow": "la prairie", "scree": "la pierraille",
                 "building": "un bâtiment", "road": "la route", "roundabout": "le rond-point",
                 "parking": "le parking", "island": "l'îlot", "playground": "l'aire de jeux",
@@ -26,18 +30,17 @@ def _place_word(surface: str) -> str:
     return SURFACE_WORD.get(surface, "le relief")
 
 
-CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
-BEAST_WORD = {"dog": "Chien", "horse": "Cheval"}
 # Nothing that drives or walks stands lower than this. Below it, on the
-# roadway, what moved is the tarmac itself catching the light.
-# Read the other way round it would not hold: a patch of light lying on the
-# tarmac close to the camera measures as tall as a house, because the height
-# is read as if the thing stood upright. Only the low end is trustworthy.
-MAX_GAP = 0.12
+# roadway, what moved is the tarmac itself catching the light. Read the other
+# way round it would not hold: a patch of light lying on the tarmac close to
+# the camera measures as tall as a house, because the height is read as if the
+# thing stood upright. Only the low end is trustworthy.
+LOWEST_M = 0.6
 # How far across the picture an aircraft may sit from what moved and still be
 # called the same thing. Wide on purpose: the sky is read once every few
 # minutes and an airliner covers fifteen kilometres between two readings, which
 # at a hundred kilometres out is most of this budget on its own.
+MAX_GAP = 0.12
 PLANE_SPAN_M = 40.0
 FRAME_PX = 1920.0
 # Below two pixels across there is nothing to see: no shape, no motion that is
@@ -47,31 +50,11 @@ FRAME_PX = 1920.0
 # say none of them was in the picture at all; the white patch that moved was a
 # cloud, and the callsign that fitted it was arithmetic, not sight.
 SKY_REACH_M = 30_000
-BLOAT = 25.0
 # How much larger than the aircraft the moving patch may be and still be called
 # that aircraft. Generous: the blob is the union of a track, the jpeg smears a
 # bright thing on blue, and a contrail belongs to the aircraft that made it.
 # Twenty-five times the area is five times across. Beyond that it is weather.
-SKY_REACH_M_OLD = 120_000
-# How far an aircraft can be and still be worth matching. Beyond that a jet is
-# under two pixels wide and its contrail is indistinguishable from cloud, so a
-# name put to it would be a guess dressed up as a reading.
-
-LOWEST_M = 0.6
-SURFACE_WORD = {"forest": "la forêt", "meadow": "la prairie", "scree": "la pierraille",
-                "building": "un bâtiment", "road": "la route", "roundabout": "le rond-point",
-                "parking": "le parking", "island": "l'îlot", "playground": "l'aire de jeux",
-                "pool": "la piscine", "path": "le chemin"}
-
-
-def _place_word(surface: str) -> str:
-    return SURFACE_WORD.get(surface, "le relief")
-
-
-CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
-# A scooter and a motorbike are one class to the model and one word here. The
-# difference matters to whoever rides it and to nobody reading this page.
-ANIMAL_WORD = {"dog": "Chien", "horse": "Cheval"}
+BLOAT = 25.0
 # And the narrowest. Every vehicle ever confirmed here has measured at least
 # two metres and a half across the ground, a bus eleven. Below two metres there
 # is nothing on wheels: a walker is that wide, and so is a patch of light.
@@ -272,6 +255,25 @@ def _vehicle_word(obs: Observation, vehicle: Detection | None, bus: Detection | 
     if heavy and obs.width_m > 5.5:
         return "Camion"
     return "Voiture"
+
+
+SHAPE_CONF = 0.2
+CAR_TALL_M = 2.6
+
+
+def _car_shaped(obs: Observation) -> bool:
+    """Does the ground it covers have the footprint of a car?
+
+    Only the width is trusted far from the camera and only the low end of the
+    height is trusted near it, so both are asked loosely and the pair of them
+    is what decides. A walker is under a metre across; a car is two and a half
+    to eight, wider than it is tall, and never as tall as a house.
+    """
+    if not (SMALLEST_M["car"] <= obs.width_m <= BIGGEST_M["car"]):
+        return False
+    if not 0 < obs.height_m <= CAR_TALL_M:
+        return False
+    return obs.width_m > obs.height_m
 
 
 def _fits(obs: Observation, cls: str) -> bool:
@@ -576,6 +578,13 @@ def decide(obs: Observation) -> Decision:
             )
         if not _fits(obs, "person"):
             person = None
+        if person is not None and _car_shaped(obs):
+            # The model reads a car on this roundabout at about a quarter
+            # confidence and the people beside it at half, so the patch that
+            # moved kept coming out as somebody on foot. The ground says
+            # otherwise: nobody walking is four metres wide and a metre and a
+            # half tall. A measurement beats a weak guess.
+            person = None
         if cycle is not None and not _fits(obs, cycle.cls):
             cycle = None
         if beast is not None and not _fits(obs, beast.cls):
@@ -584,6 +593,13 @@ def decide(obs: Observation) -> Decision:
             vehicle = None
         if bus is not None and not _fits(obs, "bus"):
             bus = None
+        if person is not None and _car_shaped(obs):
+            # The model reads a car on this roundabout at about a quarter
+            # confidence and the people beside it at half, so the patch that
+            # moved kept coming out as somebody on foot. The ground says
+            # otherwise: nobody walking is four metres wide and a metre and a
+            # half tall. A measurement beats a weak guess.
+            person = None
         if cycle is not None and not _fits(obs, cycle.cls):
             cycle = None
         if animal is not None and not _fits(obs, animal.cls):
@@ -657,6 +673,21 @@ def decide(obs: Observation) -> Decision:
                         "source": trip.source,
                     },
                     confidence=bus.conf,
+                ),
+                obs,
+            )
+        if vehicle is not None and vehicle.conf >= SHAPE_CONF and _car_shaped(obs):
+            # Below the usual threshold, but the footprint settles it. Asked
+            # only of something already shaped like a car: this is not a lower
+            # bar, it is a second kind of evidence.
+            return _stamp(
+                Decision(
+                    "publish",
+                    "vehicle",
+                    _tinted(_vehicle_word(obs, vehicle, bus), obs.colour),
+                    reason="shape",
+                    detail={"width_m": round(obs.width_m, 1), "height_m": round(obs.height_m, 1)},
+                    confidence=max(vehicle.conf, 0.5),
                 ),
                 obs,
             )
