@@ -574,6 +574,33 @@ class SceneTests(unittest.TestCase):
         self.assertEqual(YoloDetector(str(path)).detect(frame), [])
 
 
+class SkyFromThePictureTests(unittest.TestCase):
+    """The forecast answers for the valley; the camera can see its own sky."""
+
+    def test_a_blue_band_reads_as_clear(self):
+        import numpy as np
+        from watcher.scene import sky_cover, weather_from_sky
+        frame = np.zeros((270, 480, 3), dtype=np.uint8)
+        frame[:, :] = (200, 140, 90)  # bleu franc en BGR
+        self.assertLess(sky_cover(frame), 12)
+        self.assertEqual(weather_from_sky(sky_cover(frame)), "ciel dégagé")
+
+    def test_a_grey_band_reads_as_overcast(self):
+        import numpy as np
+        from watcher.scene import sky_cover, weather_from_sky
+        frame = np.zeros((270, 480, 3), dtype=np.uint8)
+        frame[:, :] = (170, 170, 170)
+        self.assertGreater(sky_cover(frame), 80)
+        self.assertEqual(weather_from_sky(sky_cover(frame)), "couvert")
+
+    def test_a_dark_frame_gives_no_reading(self):
+        import numpy as np
+        from watcher.scene import sky_cover
+        # At night there is nothing to read, and a guess would be worse than
+        # the forecast the reading is there to replace.
+        self.assertIsNone(sky_cover(np.zeros((270, 480, 3), dtype=np.uint8)))
+
+
 class FrameOfSkyTests(unittest.TestCase):
     """The camera looks down and sideways, so height alone decides nothing."""
 

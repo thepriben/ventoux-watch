@@ -95,7 +95,9 @@ async function start(host) {
   for (const lamp of lamps) world.add(lamp.post);
   const beacons = (relief.beacons || []).map((mark) => obstacle(mark, high));
   for (const mark of beacons) world.add(mark.bulb);
-  world.add(here());
+  const eye = here(pose, high);
+  named.push(eye);
+  world.add(eye);
 
   const fill = new THREE.AmbientLight(0xffffff, 1);
   const beam = new THREE.DirectionalLight(0xffffff, 1);
@@ -574,13 +576,18 @@ function carving(figure, high) {
   return piece;
 }
 
-function here() {
-  /* Where the webcam stands. Invisible from the webcam's own angle, and the
-     first thing you look for once you have turned away from it. */
-  return new THREE.Mesh(
-    new THREE.SphereGeometry(2.5, 12, 8),
+function here(pose, high) {
+  /* Where the webcam stands: on the roof of the welcome chalet, not on the
+     ground. Two metres of difference on a thirteen-hundred-metre hillside is
+     nothing to look at and everything to the geometry, because every angle in
+     this scene is measured from this point. */
+  const mark = new THREE.Mesh(
+    new THREE.SphereGeometry(1.6, 14, 10),
     new THREE.MeshBasicMaterial({ color: 0xff5a5a }),
   );
+  mark.position.set(0, high(0, 0) + (pose.height_m || 4), 0);
+  mark.name = "Webcam";
+  return mark;
 }
 
 function sun(when, lat, lon) {

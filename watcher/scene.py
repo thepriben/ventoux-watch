@@ -27,6 +27,7 @@ class Scene:
     temperature_c: float | None = None
     clouds: int | None = None
     luminance: float = 0.0
+    measured_sky: bool = False
 
     @property
     def context(self) -> str:
@@ -49,12 +50,20 @@ class SceneReader:
         moment = when if when.tzinfo else when.replace(tzinfo=timezone.utc)
         if time.time() - self._fetched > self.refresh_s:
             self._refresh()
+        period = solar_period(moment, self.lat, self.lon)
+        # The forecast is modelled on a grid whose ground here sits a thousand
+        # metres below the camera, so it answers for the valley: it called a
+        # blue morning overcast while the webcam showed the summit against a
+        # clear sky. In daylight the picture is the better witness, and it is
+        # free. The model is kept for the night, when there is nothing to read.
+        overhead = sky_cover(frame) if period == "day" else None
         return Scene(
-            period=solar_period(moment, self.lat, self.lon),
-            weather=self._weather,
+            period=period,
+            weather=weather_from_sky(overhead) if overhead is not None else self._weather,
             temperature_c=self._temperature,
-            clouds=self._clouds,
+            clouds=round(overhead) if overhead is not None else self._clouds,
             luminance=luminance(frame),
+            measured_sky=overhead is not None,
         )
 
     def _refresh(self) -> None:
@@ -138,6 +147,44 @@ def solar_elevation(when: datetime, lat: float, lon: float) -> float:
     lat_r = math.radians(lat)
     sine = math.sin(lat_r) * math.sin(decl) + math.cos(lat_r) * math.cos(decl) * math.cos(hour_angle)
     return math.degrees(math.asin(max(-1.0, min(1.0, sine))))
+
+
+SKY_BAND = 0.22
+# The top fifth of the frame. Below that the summit ridge comes in, and green
+# hillside read as cloud would make every clear day overcast.
+
+
+def sky_cover(frame: np.ndarray | None) -> float | None:
+    """How much of the sky is white rather than blue, in percent.
+
+    Blue sky is strongly blue and poorly lit in the red; cloud is bright and
+    equal in all three. The measure is the share of the band that has lost its
+    blue lead, which is what a person means by "how cloudy is it".
+    """
+    if frame is None or frame.size == 0:
+        return None
+    band = frame[: max(1, int(frame.shape[0] * SKY_BAND))]
+    if band.size == 0:
+        return None
+    blue, green, red = (band[:, :, i].astype(np.int16) for i in range(3))
+    bright = (blue + green + red) / 3 > 60
+    if not bright.any():
+        return None
+    # Twelve levels of blue over red is the least a clear sky shows here, even
+    # near the horizon where it pales.
+    pale = bright & ((blue - red) < 12)
+    return float(100.0 * pale.sum() / bright.sum())
+
+
+def weather_from_sky(cover: float) -> str:
+    """The same words the forecast uses, read off the picture instead."""
+    if cover < 12:
+        return "ciel dégagé"
+    if cover < 45:
+        return "peu nuageux"
+    if cover < 80:
+        return "nuageux"
+    return "couvert"
 
 
 def weather_label(code: int) -> str:
