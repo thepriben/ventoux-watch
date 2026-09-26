@@ -115,6 +115,7 @@ class Observation:
     colour: str = ""
     landmark: str = ""
     lit_ratio: float = 0.0
+    frames: int = 0
     camera_lat: float = 44.183501
     camera_lon: float = 5.2621281
     camera_ele: float = 1390.0
@@ -303,6 +304,13 @@ def _aircraft_label(aircraft: dict) -> str:
     return aircraft.get("callsign") or str(aircraft.get("icao24") or "").upper()
 
 
+# What it takes to call a vehicle after dark without seeing one. A car crosses
+# this frame over several seconds and several frames; a beam sweeping the grass
+# or the lit edge of the chalet terrace does not. Before these two lines the
+# rule asked only that the patch fit a car and be bright, and it filed sixteen
+# events in the first hour of one night, fourteen with nothing detected at all.
+NIGHT_FRAMES = 6
+NIGHT_SECONDS = 3.0
 SUN_LOW = 15.0
 SUN_NEAR = 8.0
 # A sun higher than fifteen degrees no longer shines through the trees into the
@@ -628,7 +636,11 @@ def decide(obs: Observation) -> Decision:
             if person is not None and person.conf < 0.6:
                 person = None
             lit = obs.lit_ratio >= 0.03
-            if person is None and _fits(obs, "car") and (lit or obs.travel >= obs.min_travel):
+            # Brightness used to stand in for movement here. It cannot: the
+            # brightest thing on this hillside at night is a patch of grass a
+            # headlight is crossing, and it fits a car exactly.
+            steady = obs.frames >= NIGHT_FRAMES and obs.duration_s >= NIGHT_SECONDS
+            if person is None and _fits(obs, "car") and steady and obs.travel >= obs.min_travel:
                 return _stamp(
                     Decision(
                         "publish",

@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 import unittest
+from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -348,10 +349,23 @@ class NamingTests(unittest.TestCase):
 
     def test_car_lights_name_a_vehicle_at_night(self):
         decision = decide(
-            Observation(zone="road", travel=0.05, period="night", lit_ratio=0.06, surface="road")
+            Observation(zone="road", travel=0.05, period="night", lit_ratio=0.06, surface="road",
+                        frames=9, duration_s=5.0)
         )
         self.assertEqual(decision.type, "vehicle")
         self.assertEqual(decision.reason, "car_lights")
+
+    def test_a_beam_sweeping_the_grass_is_not_a_vehicle(self):
+        """The measurements of a real evening, and there were sixteen of them.
+
+        Nothing detected, car-sized on the ground, bright, and gone in a fifth
+        of a second: a headlight crossing the strip in front of the chalet.
+        """
+        beam = Observation(zone="other", surface="road", period="night", lit_ratio=0.06,
+                           travel=0.1162, duration_s=0.2, frames=2, width_m=3.3, height_m=0.8)
+        self.assertEqual(decide(beam).type, "motion")
+        steady = replace(beam, frames=9, duration_s=5.0, travel=0.2)
+        self.assertEqual(decide(steady).type, "vehicle")
 
     def test_lights_off_the_road_stay_unnamed(self):
         decision = decide(
@@ -366,6 +380,8 @@ class NamingTests(unittest.TestCase):
                 travel=0.05,
                 period="twilight",
                 surface="roundabout",
+                frames=9,
+                duration_s=5.0,
                 detections=[Detection("person", 0.42)],
             )
         )
@@ -742,7 +758,7 @@ class SkyTests(unittest.TestCase):
         self.assertEqual(decide(speck).type, "motion")
         self.assertEqual(decide(speck).reason, "too_small")
         car = Observation(zone="other", surface="roundabout", period="night", travel=0.2,
-                          width_m=2.6, height_m=0.98)
+                          frames=9, duration_s=5.0, width_m=2.6, height_m=0.98)
         self.assertEqual(decide(car).type, "vehicle")
 
     def test_what_stands_still_on_the_island_is_the_furniture(self):
