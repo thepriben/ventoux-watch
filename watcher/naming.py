@@ -332,6 +332,18 @@ PERSON_WIDEST = 0.28
 # headlight crossing the grass or the lit edge of the terrace. A car read
 # faintly, even as a person, is still a car; a car read as nothing is a lamp.
 NIGHT_CONF = 0.25
+# A patch of fire colour that holds still. The main fire rule asks for colour
+# *and* for the patch to grow by half, which is two independent proofs where
+# one is already decisive: a fire that has just caught spreads across the
+# ground slowly and changes colour at once. Drawn with eight seconds of flame
+# before any smoke, the watcher sat on its hands the whole time and only spoke
+# six seconds after the plume began. Colour alone is allowed to raise the
+# alarm, at the price of having to be plainly the colour of fire rather than
+# merely warm. It cannot be asked to hold longer instead: a patch that does not
+# move is absorbed into the background within about five seconds, so the track
+# dies and starts again, and its age never climbs past that. The subtractor
+# forgets a still fire faster than any rule could wait for it.
+EMBER_WARM = 1.15
 NIGHT_FRAMES = 6
 NIGHT_SECONDS = 3.0
 SUN_LOW = 15.0
@@ -460,7 +472,10 @@ def decide(obs: Observation) -> Decision:
         # A fire that has just caught shows as a pale plume climbing out of the
         # trees, minutes before any flame is large enough to colour a pixel.
         plume = obs.smoke_ratio >= obs.fire_smoke and obs.rise >= obs.fire_rise
-        if (flame or plume) and obs.area_grow >= obs.fire_grow:
+        # Plainly the colour of fire, not merely warm, since nothing else here
+        # vouches for it: no growth, no plume, no movement.
+        burning = obs.warm_ratio >= EMBER_WARM * obs.fire_warm
+        if (flame or plume) and (obs.area_grow >= obs.fire_grow or burning):
             if not plume and _facing_the_sun(obs):
                 # Warm, wide and growing, with no smoke and no plume rising, in
                 # the exact direction of a sun that has just cleared the ridge.

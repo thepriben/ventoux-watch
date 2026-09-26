@@ -19,6 +19,9 @@ import numpy as np
 CLIMB_PER_S = 0.020
 SPREAD_PER_S = 0.004
 DRIFT_PER_S = 0.004
+# How fast the burning patch itself widens, as a share of the frame height per
+# second. Slower than the column: flames spread across the ground, smoke climbs.
+FLAME_PER_S = 0.010
 SMOKE_BGR = (196, 196, 196)
 FLAME_BGR = (30, 95, 235)
 
@@ -29,25 +32,33 @@ def plume(
     age_s: float,
     flame: bool = False,
     seed: int = 0,
+    smoke_after_s: float = 0.0,
 ) -> np.ndarray:
     """The view as it would look age_s seconds after the fire caught at spot.
 
     spot is given in the normalised frame, the base of the fire. The drawing
     is turbulent and seeded on the second, so two frames never match and the
     background subtractor sees the plume move.
+
+    smoke_after_s holds the smoke back while the flame is already burning. A
+    fire in dry scrub often shows colour before it shows a column: a few square
+    metres of orange with nothing above them yet. That is the moment worth
+    catching, because it is the one where a fire is still small enough to be
+    put out, and it is the hardest, since there is no plume to look for.
     """
     if age_s <= 0:
         return frame.copy()
     height, width = frame.shape[:2]
     base_x, base_y = spot[0] * width, spot[1] * height
-    column = CLIMB_PER_S * age_s * height
+    smoke_age = max(0.0, age_s - smoke_after_s)
+    column = CLIMB_PER_S * smoke_age * height
     smoke = np.zeros((height, width), dtype=np.float32)
     rng = np.random.default_rng(seed + int(age_s * 4))
-    puffs = max(8, int(column / 4))
+    puffs = max(8, int(column / 4)) if smoke_age > 0 else 0
     for index in range(puffs):
-        along = (index + 1) / puffs
-        radius = (0.010 + SPREAD_PER_S * age_s * along) * height
-        x = base_x + DRIFT_PER_S * age_s * along * width + rng.normal(0, radius * 0.5)
+        along = (index + 1) / max(puffs, 1)
+        radius = (0.010 + SPREAD_PER_S * smoke_age * along) * height
+        x = base_x + DRIFT_PER_S * smoke_age * along * width + rng.normal(0, radius * 0.5)
         y = base_y - column * along + rng.normal(0, radius * 0.3)
         weight = (1.0 - 0.55 * along) * rng.uniform(0.7, 1.0)
         cv2.circle(smoke, (int(x), int(y)), max(2, int(radius)), float(weight), -1)
@@ -57,7 +68,9 @@ def plume(
     paint = np.full(frame.shape, SMOKE_BGR, dtype=np.float32)
     out = frame.astype(np.float32) * (1 - smoke) + paint * smoke
     if flame:
-        _flame(out, base_x, base_y, column, rng)
+        # The hot core grows on its own clock, not the plume's, so that it is
+        # there in the seconds before there is any plume at all.
+        _flame(out, base_x, base_y, max(column, FLAME_PER_S * age_s * height), rng)
     return np.clip(out, 0, 255).astype(np.uint8)
 
 

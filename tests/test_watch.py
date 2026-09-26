@@ -934,3 +934,31 @@ class WalkerWidthTests(unittest.TestCase):
         usual = Observation(zone="road", period="day", travel=0.2, surface="road",
                             box_w=0.062, detections=[Detection("person", 0.55)])
         self.assertEqual(decide(usual).type, "person")
+
+
+class ColourBeforeSmokeTests(unittest.TestCase):
+    """A fire that has caught but has not yet made a plume."""
+
+    def _caught(self, **extra):
+        base = dict(zone="slope", surface="forest", duration_s=5.0, travel=0.0,
+                    area_grow=0.8, smoke_ratio=0.20, rise=0.0,
+                    fire_sustain_s=5.0, fire_grow=1.6, fire_warm=0.35,
+                    fire_smoke=0.35, fire_rise=0.008, period="day",
+                    sun_bearing=250.0, sun_elevation=40.0)
+        base.update(extra)
+        return Observation(**base)
+
+    def test_fire_colour_alone_raises_the_alarm(self):
+        # The readings of the drawn fire at its fifth second, before any smoke.
+        self.assertEqual(decide(self._caught(warm_ratio=0.41)).type, "fire")
+
+    def test_merely_warm_and_not_growing_raises_nothing(self):
+        # Over the plain threshold but under the one asked when nothing else
+        # vouches for it: no growth, no plume, no movement.
+        self.assertNotEqual(decide(self._caught(warm_ratio=0.37)).type, "fire")
+
+    def test_the_rising_sun_is_still_not_a_fire(self):
+        dawn = self._caught(warm_ratio=0.50, sun_bearing=97.0, sun_elevation=6.0,
+                            at_x=0.153, camera_bearing=126.713, camera_fov=78.755)
+        self.assertEqual(decide(dawn).type, "motion")
+        self.assertEqual(decide(dawn).reason, "low_sun")

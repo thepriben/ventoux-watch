@@ -1281,6 +1281,35 @@
       }
     },
     {
+      "id": "2026-09-26T15-58-44Z-fire-1",
+      "t": "2026-09-26T15:58:44Z",
+      "type": "fire",
+      "label": "Simulation : départ de feu",
+      "zone": "slope",
+      "confidence": 0.414,
+      "thumb": "data/thumbs/2026-09-26T15-58-44Z-fire-1.jpg",
+      "clip_url": "",
+      "detail": {
+        "warm_ratio": 0.414,
+        "smoke_ratio": 0.202,
+        "rise": 0.0,
+        "grow": 0.82,
+        "width_m": 26.2,
+        "surface": "forest",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé",
+        "simulation": true,
+        "reading": "Simulation : couleur seule pendant 8 s puis fumée dessiné sur la vue réelle, alerte à la 6e seconde.",
+        "box": [
+          0.6979,
+          0.2407,
+          0.0229,
+          0.0333
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T15-57-35Z-vehicle-3",
       "t": "2026-09-26T15:57:35Z",
       "type": "vehicle",

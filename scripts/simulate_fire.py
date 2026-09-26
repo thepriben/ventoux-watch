@@ -40,6 +40,8 @@ def main() -> int:
     parser.add_argument("--spot", default="", help="foyer, en x,y normalisés")
     parser.add_argument("--seconds", type=int, default=20)
     parser.add_argument("--night", action="store_true", help="feu de nuit : la flamme, pas la fumée")
+    parser.add_argument("--ember", type=float, default=0.0, metavar="S",
+                        help="départ par la couleur : la flamme seule pendant S secondes, la fumée ensuite")
     parser.add_argument("--publish", action="store_true", help="met la simulation dans le flux")
     parser.add_argument("--at", default="", help="horodatage ISO, par défaut celui de la photo ou maintenant")
     args = parser.parse_args()
@@ -55,7 +57,8 @@ def main() -> int:
     when = _when(args.at, args.frame)
     period = "night" if args.night else "day"
     print(f"Foyer en {spot[0]:.3f}, {spot[1]:.3f} sur {scene_map.surface_at(*spot) or 'pente'}"
-          f" à {scene_map.distance_at(*spot):.0f} m, de {period}")
+          f" à {scene_map.distance_at(*spot):.0f} m, de {period}"
+          + (f", couleur seule pendant {args.ember:.0f} s" if args.ember else ""))
 
     motion = MotionDetector(
         zones,
@@ -69,7 +72,8 @@ def main() -> int:
 
     raised = None
     for second in range(1, args.seconds + 1):
-        frame = plume(sensor_noise(base, seed=100 + second), spot, second, flame=args.night, seed=7)
+        frame = plume(sensor_noise(base, seed=100 + second), spot, second,
+                      flame=args.night or args.ember > 0, seed=7, smoke_after_s=args.ember)
         now = start + second
         motion.step(frame, now)
         track = _widest(motion.tracks)
@@ -89,7 +93,10 @@ def main() -> int:
     second, decision, frame, track = raised
     print(f"\nAlerte à la {second}e seconde : {decision.label}")
     if args.publish:
-        _publish(when, second, decision, frame, track, scene_map, period)
+        kind = (f"couleur seule pendant {args.ember:.0f} s puis fumée"
+                if args.ember else "panache")
+        _publish(when, second, decision, frame, track, scene_map, period,
+                 f"Simulation : {kind} dessiné sur la vue réelle, alerte à la {second}e seconde.")
     return 0
 
 
@@ -127,7 +134,7 @@ def _judge(track, frame, now, cfg, scene_map, period):
     return decide(obs), obs
 
 
-def _publish(when, second, decision, frame, track, scene_map, period) -> None:
+def _publish(when, second, decision, frame, track, scene_map, period, reading) -> None:
     store = Store(ROOT / "data", 30)
     height, width = frame.shape[:2]
     x, y, w, h = track.bbox
@@ -137,7 +144,7 @@ def _publish(when, second, decision, frame, track, scene_map, period) -> None:
     detail.update(
         {
             "simulation": True,
-            "reading": f"Simulation : panache dessiné sur la vue réelle, alerte à la {second}e seconde.",
+            "reading": reading,
             "period": period,
             "box": box,
         }
