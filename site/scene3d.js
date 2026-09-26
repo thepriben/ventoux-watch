@@ -28,6 +28,12 @@ const STEEL = 0xb9bec7;
 const LAMP_ON = 0xffd9a0; const LAMP_OFF = 0x6b6b66;
 const LAMP_REACH_M = 45; const LAMP_POWER = 140;
 const BEACON_ON = 0xff2b1e; const BEACON_OFF = 0x5e3a36;
+// One colour per kind of thing, so the mark says what it stands for before the
+// card is read: warm for anything on wheels, cool for a person, red for fire.
+const TYPES = {
+  car: 0xffb347, bus: 0xffb347, truck: 0xffb347, vehicle: 0xffb347,
+  person: 0x67d5f5, aircraft: 0xc9b6ff, fire: 0xff4436, other: 0xe6e6e6,
+};
 const FOLIAGE = [0x345c2c, 0x3e6b33, 0x4a7a3a, 0x2e5228];
 const TRUNK = 0x4a3b2c;
 // A tree every twelve metres is what a pine wood looks like up here. Sown at
@@ -128,7 +134,11 @@ async function start(host) {
     fit();
   });
 
+  const latest = await lastSeen(pose, aspect, axes, high);
+  if (latest) world.add(latest.pin);
+
   const caption = document.getElementById("relief-name");
+  const card = document.getElementById("relief-card");
   const finder = new THREE.Raycaster();
   const cursor = new THREE.Vector2();
   renderer.domElement.addEventListener("pointermove", (event) => {
@@ -136,9 +146,27 @@ async function start(host) {
     cursor.x = ((event.clientX - box.left) / box.width) * 2 - 1;
     cursor.y = -((event.clientY - box.top) / box.height) * 2 + 1;
     finder.setFromCamera(cursor, camera);
+    if (latest && finder.intersectObject(latest.pin, true).length) {
+      card.innerHTML = latest.card;
+      card.hidden = false;
+      // Kept clear of the edge: a card that ran off the view would be read
+      // half, and the tags at the end are the ones worth reading.
+      const room = stage.getBoundingClientRect();
+      const left = Math.min(event.clientX - room.left + 14, room.width - card.offsetWidth - 8);
+      const top = Math.min(event.clientY - room.top + 14, room.height - card.offsetHeight - 8);
+      card.style.left = `${Math.max(8, left)}px`;
+      card.style.top = `${Math.max(8, top)}px`;
+      caption.hidden = true;
+      return;
+    }
+    card.hidden = true;
     const hit = finder.intersectObjects(named)[0];
     caption.textContent = hit ? hit.object.name : "";
     caption.hidden = !hit;
+  });
+  renderer.domElement.addEventListener("pointerleave", () => {
+    card.hidden = true;
+    caption.hidden = true;
   });
 
   function fit() {
@@ -233,6 +261,89 @@ function ribbon(line, width, colour, high) {
   shape.setAttribute("position", new THREE.Float32BufferAttribute(place, 3));
   shape.computeVertexNormals();
   return new THREE.Mesh(shape, tarmac(colour));
+}
+
+async function lastSeen(pose, aspect, axes, high) {
+  /* The newest published event, put back on the ground it happened on.
+
+     The history keeps where a thing was in the picture, never where it was on
+     the hill. Sending that image point back out through the same camera the
+     watcher looks through, until it meets the terrain, is what turns a box on a
+     photograph into a place you can walk round in. */
+  const events = await fetch("data/events.json", { cache: "no-store" })
+    .then((answer) => answer.json())
+    .then((payload) => payload.events || [])
+    .catch(() => []);
+  const event = events.find((item) => (item.detail || {}).box);
+  if (!event) return null;
+  const [cx, cy, w, h] = event.detail.box;
+  // The foot of the box, not its middle: a thing stands on the ground, and its
+  // middle floats a metre above the spot you want to mark.
+  const at = toGround(pose, aspect, axes, cx, cy + h / 2, high);
+  if (!at) return null;
+  return { pin: marker(at, TYPES[event.type] || TYPES.other), card: tags(event, at) };
+}
+
+function toGround(pose, aspect, axes, sx, sy, high) {
+  const wide = Math.tan(THREE.MathUtils.degToRad(pose.hfov) / 2);
+  const aim = axes.forward.clone()
+    .addScaledVector(axes.right, (sx - 0.5) * 2 * wide)
+    .addScaledVector(axes.up, (0.5 - sy) * 2 * wide / aspect)
+    .normalize();
+  // Fine close in, coarse far out. Near the bottom of the frame a metre of
+  // step is several metres of ground, and the marks that matter most are the
+  // ones by the roundabout, thirty metres away.
+  let step = 0.25;
+  for (let away = 1.5; away < 3000; away += step) {
+    const east = aim.x * away;
+    const north = -aim.z * away;
+    if (aim.y * away <= high(east, north)) return [east, north, high(east, north), away];
+    step = Math.max(0.25, away / 120);
+  }
+  return null;
+}
+
+function marker(at, colour) {
+  const [east, north, floor] = at;
+  const pin = new THREE.Group();
+  const skin = new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.85 });
+  // Kept to the size of the thing it stands for. A taller mark would read as
+  // another lamp post and would hide the very ground it is pointing at.
+  const ring = new THREE.Mesh(new THREE.RingGeometry(1.15, 1.45, 32), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.45, side: THREE.DoubleSide }));
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(east, floor + 0.1, -north);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 3.2, 6), new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.35 }));
+  beam.position.set(east, floor + 1.6, -north);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 10), skin);
+  head.position.set(east, floor + 3.4, -north);
+  pin.add(ring, beam, head);
+  return pin;
+}
+
+function tags(event, at) {
+  // Every hour on this page is the hour it was at the camera, not the hour of
+  // whoever is reading: an event at dusk must not be stamped as noon.
+  const words = window.ventoux || { locale: () => undefined, place: (k) => k, period: (k) => k };
+  const clock = { timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", second: "2-digit" };
+  const day = { timeZone: "Europe/Paris", day: "2-digit", month: "short", year: "numeric" };
+  const when = new Date(event.t);
+  const detail = event.detail || {};
+  const chips = [
+    words.period(detail.period),
+    detail.weather,
+    words.place(detail.surface || event.zone),
+    `${Math.round(at[3])} m`,
+  ]
+    .filter(Boolean)
+    .map((word) => `<span class="tag">${escape(word)}</span>`)
+    .join("");
+  return `<div class="when">${escape(when.toLocaleTimeString(words.locale(), clock))} · ${escape(when.toLocaleDateString(words.locale(), day))}</div>`
+    + `<div class="what">${escape(event.label || event.type || "")}</div>`
+    + `<div class="tags">${chips}</div>`;
+}
+
+function escape(word) {
+  return String(word).replace(/[&<>"]/g, (mark) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[mark]));
 }
 
 function obstacle(mark, high) {

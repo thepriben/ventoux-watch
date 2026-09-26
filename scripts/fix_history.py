@@ -61,6 +61,12 @@ REFRAME = {
         "erase": [(0, 145, 182, 269)],  # le halo des phares sur le rond-point
         "draw": (283, 245, 369, 269),
     },
+    "2026-09-26T04:32:00Z": {
+        "type": "car",
+        "label": "Voiture blanche",
+        "erase": [(51, 196, 348, 270)],  # une boîte sur tout le bas de l'image
+        "draw": (50, 206, 84, 236),
+    },
     "2026-09-25T08:23:34Z": {
         "type": "bus",
         "label": "Bus",

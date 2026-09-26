@@ -231,8 +231,17 @@ function locale() {
   return lang === "fr" ? "fr-FR" : "en-GB";
 }
 
+// The 3D view is a separate module and must not keep a second copy of the
+// wording: one dictionary, or the same place ends up named two ways.
+window.ventoux = {
+  locale,
+  place: (key) => t("places")[key] || key,
+  period: (key) => t("periods")[key] || key,
+};
+
 function applyLang() {
   document.documentElement.lang = lang;
+  document.dispatchEvent(new CustomEvent("ventoux-lang"));
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const value = t(node.dataset.i18n);
     if (typeof value === "string") node.textContent = value;
