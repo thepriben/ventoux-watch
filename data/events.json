@@ -1,6 +1,40 @@
 {
   "events": [
     {
+      "id": "2026-09-26T06-07-05Z-fire-4",
+      "t": "2026-09-26T06:07:05Z",
+      "type": "fire",
+      "label": "Départ de feu",
+      "zone": "slope",
+      "confidence": 0.846,
+      "thumb": "data/thumbs/2026-09-26T06-07-05Z-fire-4.jpg",
+      "clip_url": "",
+      "detail": {
+        "warm_ratio": 0.846,
+        "smoke_ratio": 0.005,
+        "rise": 0.0,
+        "grow": 29.21,
+        "width_m": 60.9,
+        "surface": "forest",
+        "period": "day",
+        "weather": "ciel dégagé",
+        "context": "de jour, ciel dégagé",
+        "measured": {
+          "travel": 0.1038,
+          "area_ratio": 0.01597,
+          "duration_s": 6.9,
+          "frames": 7
+        },
+        "box": [
+          0.0625,
+          0.4694,
+          0.125,
+          0.1306
+        ]
+      },
+      "closeup": "data/closeups/2026-09-26T06-07-05Z-fire-4.jpg"
+    },
+    {
       "id": "2026-09-26T05-48-39Z-vehicle-1",
       "t": "2026-09-26T05:48:39Z",
       "type": "vehicle",
