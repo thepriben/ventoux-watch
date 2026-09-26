@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-26T18-03-47Z-vehicle-307",
+      "t": "2026-09-26T18:03:47Z",
+      "type": "vehicle",
+      "label": "Voiture et piéton",
+      "zone": "roundabout",
+      "confidence": 0.455,
+      "thumb": "data/thumbs/2026-09-26T18-03-47Z-vehicle-307.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "night",
+        "weather": "brouillard",
+        "context": "de nuit, brouillard",
+        "box": [
+          0.0969,
+          0.6611,
+          0.4297,
+          0.2639
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T18-00-10Z-vehicle-100",
       "t": "2026-09-26T18:00:10Z",
       "type": "vehicle",
