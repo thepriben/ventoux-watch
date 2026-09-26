@@ -205,14 +205,20 @@ def weather_label(code: int) -> str:
     return ""
 
 
-def moon_in_sky(frame: np.ndarray | None, exclude: list[dict] | None = None) -> bool:
-    """A small bright disc, round and far brighter than the sky around it.
+def moon_spot(frame: np.ndarray | None, exclude: list[dict] | None = None) -> dict | None:
+    """Where the moon is: a small bright disc, round and far brighter than the
+    sky around it. Returns its middle and its radius as fractions of the frame,
+    or None when there is none.
+
+    This used to answer yes or no and throw the position away, which is a waste:
+    having found the disc, the cheapest thing in the world is to say where it
+    is, and a reader looking at a dark picture wants it pointed at.
 
     The summit beacon and the valley lamps are excluded by the same circles
     the motion mask uses.
     """
     if frame is None or frame.size == 0:
-        return False
+        return None
     height, width = frame.shape[:2]
     band = cv2.cvtColor(frame[: max(1, int(height * 0.45))], cv2.COLOR_BGR2GRAY)
     level = max(190, int(band.mean()) + 60)
@@ -231,8 +237,9 @@ def moon_in_sky(frame: np.ndarray | None, exclude: list[dict] | None = None) -> 
         spot = band[y : y + h, x : x + w]
         ring = band[max(0, y - 2 * h) : y + 3 * h, max(0, x - 2 * w) : x + 3 * w]
         if ring.size and float(spot.mean()) - float(ring.mean()) >= 45:
-            return True
-    return False
+            return {"cx": round(float(cx), 4), "cy": round(float(cy), 4),
+                    "r": round(float(max(w, h)) / (2.0 * width), 4)}
+    return None
 
 
 def _inside_circle(x: float, y: float, circles: list[dict]) -> bool:
@@ -305,12 +312,13 @@ class ViewLog:
         wait = self.change_s if changed else self.every_s
         if self.last and stamp - self._last_commit < wait:
             return
-        moon = period in {"twilight", "night"} and moon_in_sky(frame, self.exclude)
+        moon = moon_spot(frame, self.exclude) if period in {"twilight", "night"} else None
         self.last = {
             "t": moment.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "webcam": chosen,
             "period": period,
-            "moon": bool(moon),
+            "moon": moon is not None,
+            "moon_at": moon,
             "api": api_label or "",
             "temp_c": None if temp_c is None else round(float(temp_c)),
             "photo": "data/view.jpg",

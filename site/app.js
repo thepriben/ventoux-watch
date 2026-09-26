@@ -58,6 +58,7 @@ const COPY = {
       sky: "Sky", island: "Roundabout island", scree: "Scree", playground: "Playground", pool: "Swimming pool", other: "Off the road",
     },
     follow: "its track",
+    nearestStation: "Nearest weather station:",
     from: "from",
     to: "towards",
     heading: "heading",
@@ -159,6 +160,7 @@ const COPY = {
       sky: "Ciel", island: "Îlot central", scree: "Éboulis", playground: "Aire de jeux", pool: "Piscine", other: "Hors chaussée",
     },
     follow: "sa trace",
+    nearestStation: "Station météo la plus proche :",
     from: "de",
     to: "vers",
     heading: "cap",
@@ -432,12 +434,14 @@ function paintBulletin() {
   const words = document.querySelector("#view-words");
   const when = document.querySelector("#view-when");
   const photo = document.querySelector("#view-photo");
+  const shot = document.querySelector("#view-shot");
+  const moon = document.querySelector("#view-moon");
   const place = document.querySelector("#view-station");
   if (!words || !when || !photo || !place) return;
   if (!bulletin || !bulletin.t) {
     words.textContent = t("compareEmpty");
     when.textContent = "";
-    photo.hidden = true;
+    if (shot) shot.hidden = true;
     place.textContent = "";
     return;
   }
@@ -451,12 +455,30 @@ function paintBulletin() {
   ].filter(Boolean).join(" · ");
   if (bulletin.photo) {
     photo.src = `${bulletin.photo}?t=${encodeURIComponent(bulletin.t)}`;
-    photo.hidden = false;
+    if (shot) shot.hidden = false;
   }
-  place.textContent = [
-    `${station.name} ${Number.isFinite(bulletin.temp_c) ? `${bulletin.temp_c} °C` : ""}`.trim(),
+  // The words say there is a moon; this says which of the bright specks it is.
+  // The watcher already found the disc to say so, and kept where it was.
+  const at = bulletin.moon_at;
+  if (moon) {
+    moon.hidden = !at;
+    if (at) {
+      moon.style.left = `${at.cx * 100}%`;
+      moon.style.top = `${at.cy * 100}%`;
+      moon.style.width = `${Math.max(at.r * 2 * 100, 4)}%`;
+      moon.title = t("moon");
+    }
+  }
+  // Who is speaking, and from how far. A reading that disagrees with the
+  // picture above it is only worth arguing with once you know it was taken
+  // twenty-two kilometres away and eleven hundred metres lower.
+  const reading = [
+    Number.isFinite(bulletin.temp_c) ? `${bulletin.temp_c} °C` : "",
     skyText(bulletin.api) || stationLabel(),
   ].filter(Boolean).join(" · ");
+  place.innerHTML = `${t("nearestStation")} <a class="out" href="${mapLink(station)}" target="_blank" rel="noopener">${escapeText(station.name)}</a>`
+    + ` · ${escapeText(`${Math.round(km(CAMERA, station))} km`)}`
+    + (reading ? ` · ${escapeText(reading)}` : "");
 }
 
 async function loadView() {

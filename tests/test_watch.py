@@ -18,7 +18,7 @@ from watcher.motion import MotionDetector, Track
 from watcher.naming import Detection, Observation, Trip, choose_aircraft, decide, in_camera_view
 from watcher.review import apply_review, parse_review
 from watcher.opensky import SkyArchive
-from watcher.scene import ViewLog, moon_in_sky, read_sky, solar_period, weather_label
+from watcher.scene import ViewLog, moon_spot, read_sky, solar_period, weather_label
 from watcher.store import Store, fold_events, small_jpeg
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -555,15 +555,21 @@ class SceneTests(unittest.TestCase):
         night = np.zeros((200, 400, 3), dtype=np.uint8)
         night[:] = (30, 28, 25)
         cv2.circle(night, (120, 40), 8, (245, 245, 240), -1)
-        self.assertTrue(moon_in_sky(night))
-        self.assertFalse(moon_in_sky(np.full((200, 400, 3), 40, dtype=np.uint8)))
+        found = moon_spot(night)
+        self.assertIsNotNone(found)
+        # Drawn at (120, 40) of a 400 by 200 frame, radius 8.
+        self.assertAlmostEqual(found["cx"], 0.30, places=2)
+        self.assertAlmostEqual(found["cy"], 0.20, places=2)
+        self.assertAlmostEqual(found["r"], 8 / 400, places=2)
+        self.assertIsNone(moon_spot(np.full((200, 400, 3), 40, dtype=np.uint8)))
 
     def test_the_summit_beacon_is_not_the_moon(self):
         night = np.zeros((200, 400, 3), dtype=np.uint8)
         night[:] = (30, 28, 25)
         cv2.circle(night, (202, 55), 8, (245, 245, 240), -1)
         beacon = [{"cx": 0.505, "cy": 0.275, "r": 0.035}]
-        self.assertFalse(moon_in_sky(night, beacon))
+        self.assertIsNone(moon_spot(night, beacon))
+
     def test_onnx_accepts_a_frame(self):
         path = ROOT / "models" / "yolo11n.onnx"
         if not path.is_file():
