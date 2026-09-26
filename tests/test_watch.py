@@ -440,6 +440,15 @@ class SkyTests(unittest.TestCase):
                           detections=[Detection(cls="car", conf=0.8)], min_conf={"car": 0.4})
         self.assertEqual(decide(car).type, "vehicle")
 
+    def test_a_metre_wide_on_the_roundabout_is_not_a_vehicle(self):
+        speck = Observation(zone="other", surface="roundabout", period="night", travel=0.2,
+                            width_m=1.13, height_m=0.98)
+        self.assertEqual(decide(speck).type, "motion")
+        self.assertEqual(decide(speck).reason, "too_small")
+        car = Observation(zone="other", surface="roundabout", period="night", travel=0.2,
+                          width_m=2.6, height_m=0.98)
+        self.assertEqual(decide(car).type, "vehicle")
+
     def test_what_stands_still_on_the_island_is_the_furniture(self):
         planted = Observation(zone="roundabout", surface="island", travel=0.0, width_m=1.6, height_m=1.26,
                               detections=[Detection(cls="person", conf=0.73)])

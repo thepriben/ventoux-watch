@@ -19,6 +19,10 @@ BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
 # tarmac close to the camera measures as tall as a house, because the height
 # is read as if the thing stood upright. Only the low end is trustworthy.
 LOWEST_M = 0.6
+# And the narrowest. Every vehicle ever confirmed here has measured at least
+# two metres and a half across the ground, a bus eleven. Below two metres there
+# is nothing on wheels: a walker is that wide, and so is a patch of light.
+SMALLEST_M = {"car": 2.0, "truck": 2.0, "bus": 2.0}
 # How long something has to burn before the word "incendie" is used. The width
 # of a plume says nothing: smoke spreads over a hundred metres in a minute
 # above a fire the size of a car. How long it has held does say something.
@@ -167,7 +171,10 @@ def _vehicle_word(obs: Observation, vehicle: Detection | None, bus: Detection | 
 def _fits(obs: Observation, cls: str) -> bool:
     """Could a thing of that kind really be that wide, where it stands?"""
     limit = BIGGEST_M.get(cls)
-    return not (limit and obs.width_m > limit)
+    if limit and obs.width_m > limit:
+        return False
+    floor = SMALLEST_M.get(cls)
+    return not (floor and 0 < obs.width_m < floor)
 
 
 def _best(detections: list[Detection], names: set[str]) -> Detection | None:
@@ -409,6 +416,15 @@ def decide(obs: Observation) -> Decision:
             return _stamp(Decision("publish", "person", "Piéton", reason="person", confidence=person.conf), obs)
         if obs.travel < obs.min_travel:
             return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
+        if 0 < obs.width_m < SMALLEST_M["car"]:
+            # Asked after the walker has had its say: a walker really is that
+            # narrow. What is left is neither, and on tarmac it is light.
+            return _motion(
+                obs,
+                "too_small",
+                "Trop petit pour un véhicule",
+                f"Environ {obs.width_m * 100:.0f} cm au sol. Une voiture en couvre deux mètres et demi ici.",
+            )
         return _motion(obs, "unnamed_vehicle", "Mouvement sur la route", "Quelque chose a traversé la chaussée ou le rond-point, sans classe sûre.")
 
     if obs.zone == "slope" and obs.travel < max(obs.min_travel, 0.02):
