@@ -1,6 +1,35 @@
 {
   "events": [
     {
+      "id": "2026-09-26T14-48-18Z-vehicle-1",
+      "t": "2026-09-26T14:48:18Z",
+      "type": "vehicle",
+      "label": "Voiture orange",
+      "zone": "road",
+      "confidence": 0.54,
+      "thumb": "data/thumbs/2026-09-26T14-48-18Z-vehicle-1.jpg",
+      "clip_url": "",
+      "detail": {
+        "width_m": 2.9,
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "measured": {
+          "travel": 0.066,
+          "area_ratio": 0.00073,
+          "duration_s": 2.3,
+          "frames": 5
+        },
+        "surface": "road",
+        "box": [
+          0.1125,
+          0.7333,
+          0.0391,
+          0.075
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T14-46-45Z-vehicle-3",
       "t": "2026-09-26T14:46:45Z",
       "type": "vehicle",
