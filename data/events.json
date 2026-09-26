@@ -1,6 +1,30 @@
 {
   "events": [
     {
+      "id": "2026-09-26T17-42-58Z-vehicle-34",
+      "t": "2026-09-26T17:42:58Z",
+      "type": "vehicle",
+      "label": "Véhicule",
+      "zone": "other",
+      "confidence": 0.577,
+      "thumb": "data/thumbs/2026-09-26T17-42-58Z-vehicle-34.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "twilight",
+        "weather": "brouillard",
+        "context": "au crépuscule, brouillard",
+        "box": [
+          0.475,
+          0.8583,
+          0.1656,
+          0.1417
+        ],
+        "count": 9,
+        "since": "2026-09-26T17:42:58Z"
+      },
+      "closeup": "data/closeups/2026-09-26T17-42-58Z-vehicle-34.jpg"
+    },
+    {
       "id": "2026-09-26T17-41-23Z-person-291",
       "t": "2026-09-26T17:41:23Z",
       "type": "vehicle",
