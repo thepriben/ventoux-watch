@@ -1,6 +1,27 @@
 {
   "events": [
     {
+      "id": "2026-09-26T12-37-25Z-person-116",
+      "t": "2026-09-26T12:37:25Z",
+      "type": "person",
+      "label": "Piéton",
+      "zone": "roundabout",
+      "confidence": 0.65,
+      "thumb": "data/thumbs/2026-09-26T12-37-25Z-person-116.jpg",
+      "clip_url": "",
+      "detail": {
+        "period": "day",
+        "weather": "peu nuageux",
+        "context": "de jour, peu nuageux",
+        "box": [
+          0.0219,
+          0.875,
+          0.0906,
+          0.125
+        ]
+      }
+    },
+    {
       "id": "2026-09-26T12-36-13Z-person-115",
       "t": "2026-09-26T12:36:13Z",
       "type": "person",
