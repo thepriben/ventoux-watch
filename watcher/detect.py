@@ -11,10 +11,19 @@ from watcher.naming import Detection
 
 COCO = {
     0: "person",
+    # A rider reads as a person from here, which is how every scooter, every
+    # motorbike and every cyclist on this roundabout came to be filed as a
+    # walker. The machine under them has its own class and always had.
+    1: "bicycle",
     2: "car",
+    3: "motorcycle",
     5: "bus",
     7: "truck",
     4: "airplane",
+    # Dogs are walked here all day. One was standing beside a pedestrian on the
+    # crossing, unnamed, because nothing in the list could hold it.
+    16: "dog",
+    17: "horse",
 }
 KEEP = set(COCO)
 

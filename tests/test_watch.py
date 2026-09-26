@@ -188,6 +188,39 @@ class NamingTests(unittest.TestCase):
         self.assertEqual(decision.type, "motion")
         self.assertNotEqual(decision.label, "NSZ5525")
 
+    def test_a_rider_is_named_by_the_machine_not_the_person(self):
+        """Thirteen entries of one afternoon were filed as walkers.
+
+        The model sees a person and a bicycle on the same rider, and the list of
+        classes it was allowed to report held only the person.
+        """
+        for kind, word in (("bicycle", "Vélo"), ("motorcycle", "Moto")):
+            decision = decide(
+                Observation(
+                    zone="roundabout",
+                    travel=0.08,
+                    width_m=1.8,
+                    height_m=1.6,
+                    detections=[Detection("person", 0.55), Detection(kind, 0.6)],
+                )
+            )
+            self.assertEqual(decision.type, "cycle")
+            self.assertEqual(decision.label, word)
+
+    def test_a_dog_beside_the_road_is_named(self):
+        decision = decide(
+            Observation(zone="road", travel=0.05, width_m=0.9, height_m=0.7, detections=[Detection("dog", 0.6)])
+        )
+        self.assertEqual(decision.type, "animal")
+        self.assertEqual(decision.label, "Chien")
+
+    def test_a_walker_alone_is_still_a_walker(self):
+        decision = decide(
+            Observation(zone="road", travel=0.05, width_m=0.7, height_m=1.7, detections=[Detection("person", 0.7)])
+        )
+        self.assertEqual(decision.type, "person")
+        self.assertEqual(decision.label, "Piéton")
+
     def test_car_on_the_road_is_published(self):
         decision = decide(Observation(zone="road", travel=0.08, detections=[Detection("car", 0.8)]))
         self.assertEqual(decision.type, "vehicle")

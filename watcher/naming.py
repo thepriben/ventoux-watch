@@ -12,7 +12,12 @@ NOT_DRIVABLE = {"forest", "meadow", "building", "sky", "scree", "island", "playg
 # The widest a thing of that kind can be where it stands, in metres. The scene
 # map turns a box into ground metres, so a walker eight metres across is light
 # or shadow whatever the model reads into it.
-BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0}
+BIGGEST_M = {"person": 2.5, "car": 8.0, "truck": 20.0, "bus": 20.0,
+             "bicycle": 3.0, "motorcycle": 3.5, "dog": 2.0, "horse": 3.5}
+CYCLES = {"bicycle", "motorcycle"}
+BEASTS = {"dog", "horse"}
+CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
+BEAST_WORD = {"dog": "Chien", "horse": "Cheval"}
 # Nothing that drives or walks stands lower than this. Below it, on the
 # roadway, what moved is the tarmac itself catching the light.
 # Read the other way round it would not hold: a patch of light lying on the
@@ -29,6 +34,10 @@ SKY_REACH_M = 120_000
 # name put to it would be a guess dressed up as a reading.
 
 LOWEST_M = 0.6
+CYCLE_WORD = {"bicycle": "Vélo", "motorcycle": "Moto"}
+# A scooter and a motorbike are one class to the model and one word here. The
+# difference matters to whoever rides it and to nobody reading this page.
+ANIMAL_WORD = {"dog": "Chien", "horse": "Cheval"}
 # And the narrowest. Every vehicle ever confirmed here has measured at least
 # two metres and a half across the ground, a bus eleven. Below two metres there
 # is nothing on wheels: a walker is that wide, and so is a patch of light.
@@ -457,6 +466,10 @@ def decide(obs: Observation) -> Decision:
         bus = _best(obs.detections, {"bus"})
         vehicle = _best(obs.detections, {"car", "truck"})
         person = _best(obs.detections, {"person"})
+        cycle = _best(obs.detections, {"bicycle", "motorcycle"})
+        animal = _best(obs.detections, {"dog", "horse"})
+        cycle = _best(obs.detections, CYCLES)
+        beast = _best(obs.detections, BEASTS)
         if obs.width_m > BIGGEST_M["truck"]:
             return _motion(
                 obs,
@@ -473,10 +486,18 @@ def decide(obs: Observation) -> Decision:
             )
         if not _fits(obs, "person"):
             person = None
+        if cycle is not None and not _fits(obs, cycle.cls):
+            cycle = None
+        if beast is not None and not _fits(obs, beast.cls):
+            beast = None
         if vehicle is not None and not _fits(obs, vehicle.cls):
             vehicle = None
         if bus is not None and not _fits(obs, "bus"):
             bus = None
+        if cycle is not None and not _fits(obs, cycle.cls):
+            cycle = None
+        if animal is not None and not _fits(obs, animal.cls):
+            animal = None
         if obs.landmark and obs.travel < obs.min_travel:
             return _motion(
                 obs,
@@ -561,8 +582,26 @@ def decide(obs: Observation) -> Decision:
                 ),
                 obs,
             )
+        if cycle is not None and cycle.conf >= 0.35:
+            # Before the walker, never after. The rider is a person too, and
+            # whichever of the two is read first is what the event is called:
+            # asked in the other order, every scooter on this roundabout came
+            # out as somebody on foot.
+            return _stamp(
+                Decision("publish", "cycle", CYCLE_WORD[cycle.cls], reason=cycle.cls, confidence=cycle.conf),
+                obs,
+            )
         if person is not None and person.conf >= 0.4:
-            return _stamp(Decision("publish", "person", "Piéton", reason="person", confidence=person.conf), obs)
+            # A dog is walked, not met: when both are in the same patch of
+            # movement they are one event, and naming only the end of the lead
+            # leaves out the half of it that was asked for.
+            word = f"Piéton et {BEAST_WORD[beast.cls].lower()}" if beast is not None else "Piéton"
+            return _stamp(Decision("publish", "person", word, reason="person", confidence=person.conf), obs)
+        if beast is not None and beast.conf >= 0.4:
+            return _stamp(
+                Decision("publish", "animal", BEAST_WORD[beast.cls], reason=beast.cls, confidence=beast.conf),
+                obs,
+            )
         if obs.travel < obs.min_travel:
             return _motion(obs, "static", "Presque immobile", "Le mouvement est trop court pour une voiture ou un bus.")
         if 0 < obs.width_m < SMALLEST_M["car"]:

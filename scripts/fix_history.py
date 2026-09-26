@@ -20,6 +20,22 @@ ROOT = Path(__file__).resolve().parents[1]
 # last field is the box the photo was first drawn with, so the old stroke can
 # be found even after the entry has been corrected once.
 RENAME = {
+    # Le 26 septembre, relu à la main. Presque tous les « piétons » du
+    # rond-point étaient des cyclistes et des motards : le détecteur n'avait
+    # ni vélo ni moto dans sa liste, et ne pouvait rendre que le cavalier.
+    "2026-09-26T13:55:51Z": ("cycle", "Moto", None, None),
+    "2026-09-26T13:46:22Z": ("car", "Voiture", None, None),
+    "2026-09-26T13:40:20Z": ("cycle", "Moto", None, None),
+    "2026-09-26T13:28:12Z": ("person", "Piétons doublés par une voiture", None, None),
+    "2026-09-26T13:25:27Z": ("car", "Voiture", None, None),
+    "2026-09-26T12:37:25Z": ("cycle", "Vélo", None, None),
+    "2026-09-26T12:36:13Z": ("cycle", "Vélo", None, None),
+    "2026-09-26T11:57:10Z": ("cycle", "Vélo", None, None),
+    "2026-09-26T11:15:28Z": ("cycle", "Moto", None, None),
+    "2026-09-26T10:43:38Z": ("car", "Voiture", None, None),
+    "2026-09-26T10:38:39Z": ("cycle", "Vélo", None, None),
+    "2026-09-26T09:39:46Z": ("car", "Voiture", None, None),
+    "2026-09-26T09:23:35Z": ("car", "Voiture", None, None),
     "2026-09-25T18:28:24Z": ("vehicle", "Voiture", (166, 214, 226, 244), [0.5859, 0.7667, 0.0391, 0.0583]),
     "2026-09-25T17:54:36Z": ("vehicle", "Camionnette blanche", (173, 213, 236, 248), [0.2547, 0.7389, 0.2516, 0.2222]),
     "2026-09-25T17:53:09Z": ("vehicle", "Voiture avec carriole", (178, 213, 259, 249), [0.2547, 0.7472, 0.3312, 0.2306]),
@@ -80,6 +96,8 @@ REFRAME = {
     },
 }
 DROP = {
+    "2026-09-26T10:52:32Z": "rien dans la découpe, hors chaussée",
+    "2026-09-26T05:26:39Z": "une traînée à onze mille mètres signée d'un avion qui volait à quatre",
     "2026-09-26T04:26:47Z": "les pierres de l'îlot central sous le lampadaire, personne dedans",
     "2026-09-26T00:05:47Z": "un motif d'un mètre sur la chaussée, trop petit pour un véhicule",
     "2026-09-25T22:11:35Z": "l'îlot central du rond-point, ses pierres et ses figures",

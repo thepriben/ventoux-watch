@@ -32,7 +32,8 @@ const BEACON_ON = 0xff2b1e; const BEACON_OFF = 0x5e3a36;
 // card is read: warm for anything on wheels, cool for a person, red for fire.
 const TYPES = {
   car: 0xffb347, bus: 0xffb347, truck: 0xffb347, vehicle: 0xffb347,
-  person: 0x67d5f5, aircraft: 0xc9b6ff, fire: 0xff4436, other: 0xe6e6e6,
+  person: 0x67d5f5, aircraft: 0xc9b6ff, plane: 0xc9b6ff, fire: 0xff4436,
+  cycle: 0x8ce99a, animal: 0xf2a2c0, other: 0xe6e6e6,
 };
 const FOLIAGE = [0x345c2c, 0x3e6b33, 0x4a7a3a, 0x2e5228];
 const TRUNK = 0x4a3b2c;
